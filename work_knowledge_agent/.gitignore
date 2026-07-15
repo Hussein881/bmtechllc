@@ -1,2 +1,4 @@
-# Keep local source documents out of version control.
+# Keep local source documents and generated retrieval artifacts out of version control.
 data/raw/
+data/processed/
+data/indexes/

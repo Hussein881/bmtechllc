@@ -1,0 +1,38 @@
+[
+  {
+    "id": "howto-restart-service",
+    "task": "How do I restart a service safely and verify it is healthy?",
+    "expected_commands": [
+      "systemctl restart",
+      "systemctl status"
+    ],
+    "expected_sources": [
+      "sample_runbook",
+      "README"
+    ]
+  },
+  {
+    "id": "howto-disk-usage",
+    "task": "How do I check disk usage by filesystem and identify the largest directories on Linux?",
+    "expected_commands": [
+      "df -h",
+      "du"
+    ],
+    "expected_sources": [
+      "linux_commands"
+    ]
+  },
+  {
+    "id": "howto-log-growth",
+    "task": "How do I investigate log growth and reduce disk pressure safely on Linux?",
+    "expected_commands": [
+      "journalctl",
+      "find",
+      "du"
+    ],
+    "expected_sources": [
+      "sample_runbook",
+      "SKLM Log Cleanup"
+    ]
+  }
+]

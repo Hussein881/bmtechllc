@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "work-knowledge-agent"
+version = "0.1.0"
+description = "Local-first engineering knowledge system with citation-first outputs"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+	"pypdf>=4.0.0",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,98 @@
+[
+  {
+    "id": "q1",
+    "category": "procedure",
+    "question": "How do I restart a service safely?",
+    "expected_answerable": true,
+    "expected_sources": [
+      "sample_runbook.md"
+    ]
+  },
+  {
+    "id": "q2",
+    "category": "troubleshooting",
+    "question": "Where should I look for recent service failure logs?",
+    "expected_answerable": true,
+    "expected_sources": [
+      "sample_runbook.md"
+    ]
+  },
+  {
+    "id": "q3",
+    "category": "unknown",
+    "question": "What is the approved cloud region failover architecture for project x9?",
+    "expected_answerable": false,
+    "expected_sources": []
+  },
+  {
+    "id": "q4",
+    "category": "operations",
+    "question": "How do I perform a JMET roll sequence?",
+    "expected_answerable": true,
+    "expected_sources": [
+      "How_to_Perform_a_JMET_Roll.md"
+    ]
+  },
+  {
+    "id": "q5",
+    "category": "security",
+    "question": "How can I update SSH authorized keys in utility mode?",
+    "expected_answerable": true,
+    "expected_sources": [
+      "SSH access/README.md"
+    ]
+  },
+  {
+    "id": "q6",
+    "category": "ambiguous",
+    "question": "For Linux disk pressure, should I clean logs first or restart services first?",
+    "expected_answerable": true,
+    "expected_sources": []
+  },
+  {
+    "id": "q7",
+    "category": "unknown",
+    "question": "What is the approved incident escalation pager rotation for project zeta-77?",
+    "expected_answerable": false,
+    "expected_sources": []
+  },
+  {
+    "id": "q8",
+    "category": "unknown",
+    "question": "Which change ticket EXM-9091 approved last month's emergency SSH key exemption?",
+    "expected_answerable": false,
+    "expected_sources": []
+  },
+  {
+    "id": "q9",
+    "category": "ambiguous",
+    "question": "What is the single authoritative rollback procedure for all environments?",
+    "expected_answerable": true,
+    "expected_sources": []
+  },
+  {
+    "id": "q10",
+    "category": "operations",
+    "question": "How can I inspect filesystem usage on Linux?",
+    "expected_answerable": true,
+    "expected_sources": [
+      "linux_commands.md"
+    ]
+  },
+  {
+    "id": "q11",
+    "category": "operations",
+    "question": "Where is the JMET roll procedure documented?",
+    "expected_answerable": true,
+    "expected_sources": [
+      "How_to_Perform_a_JMET_Roll.md"
+    ]
+  },
+  {
+    "id": "q12",
+    "category": "unknown",
+    "question": "What Kubernetes namespace restart policy is approved for project x9?",
+    "expected_answerable": false,
+    "expected_sources": []
+  }
+]

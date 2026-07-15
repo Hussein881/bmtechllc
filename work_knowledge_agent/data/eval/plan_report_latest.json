@@ -1,0 +1,1519 @@
+{
+  "total_cases": 4,
+  "trials_per_case": 5,
+  "total_runs": 20,
+  "metrics": {
+    "supported_rate_pct": 100.0,
+    "citation_ok_rate_pct": 100.0,
+    "raw_supported_rate_pct": 75.0,
+    "raw_citation_ok_rate_pct": 75.0,
+    "required_sections_rate_pct": 100.0,
+    "expected_task_match_rate_pct": 100.0,
+    "expected_source_match_rate_pct": 100.0,
+    "expected_support_match_rate_pct": 100.0,
+    "unknown_signal_match_rate_pct": 100.0,
+    "open_questions_presence_rate_pct": 100.0,
+    "run_error_rate_pct": 0.0,
+    "task_coverage_avg_pct": 75.0,
+    "source_coverage_avg_pct": 100.0,
+    "retrieval_hits_avg": 8.0,
+    "latency_p50_ms": 5917.211,
+    "latency_p95_ms": 6658.639,
+    "answer_generation_p50_ms": 5355.315,
+    "answer_generation_p95_ms": 6289.131
+  },
+  "gate_signals": {
+    "strict_source_match": true,
+    "min_task_token_overlap": 0.6,
+    "gate_ready": true
+  },
+  "failure_catalog": {},
+  "per_case": [
+    {
+      "id": "plan-restart-rollout",
+      "goal": "Plan a safe service restart rollout.",
+      "expected_tasks": [
+        "Identify prerequisites",
+        "Validate access",
+        "Execute the change"
+      ],
+      "expected_sources": [
+        "sample_runbook"
+      ],
+      "trials": [
+        {
+          "trial_index": 1,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": null,
+          "required_unknown_signals": [],
+          "min_open_questions_count": null,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/daily-testing.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/AROM/Loading_AROMs.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 177.328,
+            "confidentiality_filter": 0.065,
+            "answer_generation": 6334.806,
+            "guardrails": 0.824,
+            "total": 6681.492
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "1ab87421-ca3b-4c45-a7bc-2990df2503a5",
+            "input_token_count": 1083,
+            "output_token_count": 700,
+            "latency_ms": 6334.6,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:09:30.012Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe service restart rollout.\n\n## Summary\nThe provided context outlines a simple service restart runbook, a sample runbook, and a detailed procedure for rolling out a new system, as well as guidance on configuring partition plans for a system.\n\n## Objectives\n- Safely restart the 'my-service' using 'systemctl'.\n- Validate the service status post-restart.\n- If the service fails, collect and review logs.\n- Acknowledge a common failure signal.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. Identify the current status of 'my-service'.\n3. Execute command: $ systemctl restart my-service.\n4. Validate the status of 'my-service'.\n5. Execute command: $ systemctl status my-service.\n6. Monitor the status of 'my-service'.\n## Dependencies\n- Access to the system where 'my-service' is installed.\n- Authorization to execute 'systemctl' commands.\n- A method to collect and view logs, such as 'journalctl'.\n\n## Open Questions\n- What are the specific environment-related conditions under which the service restart should occur?\n- Are there specific users or roles required to execute the 'systemctl' commands?\n- How should temporary disruptions in service be managed or communicated?\n\n## Risks and Unknowns\n- The common failure signal indicates a potential dependency issue.\n- The procedure for collecting logs is manual, which may delay troubleshooting if not promptly executed.\n\n## Sources\n[Evidence 1] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Restart Service\nContent:\n## Restart Service\n\nUse this synthetic runbook to validate ingestion and retrieval pipelines.\n\n$ systemctl restart my-service\n$ systemctl status my-service\n\nIf the service fails, collect logs:\n\n$ journalctl -u my-service -n 100\n\nCommon failure signal:\nERROR: health check failed for dependency database\n\n[Evidence 2] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Sample Runbook\nContent:\n# Sample Runbook\n\n[Evidence 3] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md\nSection: HMA JEMT-Roll Procedures:\nContent:\n## HMA JEMT-Roll Procedures:\n\nHMA-SE JEMT-Roll Procedure:\n....\n[Evidence 4] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\nSection: Step 5: Partition Plan Configuration\nContent:\n### Step 5: Partition",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 2,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": null,
+          "required_unknown_signals": [],
+          "min_open_questions_count": null,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/daily-testing.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/AROM/Loading_AROMs.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 212.384,
+            "confidentiality_filter": 0.059,
+            "answer_generation": 6259.692,
+            "guardrails": 0.521,
+            "total": 6654.537
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "36114192-138d-4ff4-8989-31a3a0b4201c",
+            "input_token_count": 1083,
+            "output_token_count": 700,
+            "latency_ms": 6259.535,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:09:36.702Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe service restart rollout.\n\n## Summary\nThe provided context outlines a simple service restart runbook, a sample runbook, and a detailed procedure for rolling out a new system, as well as guidance on configuring partition plans for a system.\n\n## Objectives\n- Safely restart the 'my-service' using 'systemctl'.\n- Validate the service status post-restart.\n- If the service fails, collect and review logs.\n- Acknowledge a common failure signal.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. Identify the current status of 'my-service'.\n3. Execute command: $ systemctl restart my-service.\n4. Validate the status of 'my-service'.\n5. Execute command: $ systemctl status my-service.\n6. Monitor the status of 'my-service'.\n## Dependencies\n- Access to the system where 'my-service' is installed.\n- Authorization to execute 'systemctl' commands.\n- A method to collect and view logs, such as 'journalctl'.\n\n## Open Questions\n- What are the specific environment-related conditions under which the service restart should occur?\n- Are there specific users or roles required to execute the 'systemctl' commands?\n- How should temporary disruptions in service be managed or communicated?\n\n## Risks and Unknowns\n- The common failure signal indicates a potential dependency issue.\n- The procedure for collecting logs is manual, which may delay troubleshooting if not promptly executed.\n\n## Sources\n[Evidence 1] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Restart Service\nContent:\n## Restart Service\n\nUse this synthetic runbook to validate ingestion and retrieval pipelines.\n\n$ systemctl restart my-service\n$ systemctl status my-service\n\nIf the service fails, collect logs:\n\n$ journalctl -u my-service -n 100\n\nCommon failure signal:\nERROR: health check failed for dependency database\n\n[Evidence 2] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Sample Runbook\nContent:\n# Sample Runbook\n\n[Evidence 3] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md\nSection: HMA JEMT-Roll Procedures:\nContent:\n## HMA JEMT-Roll Procedures:\n\nHMA-SE JEMT-Roll Procedure:\n....\n[Evidence 4] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\nSection: Step 5: Partition Plan Configuration\nContent:\n### Step 5: Partition",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 3,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": null,
+          "required_unknown_signals": [],
+          "min_open_questions_count": null,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/daily-testing.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/AROM/Loading_AROMs.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 210.2,
+            "confidentiality_filter": 0.068,
+            "answer_generation": 6145.267,
+            "guardrails": 0.436,
+            "total": 6531.839
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "fbe2055e-7130-4d80-804f-b22ec3920afd",
+            "input_token_count": 1083,
+            "output_token_count": 700,
+            "latency_ms": 6145.066,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:09:43.243Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe service restart rollout.\n\n## Summary\nThe provided context outlines a simple service restart runbook, a sample runbook, and a detailed procedure for rolling out a new system, as well as guidance on configuring partition plans for a system.\n\n## Objectives\n- Safely restart the 'my-service' using 'systemctl'.\n- Validate the service status post-restart.\n- If the service fails, collect and review logs.\n- Acknowledge a common failure signal.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. Identify the current status of 'my-service'.\n3. Execute command: $ systemctl restart my-service.\n4. Validate the status of 'my-service'.\n5. Execute command: $ systemctl status my-service.\n6. Monitor the status of 'my-service'.\n## Dependencies\n- Access to the system where 'my-service' is installed.\n- Authorization to execute 'systemctl' commands.\n- A method to collect and view logs, such as 'journalctl'.\n\n## Open Questions\n- What are the specific environment-related conditions under which the service restart should occur?\n- Are there specific users or roles required to execute the 'systemctl' commands?\n- How should temporary disruptions in service be managed or communicated?\n\n## Risks and Unknowns\n- The common failure signal indicates a potential dependency issue.\n- The procedure for collecting logs is manual, which may delay troubleshooting if not promptly executed.\n\n## Sources\n[Evidence 1] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Restart Service\nContent:\n## Restart Service\n\nUse this synthetic runbook to validate ingestion and retrieval pipelines.\n\n$ systemctl restart my-service\n$ systemctl status my-service\n\nIf the service fails, collect logs:\n\n$ journalctl -u my-service -n 100\n\nCommon failure signal:\nERROR: health check failed for dependency database\n\n[Evidence 2] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Sample Runbook\nContent:\n# Sample Runbook\n\n[Evidence 3] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md\nSection: HMA JEMT-Roll Procedures:\nContent:\n## HMA JEMT-Roll Procedures:\n\nHMA-SE JEMT-Roll Procedure:\n....\n[Evidence 4] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\nSection: Step 5: Partition Plan Configuration\nContent:\n### Step 5: Partition",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 4,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": null,
+          "required_unknown_signals": [],
+          "min_open_questions_count": null,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/daily-testing.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/AROM/Loading_AROMs.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 210.741,
+            "confidentiality_filter": 0.062,
+            "answer_generation": 6180.694,
+            "guardrails": 0.535,
+            "total": 6572.426
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "c1fb162c-7705-4350-a6c4-f52fde5c6627",
+            "input_token_count": 1083,
+            "output_token_count": 700,
+            "latency_ms": 6180.559,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:09:49.843Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe service restart rollout.\n\n## Summary\nThe provided context outlines a simple service restart runbook, a sample runbook, and a detailed procedure for rolling out a new system, as well as guidance on configuring partition plans for a system.\n\n## Objectives\n- Safely restart the 'my-service' using 'systemctl'.\n- Validate the service status post-restart.\n- If the service fails, collect and review logs.\n- Acknowledge a common failure signal.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. Identify the current status of 'my-service'.\n3. Execute command: $ systemctl restart my-service.\n4. Validate the status of 'my-service'.\n5. Execute command: $ systemctl status my-service.\n6. Monitor the status of 'my-service'.\n## Dependencies\n- Access to the system where 'my-service' is installed.\n- Authorization to execute 'systemctl' commands.\n- A method to collect and view logs, such as 'journalctl'.\n\n## Open Questions\n- What are the specific environment-related conditions under which the service restart should occur?\n- Are there specific users or roles required to execute the 'systemctl' commands?\n- How should temporary disruptions in service be managed or communicated?\n\n## Risks and Unknowns\n- The common failure signal indicates a potential dependency issue.\n- The procedure for collecting logs is manual, which may delay troubleshooting if not promptly executed.\n\n## Sources\n[Evidence 1] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Restart Service\nContent:\n## Restart Service\n\nUse this synthetic runbook to validate ingestion and retrieval pipelines.\n\n$ systemctl restart my-service\n$ systemctl status my-service\n\nIf the service fails, collect logs:\n\n$ journalctl -u my-service -n 100\n\nCommon failure signal:\nERROR: health check failed for dependency database\n\n[Evidence 2] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Sample Runbook\nContent:\n# Sample Runbook\n\n[Evidence 3] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md\nSection: HMA JEMT-Roll Procedures:\nContent:\n## HMA JEMT-Roll Procedures:\n\nHMA-SE JEMT-Roll Procedure:\n....\n[Evidence 4] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\nSection: Step 5: Partition Plan Configuration\nContent:\n### Step 5: Partition",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 5,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": null,
+          "required_unknown_signals": [],
+          "min_open_questions_count": null,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/daily-testing.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/AROM/Loading_AROMs.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 211.253,
+            "confidentiality_filter": 0.067,
+            "answer_generation": 6193.562,
+            "guardrails": 0.517,
+            "total": 6582.781
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "85d82f9d-6c83-4e73-8c02-ae40c92fefa6",
+            "input_token_count": 1083,
+            "output_token_count": 700,
+            "latency_ms": 6193.421,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:09:56.428Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe service restart rollout.\n\n## Summary\nThe provided context outlines a simple service restart runbook, a sample runbook, and a detailed procedure for rolling out a new system, as well as guidance on configuring partition plans for a system.\n\n## Objectives\n- Safely restart the 'my-service' using 'systemctl'.\n- Validate the service status post-restart.\n- If the service fails, collect and review logs.\n- Acknowledge a common failure signal.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. Identify the current status of 'my-service'.\n3. Execute command: $ systemctl restart my-service.\n4. Validate the status of 'my-service'.\n5. Execute command: $ systemctl status my-service.\n6. Monitor the status of 'my-service'.\n## Dependencies\n- Access to the system where 'my-service' is installed.\n- Authorization to execute 'systemctl' commands.\n- A method to collect and view logs, such as 'journalctl'.\n\n## Open Questions\n- What are the specific environment-related conditions under which the service restart should occur?\n- Are there specific users or roles required to execute the 'systemctl' commands?\n- How should temporary disruptions in service be managed or communicated?\n\n## Risks and Unknowns\n- The common failure signal indicates a potential dependency issue.\n- The procedure for collecting logs is manual, which may delay troubleshooting if not promptly executed.\n\n## Sources\n[Evidence 1] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Restart Service\nContent:\n## Restart Service\n\nUse this synthetic runbook to validate ingestion and retrieval pipelines.\n\n$ systemctl restart my-service\n$ systemctl status my-service\n\nIf the service fails, collect logs:\n\n$ journalctl -u my-service -n 100\n\nCommon failure signal:\nERROR: health check failed for dependency database\n\n[Evidence 2] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\nSection: Sample Runbook\nContent:\n# Sample Runbook\n\n[Evidence 3] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md\nSection: HMA JEMT-Roll Procedures:\nContent:\n## HMA JEMT-Roll Procedures:\n\nHMA-SE JEMT-Roll Procedure:\n....\n[Evidence 4] Source File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\nSection: Step 5: Partition Plan Configuration\nContent:\n### Step 5: Partition",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        }
+      ],
+      "summary": {
+        "supported_rate_pct": 100.0,
+        "citation_ok_rate_pct": 100.0,
+        "required_sections_rate_pct": 100.0,
+        "expected_task_match_rate_pct": 100.0,
+        "expected_source_match_rate_pct": 100.0,
+        "expected_support_match_rate_pct": 100.0,
+        "unknown_signal_match_rate_pct": 100.0,
+        "open_questions_presence_rate_pct": 100.0,
+        "task_coverage_avg_pct": 66.667,
+        "source_coverage_avg_pct": 100.0
+      }
+    },
+    {
+      "id": "plan-log-cleanup",
+      "goal": "Plan a safe rollout for investigating log growth and reducing disk pressure on Linux.",
+      "expected_tasks": [
+        "Identify affected systems",
+        "Validate current disk pressure",
+        "Run cleanup or monitoring steps"
+      ],
+      "expected_sources": [
+        "SKLM Log Cleanup",
+        "linux_commands"
+      ],
+      "trials": [
+        {
+          "trial_index": 1,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify affected systems",
+            "Validate current disk pressure",
+            "Run cleanup or monitoring steps"
+          ],
+          "expected_sources": [
+            "SKLM Log Cleanup",
+            "linux_commands"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/multi-system-management.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 219.899,
+            "confidentiality_filter": 0.051,
+            "answer_generation": 3662.596,
+            "guardrails": 0.328,
+            "total": 4407.233
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "69658760-463e-4a9d-a48e-f378df4419af",
+            "input_token_count": 776,
+            "output_token_count": 396,
+            "latency_ms": 3662.449,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "stop",
+              "created_at": "2026-07-05T03:10:00.840Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe rollout for investigating log growth and reducing disk pressure on Linux.\n\n## Summary\nThe goal is to safely investigate and mitigate log growth causing disk pressure on IBM Linux on System z (s390) servers, specifically those running IBM Security Key Lifecycle Manager (ISKLM).\n\n## Objectives\n- Investigate the reasons for log file growth in ISKLM.\n- Implement a process to clean up logs and reduce disk usage.\n\n## Ordered Tasks\n1. **Identify** the ISKLM log directory by examining existing documentation or source code.\n2. **Validate** current log sizes and growth rates.\n3. **Monitor** disk usage over a specified period.\n4. **Execute** log cleanup script from Github (https://github.ibm.com/systemz/sklm-log-cleanup) ensuring backup.\n5. **Review** post-cleanup disk usage and compare with initial state.\n6. **Review** log cleanup application logs for any issues or warnings.\n\n## Dependencies\n- Access to ISKLM server.\n- Root access or sufficient permissions to manage logs and services.\n- Functioning network to access Github repository.\n\n## Open Questions\n- What specific commands or scripts are currently in use for managing ISKLM logs?\n- How frequently do logs grow to critical levels?\n- What is the acceptable threshold for log file size?\n- What other services or dependencies rely on these logs?\n\n## Risks and Unknowns\n- Unanticipated issues may arise with log cleanup process.\n- Possible impact on dependent services if logs are prematurely removed.\n- Potential data loss if cleanup script is not thoroughly tested first.\n\n## Sources\n1. README.md in [SKLM Log Cleanup](https://github.ibm.com/systemz/sklm-log-cleanup)\n2. sample_runbook.md\n3. linux_commands.md",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 2,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify affected systems",
+            "Validate current disk pressure",
+            "Run cleanup or monitoring steps"
+          ],
+          "expected_sources": [
+            "SKLM Log Cleanup",
+            "linux_commands"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/multi-system-management.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 213.372,
+            "confidentiality_filter": 0.052,
+            "answer_generation": 4565.362,
+            "guardrails": 0.292,
+            "total": 5302.584
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "b7979c7c-5100-4796-b40b-82b91507d02a",
+            "input_token_count": 776,
+            "output_token_count": 396,
+            "latency_ms": 4565.164,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "stop",
+              "created_at": "2026-07-05T03:10:06.136Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe rollout for investigating log growth and reducing disk pressure on Linux.\n\n## Summary\nThe goal is to safely investigate and mitigate log growth causing disk pressure on IBM Linux on System z (s390) servers, specifically those running IBM Security Key Lifecycle Manager (ISKLM).\n\n## Objectives\n- Investigate the reasons for log file growth in ISKLM.\n- Implement a process to clean up logs and reduce disk usage.\n\n## Ordered Tasks\n1. **Identify** the ISKLM log directory by examining existing documentation or source code.\n2. **Validate** current log sizes and growth rates.\n3. **Monitor** disk usage over a specified period.\n4. **Execute** log cleanup script from Github (https://github.ibm.com/systemz/sklm-log-cleanup) ensuring backup.\n5. **Review** post-cleanup disk usage and compare with initial state.\n6. **Review** log cleanup application logs for any issues or warnings.\n\n## Dependencies\n- Access to ISKLM server.\n- Root access or sufficient permissions to manage logs and services.\n- Functioning network to access Github repository.\n\n## Open Questions\n- What specific commands or scripts are currently in use for managing ISKLM logs?\n- How frequently do logs grow to critical levels?\n- What is the acceptable threshold for log file size?\n- What other services or dependencies rely on these logs?\n\n## Risks and Unknowns\n- Unanticipated issues may arise with log cleanup process.\n- Possible impact on dependent services if logs are prematurely removed.\n- Potential data loss if cleanup script is not thoroughly tested first.\n\n## Sources\n1. README.md in [SKLM Log Cleanup](https://github.ibm.com/systemz/sklm-log-cleanup)\n2. sample_runbook.md\n3. linux_commands.md",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 3,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify affected systems",
+            "Validate current disk pressure",
+            "Run cleanup or monitoring steps"
+          ],
+          "expected_sources": [
+            "SKLM Log Cleanup",
+            "linux_commands"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/multi-system-management.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 210.756,
+            "confidentiality_filter": 0.051,
+            "answer_generation": 3816.446,
+            "guardrails": 0.334,
+            "total": 4530.223
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "25c1f755-8ef3-4bfd-9a49-93dcb07d2237",
+            "input_token_count": 776,
+            "output_token_count": 396,
+            "latency_ms": 3816.288,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "stop",
+              "created_at": "2026-07-05T03:10:10.612Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe rollout for investigating log growth and reducing disk pressure on Linux.\n\n## Summary\nThe goal is to safely investigate and mitigate log growth causing disk pressure on IBM Linux on System z (s390) servers, specifically those running IBM Security Key Lifecycle Manager (ISKLM).\n\n## Objectives\n- Investigate the reasons for log file growth in ISKLM.\n- Implement a process to clean up logs and reduce disk usage.\n\n## Ordered Tasks\n1. **Identify** the ISKLM log directory by examining existing documentation or source code.\n2. **Validate** current log sizes and growth rates.\n3. **Monitor** disk usage over a specified period.\n4. **Execute** log cleanup script from Github (https://github.ibm.com/systemz/sklm-log-cleanup) ensuring backup.\n5. **Review** post-cleanup disk usage and compare with initial state.\n6. **Review** log cleanup application logs for any issues or warnings.\n\n## Dependencies\n- Access to ISKLM server.\n- Root access or sufficient permissions to manage logs and services.\n- Functioning network to access Github repository.\n\n## Open Questions\n- What specific commands or scripts are currently in use for managing ISKLM logs?\n- How frequently do logs grow to critical levels?\n- What is the acceptable threshold for log file size?\n- What other services or applications rely on these logs?\n\n## Risks and Unknowns\n- Unanticipated issues may arise with log cleanup process.\n- Possible impact on dependent applications if logs are removed.\n- Potential data loss if improper cleanup script is used.\n\n## Sources\n[Evidence 1: README.md related to SKLM log cleanup]\n[Evidence 2: SKLM Log Cleanup Github Repository and Issues]\n[Evidence 3: Systemd service management commands]\n[Evidence 4: Linux fundamentals]",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 4,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify affected systems",
+            "Validate current disk pressure",
+            "Run cleanup or monitoring steps"
+          ],
+          "expected_sources": [
+            "SKLM Log Cleanup",
+            "linux_commands"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/multi-system-management.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 216.629,
+            "confidentiality_filter": 0.047,
+            "answer_generation": 3773.749,
+            "guardrails": 0.324,
+            "total": 4494.393
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "6b76bb45-ce06-425d-adac-7bccb5f72126",
+            "input_token_count": 776,
+            "output_token_count": 396,
+            "latency_ms": 3773.596,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "stop",
+              "created_at": "2026-07-05T03:10:15.155Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe rollout for investigating log growth and reducing disk pressure on Linux.\n\n## Summary\nThe goal is to safely investigate and mitigate log growth causing disk pressure on IBM Linux on System z (s390) servers, specifically those running IBM Security Key Lifecycle Manager (ISKLM).\n\n## Objectives\n- Investigate the reasons for log file growth in ISKLM.\n- Implement a process to clean up logs and reduce disk usage.\n\n## Ordered Tasks\n1. **Identify** the ISKLM log directory by examining existing documentation or source code.\n2. **Validate** current log sizes and growth rates.\n3. **Monitor** disk usage over a specified period.\n4. **Execute** log cleanup script from Github (https://github.ibm.com/systemz/sklm-log-cleanup) ensuring backup.\n5. **Review** post-cleanup disk usage and compare with initial state.\n6. **Review** log cleanup application logs for any issues or warnings.\n\n## Dependencies\n- Access to ISKLM server.\n- Root access or sufficient permissions to manage logs and services.\n- Functioning network to access Github repository.\n\n## Open Questions\n- What specific commands or scripts are currently in use for managing ISKLM logs?\n- How frequently do logs grow to critical levels?\n- What is the acceptable threshold for log file size?\n- What other services or dependencies rely on these logs?\n\n## Risks and Unknowns\n- Unanticipated issues may arise with log cleanup process.\n- Possible impact on dependent services if logs are prematurely removed.\n- Potential data loss if cleanup script is not thoroughly tested first.\n\n## Sources\n1. README.md in [SKLM Log Cleanup](https://github.ibm.com/systemz/sklm-log-cleanup)\n2. sample_runbook.md\n3. linux_commands.md",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 5,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify affected systems",
+            "Validate current disk pressure",
+            "Run cleanup or monitoring steps"
+          ],
+          "expected_sources": [
+            "SKLM Log Cleanup",
+            "linux_commands"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/multi-system-management.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 207.257,
+            "confidentiality_filter": 0.052,
+            "answer_generation": 3961.801,
+            "guardrails": 0.24,
+            "total": 4676.098
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "36ec1d72-2861-40c8-9a30-5a2b098df24d",
+            "input_token_count": 776,
+            "output_token_count": 396,
+            "latency_ms": 3961.693,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "stop",
+              "created_at": "2026-07-05T03:10:19.808Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe rollout for investigating log growth and reducing disk pressure on Linux.\n\n## Summary\nThe goal is to safely investigate and mitigate log growth causing disk pressure on IBM Linux on System z (s390) servers, specifically those running IBM Security Key Lifecycle Manager (ISKLM).\n\n## Objectives\n- Investigate the reasons for log file growth in ISKLM.\n- Implement a process to clean up logs and reduce disk usage.\n\n## Ordered Tasks\n1. **Identify** the ISKLM log directory by examining existing documentation or source code.\n2. **Validate** current log sizes and growth rates.\n3. **Monitor** disk usage over a specified period.\n4. **Execute** log cleanup script from Github (https://github.ibm.com/systemz/sklm-log-cleanup) ensuring backup.\n5. **Review** post-cleanup disk usage and compare with initial state.\n6. **Review** log cleanup application logs for any issues or warnings.\n\n## Dependencies\n- Access to ISKLM server.\n- Root access or sufficient permissions to manage logs and services.\n- Functioning network to access Github repository.\n\n## Open Questions\n- What specific commands or scripts are currently in use for managing ISKLM logs?\n- How frequently do logs grow to critical levels?\n- What is the acceptable threshold for log file size?\n- What other services or dependencies rely on these logs?\n\n## Risks and Unknowns\n- Unanticipated issues may arise with log cleanup process.\n- Possible impact on dependent services if logs are prematurely removed.\n- Potential data loss if cleanup script is not thoroughly tested first.\n\n## Sources\n1. README.md in [SKLM Log Cleanup](https://github.ibm.com/systemz/sklm-log-cleanup)\n2. sample_runbook.md\n3. linux_commands.md",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        }
+      ],
+      "summary": {
+        "supported_rate_pct": 100.0,
+        "citation_ok_rate_pct": 100.0,
+        "required_sections_rate_pct": 100.0,
+        "expected_task_match_rate_pct": 100.0,
+        "expected_source_match_rate_pct": 100.0,
+        "expected_support_match_rate_pct": 100.0,
+        "unknown_signal_match_rate_pct": 100.0,
+        "open_questions_presence_rate_pct": 100.0,
+        "task_coverage_avg_pct": 66.667,
+        "source_coverage_avg_pct": 100.0
+      }
+    },
+    {
+      "id": "plan-ambiguous-multi-env",
+      "goal": "Plan a safe production rollout across multiple environments with minimal risk.",
+      "expected_tasks": [
+        "Identify prerequisites",
+        "Validate access",
+        "Execute the change"
+      ],
+      "expected_sources": [
+        "sample_runbook"
+      ],
+      "trials": [
+        {
+          "trial_index": 1,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [
+            "open questions"
+          ],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/CARTES/Data Documentation/CARTESdatadetails.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Virtual Environments.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 186.822,
+            "confidentiality_filter": 0.053,
+            "answer_generation": 6282.364,
+            "guardrails": 0.163,
+            "total": 6654.481
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "0e666616-cf32-4bab-b0f5-64bdda90c7a5",
+            "input_token_count": 996,
+            "output_token_count": 700,
+            "latency_ms": 6282.283,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:10:26.425Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.7778,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe production rollout across multiple environments with minimal risk.\n\n## Summary\nThe provided context outlines tasks for a production rollout, emphasizing safe and organized execution. The main focus is on restarting a service named 'my-service', validating its status, and handling logs in case of failure. The context also references partition plan configuration, offering three options for creating a plan, and mentions the creation of virtual environments for effective tool development.\n\n## Objectives\n1. Restart a service named 'my-service' in all target environments.\n2. Verify the successful restart and operational status of the service.\n3. Implement error handling and log collection if service failure occurs.\n4. Create or select a partition plan for the production rollout.\n5. Utilize virtual environments for tool development, especially for environments that lack CLI SIOCA support.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. **Identify** the target environments for service rollout.\n3. **Validate** the availability of virtual environments in each identified target to support effective tool development.\n4. **Execute** the service restart command: `systemctl restart my-service`.\n5. **Monitor** the service status with: `systemctl status my-service`.\n6. **Review** logs using: `journalctl -u my-service -n 100` in case of failure and check for common error signals like \"health check failed for dependency database.\"\n7. **Create or Load** a partition plan selecting an option (Load Existing, Create from Template, or Create from Scratch).\n8. **Verify** the successful loading of the partition plan, defined partitions, and readiness to execute.\n## Dependencies\n- Pre-existing knowledge of target environments.\n- Access to system command lines to execute service restart and validation commands.\n- Availability of partition plans for selection or further creation.\n- Presence of virtual environments in target systems for tool development.\n\n## Open Questions\n- What are the specific environments where 'my-service' needs to be rolled out?\n- Are the target environments equipped with suitable virtual environments for tool development?\n- What kind of data or information is required for manual data entry in the case of non-supported systems lacking CLI SIOCA?\n\n## Risks and Unknowns\n- There's a risk of service failure, which requires log checking skills.\n- Without CLI SIOCA support, manually entering data might be complex and error-prone.\n- There are no specified strategies for handling partition plan-related issues or conflicts.\n\n## Sources\n1. System Restart Runbook: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\n2. Partition Plan Configuration: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\n3. Production Z Systems Guidelines: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/C",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 2,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [
+            "open questions"
+          ],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/CARTES/Data Documentation/CARTESdatadetails.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Virtual Environments.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 187.655,
+            "confidentiality_filter": 0.055,
+            "answer_generation": 6289.131,
+            "guardrails": 0.278,
+            "total": 6658.639
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "e9145c90-3874-4a0f-ab01-873663bf63f2",
+            "input_token_count": 996,
+            "output_token_count": 700,
+            "latency_ms": 6288.997,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:10:33.135Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.7778,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe production rollout across multiple environments with minimal risk.\n\n## Summary\nThe provided context outlines tasks for a production rollout, emphasizing safe and organized execution. The main focus is on restarting a service named 'my-service', validating its status, and handling logs in case of failure. The context also references partition plan configuration, offering three options for creating a plan, and mentions the creation of virtual environments for effective tool development.\n\n## Objectives\n1. Restart a service named 'my-service' in all target environments.\n2. Verify the successful restart and operational status of the service.\n3. Implement error handling and log collection if service failure occurs.\n4. Create or select a partition plan for the production rollout.\n5. Utilize virtual environments for tool development, especially for environments that lack CLI SIOCA support.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. **Identify** the target environments for service rollout.\n3. **Validate** the availability of virtual environments in each identified target to support effective tool development.\n4. **Execute** the service restart command: `systemctl restart my-service`.\n5. **Monitor** the service status with: `systemctl status my-service`.\n6. **Review** logs using: `journalctl -u my-service -n 100` in case of failure and check for common error signals like \"health check failed for dependency database.\"\n7. **Create or Load** a partition plan selecting an option (Load Existing, Create from Template, or Create from Scratch).\n8. **Verify** the successful loading of the partition plan, defined partitions, and readiness to execute.\n## Dependencies\n- Pre-existing knowledge of target environments.\n- Access to system command lines to execute service restart and validation commands.\n- Availability of partition plans for selection or further creation.\n- Presence of virtual environments in target systems for tool development.\n\n## Open Questions\n- What are the specific environments where 'my-service' needs to be rolled out?\n- Are the target environments equipped with suitable virtual environments for tool development?\n- What kind of data or information is required for manual data entry in the case of non-supported systems lacking CLI SIOCA?\n\n## Risks and Unknowns\n- There's a risk of service failure, which requires log checking skills.\n- Without CLI SIOCA support, manually entering data might be complex and error-prone.\n- There are no specified strategies for handling partition plan-related issues or conflicts.\n\n## Sources\n1. System Restart Runbook: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\n2. Partition Plan Configuration: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\n3. Production Z Systems Guidelines: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/C",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 3,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [
+            "open questions"
+          ],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/CARTES/Data Documentation/CARTESdatadetails.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Virtual Environments.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 195.13,
+            "confidentiality_filter": 0.05,
+            "answer_generation": 6181.059,
+            "guardrails": 0.184,
+            "total": 6550.633
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "469ee8e4-3db0-41dc-ac3b-765d30df3a05",
+            "input_token_count": 996,
+            "output_token_count": 700,
+            "latency_ms": 6180.95,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:10:39.699Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.7778,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe production rollout across multiple environments with minimal risk.\n\n## Summary\nThe provided context outlines tasks for a production rollout, emphasizing safe and organized execution. The main focus is on restarting a service named 'my-service', validating its status, and handling logs in case of failure. The context also references partition plan configuration, offering three options for creating a plan, and mentions the creation of virtual environments for effective tool development.\n\n## Objectives\n1. Restart a service named 'my-service' in all target environments.\n2. Verify the successful restart and operational status of the service.\n3. Implement error handling and log collection if service failure occurs.\n4. Create or select a partition plan for the production rollout.\n5. Utilize virtual environments for tool development, especially for environments that lack CLI SIOCA support.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. **Identify** the target environments for service rollout.\n3. **Validate** the availability of virtual environments in each identified target to support effective tool development.\n4. **Execute** the service restart command: `systemctl restart my-service`.\n5. **Monitor** the service status with: `systemctl status my-service`.\n6. **Review** logs using: `journalctl -u my-service -n 100` in case of failure and check for common error signals like \"health check failed for dependency database.\"\n7. **Create or Load** a partition plan selecting an option (Load Existing, Create from Template, or Create from Scratch).\n8. **Verify** the successful loading of the partition plan, defined partitions, and readiness to execute.\n## Dependencies\n- Pre-existing knowledge of target environments.\n- Access to system command lines to execute service restart and validation commands.\n- Availability of partition plans for selection or further creation.\n- Presence of virtual environments in target systems for tool development.\n\n## Open Questions\n- What are the specific environments where 'my-service' needs to be rolled out?\n- Are the target environments equipped with suitable virtual environments for tool development?\n- What kind of data or information is required for manual data entry in the case of non-supported systems lacking CLI SIOCA?\n\n## Risks and Unknowns\n- There's a risk of service failure, which requires log checking skills.\n- Without CLI SIOCA support, manually entering data might be complex and error-prone.\n- There are no specified strategies for handling partition plan-related issues or conflicts.\n\n## Sources\n1. System Restart Runbook: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\n2. Partition Plan Configuration: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\n3. Production Z Systems Guidelines: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/C",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 4,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [
+            "open questions"
+          ],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/CARTES/Data Documentation/CARTESdatadetails.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Virtual Environments.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 181.251,
+            "confidentiality_filter": 0.049,
+            "answer_generation": 6199.966,
+            "guardrails": 1.111,
+            "total": 6553.987
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "df428704-4b87-4bb6-a8cc-a42271882c8d",
+            "input_token_count": 996,
+            "output_token_count": 700,
+            "latency_ms": 6199.661,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:10:46.260Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.7778,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe production rollout across multiple environments with minimal risk.\n\n## Summary\nThe provided context outlines tasks for a production rollout, emphasizing safe and organized execution. The main focus is on restarting a service named 'my-service', validating its status, and handling logs in case of failure. The context also references partition plan configuration, offering three options for creating a plan, and mentions the creation of virtual environments for effective tool development.\n\n## Objectives\n1. Restart a service named 'my-service' in all target environments.\n2. Verify the successful restart and operational status of the service.\n3. Implement error handling and log collection if service failure occurs.\n4. Create or select a partition plan for the production rollout.\n5. Utilize virtual environments for tool development, especially for environments that lack CLI SIOCA support.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. **Identify** the target environments for service rollout.\n3. **Validate** the availability of virtual environments in each identified target to support effective tool development.\n4. **Execute** the service restart command: `systemctl restart my-service`.\n5. **Monitor** the service status with: `systemctl status my-service`.\n6. **Review** logs using: `journalctl -u my-service -n 100` in case of failure and check for common error signals like \"health check failed for dependency database.\"\n7. **Create or Load** a partition plan selecting an option (Load Existing, Create from Template, or Create from Scratch).\n8. **Verify** the successful loading of the partition plan, defined partitions, and readiness to execute.\n## Dependencies\n- Pre-existing knowledge of target environments.\n- Access to system command lines to execute service restart and validation commands.\n- Availability of partition plans for selection or further creation.\n- Presence of virtual environments in target systems for tool development.\n\n## Open Questions\n- What are the specific environments where 'my-service' needs to be rolled out?\n- Are the target environments equipped with suitable virtual environments for tool development?\n- What kind of data or information is required for manual data entry in the case of non-supported systems lacking CLI SIOCA?\n\n## Risks and Unknowns\n- There's a risk of service failure, which requires log checking skills.\n- Without CLI SIOCA support, manually entering data might be complex and error-prone.\n- There are no specified strategies for handling partition plan-related issues or conflicts.\n\n## Sources\n1. System Restart Runbook: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md\n2. Partition Plan Configuration: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md\n3. Production Z Systems Guidelines: File: /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/C",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 5,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [
+            "Identify prerequisites",
+            "Validate access",
+            "Execute the change"
+          ],
+          "expected_sources": [
+            "sample_runbook"
+          ],
+          "expected_supported": true,
+          "required_unknown_signals": [
+            "open questions"
+          ],
+          "min_open_questions_count": 2,
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/CARTES/Data Documentation/CARTESdatadetails.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Virtual Environments.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 203.028,
+            "confidentiality_filter": 0.054,
+            "answer_generation": 6274.745,
+            "guardrails": 0.441,
+            "total": 6653.035
+          },
+          "generation_metadata": {
+            "provider": "watsonx-api",
+            "model_name": "ibm/granite-3-8b-instruct",
+            "prompt_version": "phase3-watsonx-v1",
+            "request_id": "6589d1ff-a01b-4350-9d73-04cf4528a6d9",
+            "input_token_count": 996,
+            "output_token_count": 700,
+            "latency_ms": 6274.564,
+            "extra": {
+              "api_version": "2024-03-14",
+              "model_version": "1.1.0",
+              "finish_reason": "length",
+              "created_at": "2026-07-05T03:10:52.819Z",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.7778,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a safe production rollout across multiple environments with minimal risk.\n\n## Summary\nThe provided context outlines tasks for a production rollout, emphasizing safe and organized execution. The main focus is on restarting a service named 'my-service', validating its status, and handling logs in case of failure. The context also references partition plan configuration, offering three options for creating a plan, and mentions the creation of virtual environments for effective tool development.\n\n## Objectives\n1. Restart a service named 'my-service' in all target environments.\n2. Verify the successful restart and operational status of the service.\n3. Implement error handling and log collection if service failure occurs.\n4. Create or select a partition plan for the production rollout.\n5. Utilize virtual environments for tool development, especially for environments that lack CLI SIOCA support.\n\n## Ordered Tasks\n1. Identify prerequisites and impacted systems before rollout.\n2. **Identify** the target environments for service rollout.\n3. **Validate** the availability of virtual environments in each identified target to support effective tool development.\n4. **Execute** the service restart command: `systemctl restart my-service`.\n5. **Monitor** the service status with: `systemctl status my-service`.\n6. **Review** logs using: `journalctl -u my-service -n 100` in case of failure and check for common error signals like \"health check failed for dependency database.\"\n7. **Create or Load** a partition plan selecting an option (Load Existing, Create from Template, or Create from Scratch).\n8. **Verify** the successful loading of the partition plan, defined partitions, and readiness to execute.\n## Dependencies\n- Pre-existing knowledge of target environments.\n- Access to system command lines to execute service restart and validation commands.\n- Availability of partition plans for selection or further creation.\n- Presence of virtual environments in target systems for tool development.\n\n## Open Questions\n- What are the specific environments where 'my-service' needs to be rolled out?\n- Are the target environments equipped with suitable virtual environments for tool development?\n- What kind of data or information is required for manual data entry in the case of non-CLI SIOCA-compatible production Z systems?\n\n## Risks and Unknowns\n- Execution risks related to service restart failure in target environments, which would require reviewing system logs.\n- Development risks if target environments lack appropriate virtual environments for tool development.\n- Manual data entry in non-CLI SIOCA-compatible production Z systems could be prone to human error.\n\n## Sources\n1. `/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md`\n2. `/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/wizard-guide/execution-profiles.md`\n3. `/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/CARTES/Data Documentation/CARTES",
+          "task_coverage_pct": 66.667,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        }
+      ],
+      "summary": {
+        "supported_rate_pct": 100.0,
+        "citation_ok_rate_pct": 100.0,
+        "required_sections_rate_pct": 100.0,
+        "expected_task_match_rate_pct": 100.0,
+        "expected_source_match_rate_pct": 100.0,
+        "expected_support_match_rate_pct": 100.0,
+        "unknown_signal_match_rate_pct": 100.0,
+        "open_questions_presence_rate_pct": 100.0,
+        "task_coverage_avg_pct": 66.667,
+        "source_coverage_avg_pct": 100.0
+      }
+    },
+    {
+      "id": "plan-out-of-corpus-failover",
+      "goal": "Plan a failover rollout for project x9 postgres cluster across eu-central and us-south with zero downtime.",
+      "expected_tasks": [],
+      "expected_sources": [],
+      "trials": [
+        {
+          "trial_index": 1,
+          "supported": false,
+          "citation_ok": false,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [],
+          "expected_sources": [],
+          "expected_supported": false,
+          "required_unknown_signals": [
+            "not provided from available evidence"
+          ],
+          "min_open_questions_count": null,
+          "citation_sources": [],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 209.976,
+            "confidentiality_filter": 0.052,
+            "answer_generation": 0.0,
+            "guardrails": 0.0,
+            "total": 382.43
+          },
+          "generation_metadata": {},
+          "guardrail_status": {
+            "supported": false,
+            "support_message": "unsupported: no sufficiently relevant evidence found",
+            "citation_ok": false,
+            "citation_reason": "missing_evidence",
+            "citation_details": {},
+            "boundary_allowed": false,
+            "boundary_reason": "missing_evidence",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3571,
+            "entity_anchor_ok": false,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a failover rollout for project x9 postgres cluster across eu-central and us-south with zero downtime.\n\n## Summary\nUnsupported: I could not find enough grounded evidence to build a reliable plan.\n\n## Objectives\nNot provided from available evidence.\n\n## Ordered Tasks\nNot provided from available evidence.\n\n## Dependencies\nNot provided from available evidence.\n\n## Open Questions\nNot provided from available evidence.\n\n## Risks and Unknowns\nNot provided from available evidence.\n\n## Sources\nNone.",
+          "task_coverage_pct": 100.0,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 2,
+          "supported": false,
+          "citation_ok": false,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [],
+          "expected_sources": [],
+          "expected_supported": false,
+          "required_unknown_signals": [
+            "not provided from available evidence"
+          ],
+          "min_open_questions_count": null,
+          "citation_sources": [],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 166.272,
+            "confidentiality_filter": 0.055,
+            "answer_generation": 0.0,
+            "guardrails": 0.0,
+            "total": 329.351
+          },
+          "generation_metadata": {},
+          "guardrail_status": {
+            "supported": false,
+            "support_message": "unsupported: no sufficiently relevant evidence found",
+            "citation_ok": false,
+            "citation_reason": "missing_evidence",
+            "citation_details": {},
+            "boundary_allowed": false,
+            "boundary_reason": "missing_evidence",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3571,
+            "entity_anchor_ok": false,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a failover rollout for project x9 postgres cluster across eu-central and us-south with zero downtime.\n\n## Summary\nUnsupported: I could not find enough grounded evidence to build a reliable plan.\n\n## Objectives\nNot provided from available evidence.\n\n## Ordered Tasks\nNot provided from available evidence.\n\n## Dependencies\nNot provided from available evidence.\n\n## Open Questions\nNot provided from available evidence.\n\n## Risks and Unknowns\nNot provided from available evidence.\n\n## Sources\nNone.",
+          "task_coverage_pct": 100.0,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 3,
+          "supported": false,
+          "citation_ok": false,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [],
+          "expected_sources": [],
+          "expected_supported": false,
+          "required_unknown_signals": [
+            "not provided from available evidence"
+          ],
+          "min_open_questions_count": null,
+          "citation_sources": [],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 165.57,
+            "confidentiality_filter": 0.052,
+            "answer_generation": 0.0,
+            "guardrails": 0.0,
+            "total": 329.224
+          },
+          "generation_metadata": {},
+          "guardrail_status": {
+            "supported": false,
+            "support_message": "unsupported: no sufficiently relevant evidence found",
+            "citation_ok": false,
+            "citation_reason": "missing_evidence",
+            "citation_details": {},
+            "boundary_allowed": false,
+            "boundary_reason": "missing_evidence",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3571,
+            "entity_anchor_ok": false,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a failover rollout for project x9 postgres cluster across eu-central and us-south with zero downtime.\n\n## Summary\nUnsupported: I could not find enough grounded evidence to build a reliable plan.\n\n## Objectives\nNot provided from available evidence.\n\n## Ordered Tasks\nNot provided from available evidence.\n\n## Dependencies\nNot provided from available evidence.\n\n## Open Questions\nNot provided from available evidence.\n\n## Risks and Unknowns\nNot provided from available evidence.\n\n## Sources\nNone.",
+          "task_coverage_pct": 100.0,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 4,
+          "supported": false,
+          "citation_ok": false,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [],
+          "expected_sources": [],
+          "expected_supported": false,
+          "required_unknown_signals": [
+            "not provided from available evidence"
+          ],
+          "min_open_questions_count": null,
+          "citation_sources": [],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 177.267,
+            "confidentiality_filter": 0.057,
+            "answer_generation": 0.0,
+            "guardrails": 0.0,
+            "total": 350.395
+          },
+          "generation_metadata": {},
+          "guardrail_status": {
+            "supported": false,
+            "support_message": "unsupported: no sufficiently relevant evidence found",
+            "citation_ok": false,
+            "citation_reason": "missing_evidence",
+            "citation_details": {},
+            "boundary_allowed": false,
+            "boundary_reason": "missing_evidence",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3571,
+            "entity_anchor_ok": false,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a failover rollout for project x9 postgres cluster across eu-central and us-south with zero downtime.\n\n## Summary\nUnsupported: I could not find enough grounded evidence to build a reliable plan.\n\n## Objectives\nNot provided from available evidence.\n\n## Ordered Tasks\nNot provided from available evidence.\n\n## Dependencies\nNot provided from available evidence.\n\n## Open Questions\nNot provided from available evidence.\n\n## Risks and Unknowns\nNot provided from available evidence.\n\n## Sources\nNone.",
+          "task_coverage_pct": 100.0,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        },
+        {
+          "trial_index": 5,
+          "supported": false,
+          "citation_ok": false,
+          "required_sections_ok": true,
+          "expected_task_match": true,
+          "expected_source_match": true,
+          "expected_tasks": [],
+          "expected_sources": [],
+          "expected_supported": false,
+          "required_unknown_signals": [
+            "not provided from available evidence"
+          ],
+          "min_open_questions_count": null,
+          "citation_sources": [],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 175.132,
+            "confidentiality_filter": 0.063,
+            "answer_generation": 0.0,
+            "guardrails": 0.0,
+            "total": 351.079
+          },
+          "generation_metadata": {},
+          "guardrail_status": {
+            "supported": false,
+            "support_message": "unsupported: no sufficiently relevant evidence found",
+            "citation_ok": false,
+            "citation_reason": "missing_evidence",
+            "citation_details": {},
+            "boundary_allowed": false,
+            "boundary_reason": "missing_evidence",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.3571,
+            "entity_anchor_ok": false,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# Plan: Plan a failover rollout for project x9 postgres cluster across eu-central and us-south with zero downtime.\n\n## Summary\nUnsupported: I could not find enough grounded evidence to build a reliable plan.\n\n## Objectives\nNot provided from available evidence.\n\n## Ordered Tasks\nNot provided from available evidence.\n\n## Dependencies\nNot provided from available evidence.\n\n## Open Questions\nNot provided from available evidence.\n\n## Risks and Unknowns\nNot provided from available evidence.\n\n## Sources\nNone.",
+          "task_coverage_pct": 100.0,
+          "source_coverage_pct": 100.0,
+          "support_expectation_match": true,
+          "unknown_signal_match": true,
+          "open_questions_presence_match": true,
+          "failure_reasons": []
+        }
+      ],
+      "summary": {
+        "supported_rate_pct": 0.0,
+        "citation_ok_rate_pct": 0.0,
+        "required_sections_rate_pct": 100.0,
+        "expected_task_match_rate_pct": 100.0,
+        "expected_source_match_rate_pct": 100.0,
+        "expected_support_match_rate_pct": 100.0,
+        "unknown_signal_match_rate_pct": 100.0,
+        "open_questions_presence_rate_pct": 100.0,
+        "task_coverage_avg_pct": 100.0,
+        "source_coverage_avg_pct": 100.0
+      }
+    }
+  ],
+  "golden_integrity": {
+    "dataset_path": "data/eval/plan_eval_cases_golden.json",
+    "manifest_path": "data/eval/plan_eval_cases_golden.meta.json",
+    "expected_sha256": "e18bfb215c41b73c51707c17154ef226961ec31f1ab6eef8c5b94630d375c463",
+    "actual_sha256": "e18bfb215c41b73c51707c17154ef226961ec31f1ab6eef8c5b94630d375c463",
+    "hash_match": true,
+    "gate_eligible": true,
+    "review_status": "reviewed",
+    "reviewer": "anwarh",
+    "review_date": "2026-07-04",
+    "notes": "Golden Phase 4 dataset includes answerable and adversarial ambiguity/insufficient-evidence cases authored independently from planner output snapshots. Continue using exploratory dataset for tuning-only changes."
+  }
+}

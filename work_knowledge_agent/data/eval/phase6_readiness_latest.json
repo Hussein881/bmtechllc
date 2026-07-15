@@ -1,0 +1,134 @@
+{
+  "generated_at": "2026-07-05T05:58:31.956486+00:00",
+  "phase": "phase6_evaluation_interface",
+  "sources": {
+    "qa_report": "data/eval/report_latest.json",
+    "howto_report": "data/eval/howto_report_latest.json",
+    "plan_report": "data/eval/plan_report_latest.json",
+    "curation_report": "data/eval/curation_report_latest.json",
+    "corpus_quality_report": "data/eval/corpus_quality_report_latest.json",
+    "llm_report": "data/eval/llm_report_latest.json"
+  },
+  "quality_metrics": {
+    "qa": {
+      "citation_guardrail_pass_rate_pct": 66.667,
+      "retrieval_source_hit_rate_pct": 91.667,
+      "citation_source_hit_rate_pct": 91.667,
+      "refusal_accuracy_pct": 100.0,
+      "latency_p50_ms": 246.254,
+      "latency_p95_ms": 262.967
+    },
+    "howto": {
+      "supported_rate_pct": 100.0,
+      "citation_ok_rate_pct": 100.0,
+      "required_sections_rate_pct": 100.0,
+      "expected_command_match_rate_pct": 33.333,
+      "expected_source_match_rate_pct": 100.0,
+      "latency_p50_ms": 6029.698,
+      "latency_p95_ms": 7886.396,
+      "answer_generation_p50_ms": 5481.844,
+      "answer_generation_p95_ms": 7156.621
+    },
+    "planner": {
+      "supported_rate_pct": 100.0,
+      "citation_ok_rate_pct": 100.0,
+      "raw_supported_rate_pct": 75.0,
+      "raw_citation_ok_rate_pct": 75.0,
+      "required_sections_rate_pct": 100.0,
+      "expected_task_match_rate_pct": 100.0,
+      "expected_source_match_rate_pct": 100.0,
+      "expected_support_match_rate_pct": 100.0,
+      "unknown_signal_match_rate_pct": 100.0,
+      "open_questions_presence_rate_pct": 100.0,
+      "run_error_rate_pct": 0.0,
+      "task_coverage_avg_pct": 75.0,
+      "source_coverage_avg_pct": 100.0,
+      "retrieval_hits_avg": 8.0,
+      "latency_p50_ms": 5917.211,
+      "latency_p95_ms": 6658.639,
+      "answer_generation_p50_ms": 5355.315,
+      "answer_generation_p95_ms": 6289.131
+    },
+    "curation": {
+      "expected_type_match_rate_pct": 100.0,
+      "non_empty_proposal_rate_pct": 100.0,
+      "proposal_count_avg": 1.0,
+      "latency_p50_ms": 263.284,
+      "latency_p95_ms": 278.386
+    },
+    "llm": {
+      "boundary_allow_rate_pct": 100.0,
+      "generation_success_rate_pct": 100.0,
+      "expected_match_rate_pct": 100.0,
+      "latency_p50_ms": 897.217,
+      "latency_p95_ms": 919.556,
+      "avg_input_tokens": 45.0,
+      "avg_output_tokens": 14.0
+    }
+  },
+  "generation_telemetry": {
+    "howto": {
+      "total_runs": 15,
+      "runs_with_generation_metadata": 15,
+      "coverage_pct": 100.0,
+      "runs_with_token_counts": 15,
+      "token_coverage_pct": 100.0
+    },
+    "planner": {
+      "total_runs": 20,
+      "runs_with_generation_metadata": 15,
+      "coverage_pct": 75.0,
+      "runs_with_token_counts": 15,
+      "token_coverage_pct": 75.0
+    }
+  },
+  "howto_eval_provenance": {
+    "trials_per_case": 5,
+    "dataset_path": "data/eval/howto_eval_cases_golden.json",
+    "review_status": "reviewed",
+    "gate_eligible": true,
+    "hash_match": true
+  },
+  "observability": {
+    "enabled": false,
+    "ingestion": {},
+    "index_build": {}
+  },
+  "carry_forward_conditions": {
+    "source_found": true,
+    "open_conditions": [],
+    "open_condition_count": 0
+  },
+  "index_evolution_recommendation": {
+    "decision": "keep_full_rebuild_strategy",
+    "reason": "within_warning_thresholds",
+    "full_rebuild_warning_ms": 120000.0,
+    "full_rebuild_warning_chunks": 50000,
+    "observed_index_stage_total_ms": null,
+    "observed_total_chunks": 4308,
+    "triggered_by_time": false,
+    "triggered_by_size": false
+  },
+  "curation_spot_audit": {
+    "history_found": true,
+    "triage_snapshot_events": 1,
+    "accepted_decision_events": 1,
+    "rollback_events": 1,
+    "metric_non_vacuous": true,
+    "spot_audit_disagreement_rate_pct": 100.0
+  },
+  "gate6_readiness_signals": {
+    "fixed_eval_reports_present": true,
+    "baseline_quality_metrics_present": true,
+    "planner_gate_ready": true,
+    "howto_run_error_rate_pct": 0.0,
+    "qa_refusal_accuracy_pct": 100.0,
+    "open_condition_count": 0
+  },
+  "interface_parity": {
+    "checked": false,
+    "status": "not_requested",
+    "health_ok": false,
+    "readiness_keys_match": false
+  }
+}

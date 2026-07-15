@@ -1,0 +1,133 @@
+{
+  "chunks_path": "data/processed/chunks.jsonl",
+  "total_chunks": 4308,
+  "controls": {
+    "exact_hash_dedupe": {
+      "duplicate_group_count": 95,
+      "duplicate_chunk_total": 149,
+      "duplicate_rate_pct": 3.459
+    },
+    "near_duplicate_strategy": {
+      "threshold": 0.93,
+      "max_pairs_per_source": 200,
+      "pairs_checked": 17273,
+      "candidate_count": 19,
+      "top_candidates": [
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0004-4edc45de9c10ce3c",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0009-da3cc87082a42b32",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0004-4edc45de9c10ce3c",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0015-43e3b330449b33f8",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0005-b1e43378b813ffd5",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0010-ba760e82c22c2e40",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0005-b1e43378b813ffd5",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0016-6ea6fd87d210c2e9",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0009-da3cc87082a42b32",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0015-43e3b330449b33f8",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md::chunk-0004-bc9625c7905b6d4a",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md::chunk-0009-d28612ba1833e6a0",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md::chunk-0005-42b1f6c1beda1b6b",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md::chunk-0010-e8557801079c2144",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Helper Documentation/HCD Dynamic Documentation/HCD_operations Class.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Helper Documentation/HCD Dynamic Documentation/HCD_operations Class.md::chunk-0013-7b302807c8a5dee0",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Helper Documentation/HCD Dynamic Documentation/HCD_operations Class.md::chunk-0015-bef7ce9521b95184",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Tools/PyStack.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Tools/PyStack.md::chunk-0002-7779ffaff802100e",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Tools/PyStack.md::chunk-0020-14b1cf050c8c4fb9",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md::chunk-0002-b630059717cd61ba",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md::chunk-0003-512433676eaefd67",
+          "similarity": 1.0
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/remoteZtoolset/APIToolHelp.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/remoteZtoolset/APIToolHelp.md::chunk-0005-dace8504c3b2cf41",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/remoteZtoolset/APIToolHelp.md::chunk-0006-90fae03297925fbe",
+          "similarity": 0.9794
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/database-maintenance/README.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/database-maintenance/README.md::chunk-0005-57aa35fd6ce84556",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/database-maintenance/README.md::chunk-0006-2ba2a28ab3f9270a",
+          "similarity": 0.9661
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0003-6bb738bb2481e286",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0014-a32171e705cf642c",
+          "similarity": 0.9538
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md::chunk-0009-38c1c5a622647544",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md::chunk-0013-08847f03412e870d",
+          "similarity": 0.953
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md::chunk-0010-7ae28fbd75ca1d73",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md::chunk-0014-da08824dbd821f52",
+          "similarity": 0.947
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md::chunk-0008-88caf8a480371761",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/Schedulemon/developer-info/Procedures/dev-server-maintenance/README.md::chunk-0012-96faad4156026ae3",
+          "similarity": 0.9462
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/rzUtilities/CEC interaction/README_envcheck.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/rzUtilities/CEC interaction/README_envcheck.md::chunk-0005-e641341ad6b47f9e",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/rzUtilities/CEC interaction/README_envcheck.md::chunk-0006-cca14f499a4bf434",
+          "similarity": 0.9412
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md::chunk-0003-2a153bae13613d46",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-workloads.md::chunk-0008-392c2a14cefb4311",
+          "similarity": 0.9371
+        },
+        {
+          "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md",
+          "chunk_id_a": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0003-6bb738bb2481e286",
+          "chunk_id_b": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md::chunk-0008-09d733e9950a0fa3",
+          "similarity": 0.9359
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,1008 @@
+{
+  "total_cases": 3,
+  "trials_per_case": 5,
+  "total_runs": 15,
+  "metrics": {
+    "supported_rate_pct": 100.0,
+    "citation_ok_rate_pct": 100.0,
+    "required_sections_rate_pct": 100.0,
+    "expected_command_match_rate_pct": 100.0,
+    "expected_source_match_rate_pct": 100.0,
+    "latency_p50_ms": 7884.334,
+    "latency_p95_ms": 9208.126,
+    "answer_generation_p50_ms": 6792.269,
+    "answer_generation_p95_ms": 7906.69
+  },
+  "per_case": [
+    {
+      "id": "howto-restart-service",
+      "task": "How do I restart a service safely and verify it is healthy?",
+      "expected_commands": [
+        "systemctl restart",
+        "systemctl status"
+      ],
+      "expected_sources": [
+        "sample_runbook",
+        "README"
+      ],
+      "trials": [
+        {
+          "trial_index": 1,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "systemctl restart",
+            "systemctl status"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "README"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 264.14,
+            "confidentiality_filter": 0.054,
+            "answer_generation": 6792.269,
+            "guardrails": 0.23,
+            "total": 7301.941
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "dcc21561-2d6d-43bb-9bfe-642f1e63bd5d",
+            "input_token_count": 1102,
+            "output_token_count": 459,
+            "latency_ms": 6791.88,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "end_turn",
+              "anthropic_id": "msg_01DrjBZXso3j96rH6jN4fLxb",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8333,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I restart a service safely and verify it is healthy?\n\n## Summary\nRestart a service using `systemctl`, check its status, and if it fails, review logs for dependency health check errors.\n\n## Assumptions\n- None explicitly stated in evidence; service name is assumed to be `my-service` as used in the example commands.\n\n## Prerequisites\n- Not specified in retrieved evidence.\n\n## Steps\n1. Restart the service.\n2. Check the service status to confirm it is running.\n3. If the service fails, collect recent logs to diagnose the issue.\n4. Look for known failure signals (e.g., dependency health check errors) in the logs.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n## Validation\n- Run `systemctl status my-service` and confirm the service is active/running.\n\n## Failure Modes\n- Example failure signal from logs: `ERROR: health check failed for dependency database` (per Evidence 1). No further remediation steps for this specific error are provided in the retrieved context.\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md (Section: Restart Service)"
+        },
+        {
+          "trial_index": 2,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "systemctl restart",
+            "systemctl status"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "README"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 269.094,
+            "confidentiality_filter": 0.055,
+            "answer_generation": 5131.777,
+            "guardrails": 0.398,
+            "total": 5662.127
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "dc39caae-0328-46ef-aa81-e6361c8ed415",
+            "input_token_count": 1102,
+            "output_token_count": 417,
+            "latency_ms": 5131.49,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "end_turn",
+              "anthropic_id": "msg_01JRkcyftQ2rmHwwK721EtGY",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8333,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I restart a service safely and verify it is healthy?\n\n## Summary\nRestart a service using `systemctl restart`, confirm status, and check logs if failure occurs.\n\n## Assumptions\nNone stated in evidence.\n\n## Prerequisites\nNot specified in retrieved evidence.\n\n## Steps\n1. Restart the service.\n2. Check service status to confirm it is running.\n3. If restart fails, collect logs for diagnosis.\n4. Look for known failure signal in logs (e.g., dependency health check failure).\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n## Validation\n- `systemctl status my-service` should show the service running/healthy.\n- If it fails, log output may show: `ERROR: health check failed for dependency database`.\n\n## Failure Modes\n- Health check failure due to a dependency (e.g., database) \u2014 evidenced by the error string `ERROR: health check failed for dependency database` in journal logs.\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md (Section: Restart Service)"
+        },
+        {
+          "trial_index": 3,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "systemctl restart",
+            "systemctl status"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "README"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 236.901,
+            "confidentiality_filter": 0.058,
+            "answer_generation": 4104.8,
+            "guardrails": 0.387,
+            "total": 4575.481
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "12c2e627-eef3-4cd4-a2a2-1aca5b2e7355",
+            "input_token_count": 1102,
+            "output_token_count": 412,
+            "latency_ms": 4104.636,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "end_turn",
+              "anthropic_id": "msg_01EyEYDnexp7Lkzo7CnTNjgZ",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8333,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I restart a service safely and verify it is healthy?\n\n## Summary\nRestart a service using `systemctl restart`, verify status, and check logs if it fails.\n\n## Assumptions\nNone stated in evidence.\n\n## Prerequisites\nNot specified in retrieved evidence.\n\n## Steps\n1. Restart the service.\n2. Check the service status to confirm it is running.\n3. If the service fails, collect logs for diagnosis.\n4. Look for known failure signals in the logs.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n## Validation\n- Run `systemctl status my-service` after restart to confirm the service is active/healthy.\n\n## Failure Modes\n- Example failure signal from logs: `ERROR: health check failed for dependency database` (indicates a dependency issue, e.g., database connectivity).\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md (Section: Restart Service)"
+        },
+        {
+          "trial_index": 4,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "systemctl restart",
+            "systemctl status"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "README"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 240.129,
+            "confidentiality_filter": 0.056,
+            "answer_generation": 4834.028,
+            "guardrails": 0.402,
+            "total": 5316.35
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "f82c98be-d54b-4b2b-b53b-2f074c65e1d8",
+            "input_token_count": 1102,
+            "output_token_count": 457,
+            "latency_ms": 4833.795,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "end_turn",
+              "anthropic_id": "msg_018J8YQzqrWiVhn8aomh7hHD",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8333,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I restart a service safely and verify it is healthy?\n\n## Summary\nRestart a service using `systemctl restart`, verify status, and check logs if it fails.\n\n## Assumptions\n- None explicitly stated in evidence; service name assumed to be `my-service` as used in the runbook example.\n\n## Prerequisites\nNot specified in retrieved context.\n\n## Steps\n1. Restart the service.\n2. Check the service status to confirm it is running.\n3. If the service fails, collect recent logs to diagnose the issue.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n## Validation\n- Confirm `systemctl status my-service` shows the service as active/running.\n- Review logs for error signals such as: `ERROR: health check failed for dependency database`.\n\n## Failure Modes\n- Health check failure due to a dependency (e.g., database) not being available, as indicated by: `ERROR: health check failed for dependency database`.\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md (Section: Restart Service)\n\nNote: Evidence 3 (CDR Regression Test Summary) is unrelated to service restart procedures and was not used."
+        },
+        {
+          "trial_index": 5,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "systemctl restart",
+            "systemctl status"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "README"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S27.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 227.184,
+            "confidentiality_filter": 0.051,
+            "answer_generation": 5532.682,
+            "guardrails": 0.483,
+            "total": 5991.334
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "4348d9a2-e67a-47ce-9767-527db2053676",
+            "input_token_count": 1102,
+            "output_token_count": 543,
+            "latency_ms": 5532.334,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "end_turn",
+              "anthropic_id": "msg_011HMNMpBSimhYD1BLm5RoWA",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.8333,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I restart a service safely and verify it is healthy?\n\n## Summary\nRestart a service using `systemctl`, check its status, and if it fails, collect logs to diagnose issues (e.g., dependency health check failures).\n\n## Assumptions\n- Target system uses `systemctl`/`journalctl` (systemd-based Linux).\n- Service name is `my-service` (per evidence; replace with actual service name).\n\n## Prerequisites\n- None specified in evidence.\n\n## Steps\n1. Restart the service.\n2. Check the service status.\n3. If the service fails, collect recent logs to identify the cause.\n4. Watch for the known failure signal indicating a dependency health check issue.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n## Validation\n- `systemctl status my-service` should show the service running without errors.\n- If logs show `ERROR: health check failed for dependency database`, the service is not healthy \u2014 this indicates a database dependency issue (per evidence).\n\n## Failure Modes\n- Health check failure for dependency database (signal: `ERROR: health check failed for dependency database`).\n- No further failure modes are described in the retrieved evidence.\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md \u2014 \"Restart Service\"\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md \u2014 \"Sample Runbook\"\n\nNote: Evidence 3 (CDR regression testing) is unrelated to service restart procedures and was not used."
+        }
+      ],
+      "summary": {
+        "supported_rate_pct": 100.0,
+        "citation_ok_rate_pct": 100.0,
+        "required_sections_rate_pct": 100.0,
+        "expected_command_match_rate_pct": 100.0,
+        "expected_source_match_rate_pct": 100.0
+      }
+    },
+    {
+      "id": "howto-disk-usage",
+      "task": "How do I check disk usage by filesystem and identify the largest directories on Linux?",
+      "expected_commands": [
+        "df -h",
+        "du"
+      ],
+      "expected_sources": [
+        "linux_commands"
+      ],
+      "trials": [
+        {
+          "trial_index": 1,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "df -h",
+            "du"
+          ],
+          "expected_sources": [
+            "linux_commands"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 256.557,
+            "confidentiality_filter": 0.178,
+            "answer_generation": 7733.442,
+            "guardrails": 0.424,
+            "total": 9028.731
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "d0877612-298b-4771-8dc8-fefef14a2d0e",
+            "input_token_count": 1233,
+            "output_token_count": 700,
+            "latency_ms": 7733.067,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "max_tokens",
+              "anthropic_id": "msg_01XZa6DkKC2peTKMuL6tXnAF",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.6667,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I check disk usage by filesystem and identify the largest directories on Linux?\n\n## Summary\nEvidence shows `df -h` for filesystem disk usage and `du` for directory size, but no dedicated command/example for ranking or sorting directories by size is present in the retrieved context.\n\n## Assumptions\n- None explicitly stated in evidence; only generic Linux commands are documented.\n\n## Prerequisites\n- Access to a Linux shell with standard coreutils (`df`, `du`) \u2014 implied by evidence, not explicitly listed as a prerequisite.\n\n## Steps\n1. Check overall filesystem disk usage using `df -h` (Evidence 3).\n2. To check usage of a specific directory/path, use `df -h <path>` (Evidence 2, e.g., `df -h /var/log/3270oe`).\n3. To measure the size of a specific directory, use `du -sm <path>` (Evidence 2, e.g., `du -sm /var/log/3270oe`), which reports size in megabytes.\n4. Evidence does not include a method for identifying the *largest* directories (e.g., sorting multiple `du` outputs) \u2014 this step is not covered by the retrieved context.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `uname -a`\n- `df -h`\n- `free -h`\n- `top`\n- `df -h`: Show disk usage in a human-readable format.`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `ls`\n- `mkdir`\n## Validation\n- Evidence 2 shows a script extracting disk usage percentage via `df -h /var/log/3270oe | awk 'NR==2 {print $5}' | sed 's/%//'` and comparing it against a threshold (>90%) to flag high disk usage.\n- Evidence 2 also extracts directory size via `du -sm /var/log/3270oe | awk '{print $1}'` and\n\n## Failure Modes\nNot provided from available evidence.\n\n## Sources\nNot provided from available evidence."
+        },
+        {
+          "trial_index": 2,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "df -h",
+            "du"
+          ],
+          "expected_sources": [
+            "linux_commands"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 266.334,
+            "confidentiality_filter": 0.161,
+            "answer_generation": 6579.041,
+            "guardrails": 0.407,
+            "total": 7881.65
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "5f4f689d-2341-41a7-be79-50af8bc9fde2",
+            "input_token_count": 1233,
+            "output_token_count": 679,
+            "latency_ms": 6578.706,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "end_turn",
+              "anthropic_id": "msg_0181BUXVkdMoxzAWB4e4xKnQ",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.6667,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I check disk usage by filesystem and identify the largest directories on Linux?\n\n## Summary\nRetrieved evidence shows a general command for checking disk usage by filesystem (`df -h`) and an example use of `du -sm` to measure directory size. No evidence provides a specific command or method for identifying the largest directories (e.g., sorted `du` output).\n\n## Assumptions\n- None explicitly stated in evidence.\n\n## Prerequisites\n- Not specified in evidence.\n\n## Steps\n1. Check disk usage per filesystem using `df -h` (Evidence 3).\n2. Check size of a specific directory using `du -sm <directory>` (Evidence 2).\n3. Evidence does not describe a method for ranking or identifying the *largest* directories (e.g., no `du -h --max-depth` or `sort` command is present in the retrieved context).\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `uname -a`\n- `df -h`\n- `free -h`\n- `top`\n- `df -h`: Show disk usage in a human-readable format.`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `ls`\n- `mkdir`\n## Validation\n- Evidence 2 shows checking if `disk_usage` (from `df -h`) exceeds 90% as a warning threshold.\n- Evidence 2 shows checking if `log_size` (from `du -sm`) exceeds 1000MB as a warning threshold.\n- No validation steps for identifying \"largest directories\" are present in evidence.\n\n## Failure Modes\n- Evidence 2 indicates disk usage >90% triggers a \"warning\" status with issue \"Disk usage high: X%\".\n- Evidence 2 indicates log/directory size >1000MB triggers a \"warning\" status with issue \"Log directory large: XMB\".\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md (Section: System Information)\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md (Section: health-check.sh - System health monitoring)"
+        },
+        {
+          "trial_index": 3,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "df -h",
+            "du"
+          ],
+          "expected_sources": [
+            "linux_commands"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 265.055,
+            "confidentiality_filter": 0.178,
+            "answer_generation": 6926.135,
+            "guardrails": 0.283,
+            "total": 8224.849
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "b8d3de43-8243-4190-86bd-e66bc359b25f",
+            "input_token_count": 1233,
+            "output_token_count": 700,
+            "latency_ms": 6925.88,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "max_tokens",
+              "anthropic_id": "msg_01V9H13mLCtMw455VutwW8oV",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.6667,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I check disk usage by filesystem and identify the largest directories on Linux?\n\n## Summary\nRetrieved evidence provides commands for checking filesystem disk usage (`df -h`) and directory-level size (`du`), but no explicit command/procedure for identifying the \"largest directories\" ranked/sorted is present in the evidence.\n\n## Assumptions\n- None beyond what is stated in the evidence.\n\n## Prerequisites\n- Access to a Linux shell.\n- No explicit permission/tooling prerequisites stated in evidence.\n\n## Steps\n1. Check overall disk usage by filesystem using `df -h`.\n2. Check size of a specific directory using `du -sm <path>` (shown in evidence for `/var/log/3270oe`).\n3. Evidence does not show a step for identifying the largest directories generally (e.g., sorting/recursive comparison) \u2014 this is not covered by the retrieved context.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `uname -a`\n- `df -h`\n- `free -h`\n- `top`\n- `df -h`: Show disk usage in a human-readable format.`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `ls`\n- `mkdir`\n## Validation\n- `df -h` output can be checked for the \"Use%\" column to confirm disk usage percentage (evidence shows extracting this via `awk 'NR==2 {print $5}'`).\n- `du -sm` output gives directory size in MB, which can be compared against a threshold (evidence uses `> 1000` MB as a \"large\" flag).\n\n## Failure Modes\n- Evidence shows a threshold-based warning: if disk usage > 90%, status is flagged \"warning\" (high disk usage).\n- Evidence shows if log directory size > 1000MB, status is flagged \"warning\" (large log directory).\n- No other failure modes are described in the retrieved context.\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md \u2014 Section: System Information\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md \u2014 Section:"
+        },
+        {
+          "trial_index": 4,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "df -h",
+            "du"
+          ],
+          "expected_sources": [
+            "linux_commands"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 265.471,
+            "confidentiality_filter": 0.16,
+            "answer_generation": 6547.713,
+            "guardrails": 0.434,
+            "total": 7884.334
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "ccd9fc9f-1253-4f89-a163-7c76ec5f421c",
+            "input_token_count": 1233,
+            "output_token_count": 662,
+            "latency_ms": 6547.346,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "end_turn",
+              "anthropic_id": "msg_01De6h6xV6MsjZV8agdKH1NA",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.6667,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I check disk usage by filesystem and identify the largest directories on Linux?\n\n## Summary\n- Retrieved context provides `df -h` for filesystem disk usage and `du -sm` for measuring directory size, but no dedicated command/workflow for identifying the largest directories.\n\n## Assumptions\n- None stated in evidence; only commands explicitly shown are used below.\n\n## Prerequisites\n- Access to a Linux shell (implied by evidence, not explicitly stated).\n\n## Steps\n1. Check disk usage per filesystem using `df -h`.\n2. Check size of a specific directory using `du -sm` on that path.\n3. Evidence does not show a method for ranking/sorting multiple directories to find the \"largest\" ones (e.g., no `du | sort` example provided).\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `uname -a`\n- `df -h`\n- `free -h`\n- `top`\n- `df -h`: Show disk usage in a human-readable format.`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `ls`\n- `mkdir`\n## Validation\n- Evidence 3 states `df -h` shows disk usage in human-readable format \u2014 can be used to confirm filesystem usage levels.\n- Evidence 2 shows a threshold check pattern (`if [ \"$disk_usage\" -gt 90 ]`) for validating disk usage against a limit, and similarly for log directory size (`-gt 1000` MB).\n\n## Failure Modes\n- Evidence 2 shows a scripted warning: \"Disk usage high: ${disk_usage}%\" when usage exceeds 90%.\n- Evidence 2 shows a scripted warning: \"Log directory large: ${log_size}MB\" when a directory exceeds 1000MB.\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md (System Information)\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md (health-check.sh - System health monitoring)"
+        },
+        {
+          "trial_index": 5,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "df -h",
+            "du"
+          ],
+          "expected_sources": [
+            "linux_commands"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 267.224,
+            "confidentiality_filter": 0.168,
+            "answer_generation": 6476.259,
+            "guardrails": 0.384,
+            "total": 7765.6
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "0f6f57f7-d059-4214-9618-d34a85716412",
+            "input_token_count": 1233,
+            "output_token_count": 663,
+            "latency_ms": 6475.952,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "end_turn",
+              "anthropic_id": "msg_018u5CXT8TJrgyk4Hi2pDzmc",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.6667,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I check disk usage by filesystem and identify the largest directories on Linux?\n\n## Summary\nRetrieved evidence provides only a general command for checking disk usage by filesystem (`df -h`) and an example script snippet using `df` and `du` to check disk/log usage. No evidence covers identifying the largest directories directly (e.g., via `du` sorting).\n\n## Assumptions\n- None explicitly stated in evidence; task assumes a standard Linux environment.\n\n## Prerequisites\n- Not specified in evidence.\n\n## Steps\n1. Check overall disk usage by filesystem using `df -h` (Evidence 3).\n2. Check disk usage of a specific directory using `df -h <path>` (Evidence 2).\n3. Check size of a specific directory using `du -sm <path>` (Evidence 2).\n4. Evidence does not provide a documented method for listing/sorting largest subdirectories.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `uname -a`\n- `df -h`\n- `free -h`\n- `top`\n- `df -h`: Show disk usage in a human-readable format.`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `ls`\n- `mkdir`\n## Validation\n- Evidence 2 shows checking `df -h` output field 5 (use%) and comparing against a threshold (>90%) to flag high disk usage.\n- Evidence 2 shows checking `du -sm` output and comparing against a size threshold (>1000MB) to flag large directories.\n\n## Failure Modes\n- Evidence 2: \"Disk usage high\" warning when disk usage percentage exceeds 90%.\n- Evidence 2: \"Log directory large\" warning when directory size exceeds 1000MB.\n\n## Sources\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md \u2014 System Information\n- /Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md \u2014 health-check.sh - System health monitoring"
+        }
+      ],
+      "summary": {
+        "supported_rate_pct": 100.0,
+        "citation_ok_rate_pct": 100.0,
+        "required_sections_rate_pct": 100.0,
+        "expected_command_match_rate_pct": 100.0,
+        "expected_source_match_rate_pct": 100.0
+      }
+    },
+    {
+      "id": "howto-log-growth",
+      "task": "How do I investigate log growth and reduce disk pressure safely on Linux?",
+      "expected_commands": [
+        "journalctl",
+        "find",
+        "du"
+      ],
+      "expected_sources": [
+        "sample_runbook",
+        "SKLM Log Cleanup"
+      ],
+      "trials": [
+        {
+          "trial_index": 1,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "journalctl",
+            "find",
+            "du"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "SKLM Log Cleanup"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 264.796,
+            "confidentiality_filter": 0.146,
+            "answer_generation": 7686.596,
+            "guardrails": 0.191,
+            "total": 9023.317
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "0746a7ef-cd1b-4264-85ff-589a272a0b36",
+            "input_token_count": 1064,
+            "output_token_count": 700,
+            "latency_ms": 7686.286,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "max_tokens",
+              "anthropic_id": "msg_01ApGD77GbQkUfcpCjJtJjtm",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.4444,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I investigate log growth and reduce disk pressure safely on Linux?\n\n## Summary\nRetrieved evidence provides a health-check script that monitors disk usage and log directory size, plus a runbook showing how to restart a service and collect logs via journalctl. No explicit log-rotation, cleanup, or deletion commands are present in the evidence.\n\n## Assumptions\n- None beyond what is stated in the evidence; no assumptions about log rotation tools, cron scheduling, or cleanup thresholds are made since they are not present in the retrieved context.\n\n## Prerequisites\n- Access to `/var/log/3270oe` (per Evidence 2) or the relevant log directory.\n- `systemctl` and `journalctl` available (per Evidence 1).\n- Shell environment supporting `df`, `du`, `pgrep` (per Evidence 2).\n\n## Steps\n1. Check whether the service is running using `pgrep` (Evidence 2).\n2. Check disk usage percentage for the log directory using `df -h` and compare against a 90% threshold (Evidence 2).\n3. Check total log directory size using `du -sm` and compare against a 1000MB threshold (Evidence 2).\n4. Record health status (healthy/warning/unhealthy) and any issues to `$HEALTH_LOG` (`/var/log/3270oe/health.log`) (Evidence 2).\n5. If a service is failing or unhealthy, restart it and check status (Evidence 1).\n6. If the service fails, collect the last 100 log lines with `journalctl` to investigate further (Evidence 1).\n7. Look for known failure signals such as `ERROR: health check failed for dependency database` (Evidence 1).\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `df -h`\n- `free -h`\n- `top`\n- `uname -a`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\;`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\`\n## Validation\nNot provided from available evidence.\n\n## Failure Modes\nNot provided from available evidence.\n\n## Sources\nNot provided from available evidence."
+        },
+        {
+          "trial_index": 2,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "journalctl",
+            "find",
+            "du"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "SKLM Log Cleanup"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 256.322,
+            "confidentiality_filter": 0.146,
+            "answer_generation": 7362.551,
+            "guardrails": 0.38,
+            "total": 8606.018
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "1c812689-dd32-448b-8af6-fb720c70a7d7",
+            "input_token_count": 1064,
+            "output_token_count": 700,
+            "latency_ms": 7362.246,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "max_tokens",
+              "anthropic_id": "msg_01W8HWGdG9CDFK7tcNQNbm37",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.4444,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I investigate log growth and reduce disk pressure safely on Linux?\n\n## Summary\nRetrieved evidence provides limited, narrow coverage: a generic service-restart/log-collection runbook and a health-check script that monitors disk usage and log directory size for a specific service (3270OE). No dedicated log-rotation, cleanup, or disk-pressure remediation procedure is present in the evidence.\n\n## Assumptions\n- None explicitly stated in evidence; task must rely only on the two retrieved snippets.\n\n## Prerequisites\n- Access to `systemctl`/`journalctl` (Evidence 1).\n- `health-check.sh` script and its log path `/var/log/3270oe/health.log` (Evidence 2).\n- Tools `df` and `du` as used in the health-check script (Evidence 2).\n\n## Steps\n1. Check whether the affected service is running or failing (Evidence 1).\n2. If failing, collect recent logs for diagnosis (Evidence 1).\n3. Look for the documented failure signal `ERROR: health check failed for dependency database` (Evidence 1).\n4. Run or review output of `health-check.sh`, which checks:\n   - Disk usage percentage on the log filesystem (`/var/log/3270oe`) \u2014 flags \"Disk usage high\" if >90% (Evidence 2).\n   - Log directory size \u2014 flags \"Log directory large\" if >1000MB (Evidence 2).\n5. Review recorded health status entries in `HEALTH_LOG` (`/var/log/3270oe/health.log`) for issues logged (Evidence 2).\n\nEvidence does not include steps for actually clearing, rotating, archiving, or truncating logs to relieve disk pressure \u2014 only detection/monitoring is covered.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `df -h`\n- `free -h`\n- `top`\n- `uname -a`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\;`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\`\n## Validation\n- Confirm service status via `systemctl status my-service` (Evidence 1).\n- Confirm no recurrence of `ERRO\n\n## Failure Modes\nNot provided from available evidence.\n\n## Sources\nNot provided from available evidence."
+        },
+        {
+          "trial_index": 3,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "journalctl",
+            "find",
+            "du"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "SKLM Log Cleanup"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 262.287,
+            "confidentiality_filter": 0.151,
+            "answer_generation": 7536.492,
+            "guardrails": 0.222,
+            "total": 8803.525
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "b376df45-494b-423f-90d1-acee5223d649",
+            "input_token_count": 1064,
+            "output_token_count": 700,
+            "latency_ms": 7536.231,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "max_tokens",
+              "anthropic_id": "msg_014qfSLPsYz41mv4asMTPLQU",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.4444,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I investigate log growth and reduce disk pressure safely on Linux?\n\n## Summary\nEvidence provides a health-check script pattern that monitors disk usage and log directory size, plus a runbook pattern for collecting service logs. No evidence covers log rotation, deletion, or archival commands.\n\n## Assumptions\n- None stated in evidence; no assumptions should be made beyond what is provided.\n\n## Prerequisites\n- Access to run shell commands on the target Linux host (implied by evidence commands, not explicitly stated).\n- `HEALTH_LOG` path `/var/log/3270oe/health.log` used in Evidence 2 (specific to that system).\n\n## Steps\n1. Check disk usage on the log partition (Evidence 2).\n2. Check the size of the log directory (Evidence 2).\n3. Record status and any issues (disk usage >90%, log directory >1000MB) to a health log (Evidence 2).\n4. If a service is failing, collect its recent logs for investigation (Evidence 1).\n5. Evidence does not describe steps for actually reducing disk pressure (e.g., rotating, compressing, or deleting logs) \u2014 this is not covered in the retrieved context.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `df -h`\n- `free -h`\n- `top`\n- `uname -a`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\;`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\`\n## Validation\n- Disk usage percentage compared against threshold (>90% triggers \"warning\" status) (Evidence 2).\n- Log directory size compared against threshold (>1000MB triggers \"warning\" status) (Evidence 2).\n- Health status and issues appended to `HEALTH_LOG` for review (Evidence 2).\n- No validation steps for confirming disk pressure has been *reduced* are present in evidence.\n\n## Failure Modes\n- Evidence 2 flags: \"Server not running\", \"Disk usage high: X%\", \"Log directory large: XMB\".\n- Evidence 1 flags: `ERROR: health check failed for dependency database` as a\n\n## Sources\nNot provided from available evidence."
+        },
+        {
+          "trial_index": 4,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "journalctl",
+            "find",
+            "du"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "SKLM Log Cleanup"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 256.919,
+            "confidentiality_filter": 0.144,
+            "answer_generation": 9288.197,
+            "guardrails": 0.399,
+            "total": 10555.787
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "69e342c8-6514-455f-872a-ffed8b15372c",
+            "input_token_count": 1064,
+            "output_token_count": 700,
+            "latency_ms": 9287.843,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "max_tokens",
+              "anthropic_id": "msg_01THxuBoc4NL2fGoJfQiXC9R",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.4444,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I investigate log growth and reduce disk pressure safely on Linux?\n\n## Summary\nRetrieved evidence covers monitoring disk usage and log directory size via a health-check script, and separately shows collecting service logs via journalctl. No evidence provided for actual log rotation, truncation, or safe deletion commands.\n\n## Assumptions\n- Target system runs systemd (based on journalctl/systemctl usage in Evidence 1).\n- Log directory of concern is `/var/log/3270oe` per Evidence 2; other paths not covered by evidence.\n\n## Prerequisites\n- Access to run `df`, `du`, `pgrep` commands (Evidence 2).\n- Access to `journalctl` and `systemctl` for service log inspection (Evidence 1).\n- Health check script and its log file `/var/log/3270oe/health.log` must exist (Evidence 2).\n\n## Steps\n1. Check overall disk usage for the log partition (Evidence 2: `df -h /var/log/3270oe`), comparing against a 90% threshold that triggers a \"warning\" status.\n2. Check the size of the log directory itself (Evidence 2: `du -sm /var/log/3270oe`), comparing against a 1000MB threshold that triggers a \"warning\" status.\n3. Confirm whether the related service/process is still running (Evidence 2: `pgrep -f run3270oe`), since an unhealthy/not-running state is tracked alongside disk/log warnings.\n4. Review recorded health check history in `HEALTH_LOG` (`/var/log/3270oe/health.log`) to see status, issues, and timestamps (Evidence 2).\n5. If investigating a specific service's log growth or\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `df -h`\n- `free -h`\n- `top`\n- `uname -a`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\;`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\`\n## Validation\nNot provided from available evidence.\n\n## Failure Modes\nNot provided from available evidence.\n\n## Sources\nNot provided from available evidence."
+        },
+        {
+          "trial_index": 5,
+          "supported": true,
+          "citation_ok": true,
+          "required_sections_ok": true,
+          "expected_command_match": true,
+          "expected_source_match": true,
+          "expected_commands": [
+            "journalctl",
+            "find",
+            "du"
+          ],
+          "expected_sources": [
+            "sample_runbook",
+            "SKLM Log Cleanup"
+          ],
+          "citation_sources": [
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_commands.md",
+            "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md"
+          ],
+          "retrieval_hit_count": 8,
+          "stage_times_ms": {
+            "retrieval": 261.667,
+            "confidentiality_filter": 0.145,
+            "answer_generation": 7906.69,
+            "guardrails": 0.446,
+            "total": 9208.126
+          },
+          "generation_metadata": {
+            "provider": "anthropic-api",
+            "model_name": "claude-sonnet-5",
+            "prompt_version": "phase3-anthropic-v1",
+            "request_id": "92a849ec-9a63-4e03-ba79-c38a0c91932c",
+            "input_token_count": 1064,
+            "output_token_count": 700,
+            "latency_ms": 7906.333,
+            "extra": {
+              "api_version": "2023-06-01",
+              "stop_reason": "max_tokens",
+              "anthropic_id": "msg_01H1rMRMMi6bigTXg2dnvSQV",
+              "seed": "41"
+            }
+          },
+          "guardrail_status": {
+            "supported": true,
+            "support_message": "supported",
+            "citation_ok": true,
+            "citation_reason": "ok",
+            "citation_details": {},
+            "boundary_allowed": true,
+            "boundary_reason": "ok",
+            "retrieval_hits_before_confidentiality": 8,
+            "retrieval_hits_after_confidentiality": 8,
+            "confidentiality_filtered_out": 0,
+            "query_token_coverage": 0.4444,
+            "entity_anchor_ok": true,
+            "output_confidentiality_ok": true
+          },
+          "answer": "# How-To: How do I investigate log growth and reduce disk pressure safely on Linux?\n\n## Summary\nEvidence provides a health-check pattern that monitors disk usage and log directory size, plus a general runbook pattern for restarting a service and collecting logs. No explicit log-rotation, cleanup, or deletion procedure is present in the retrieved context.\n\n## Assumptions\n- None stated explicitly in evidence; investigation is limited to the two retrieved sources.\n\n## Prerequisites\n- Access to run shell commands (`df`, `du`, `pgrep`) on the target Linux host (Evidence 2).\n- Access to `systemctl` and `journalctl` for the affected service (Evidence 1).\n- Log directory path known (e.g., `/var/log/3270oe` per Evidence 2).\n\n## Steps\n1. Check disk usage for the log partition using `df` and compare against a threshold (Evidence 2 uses >90% as \"warning\").\n2. Check the size of the log directory itself using `du` and compare against a threshold (Evidence 2 uses >1000MB as \"warning\").\n3. Confirm whether the associated service process is running (Evidence 2 checks via `pgrep`).\n4. Record findings (status, issues) to a health log file (Evidence 2 appends to `$HEALTH_LOG`).\n5. If a service is unhealthy or logs indicate failure, restart the service and check status (Evidence 1).\n6. If restart fails, collect recent logs for diagnosis (Evidence 1).\n7. Look for known failure signals in logs, e.g., `ERROR: health check failed for dependency database` (Evidence 1).\n\nNo evidence provided for actual log rotation, truncation, archiving, or deletion steps to reduce disk pressure \u2014 this must be sourced elsewhere if needed.\n\n## Commands\n- `$ systemctl restart my-service`\n- `$ systemctl status my-service`\n- `$ journalctl -u my-service -n 100`\n- `journalctl -u my-service -n 100`\n- `df -h /var/log/3270oe`\n- `du -sm /var/log/3270oe`\n- `df -h`\n- `free -h`\n- `top`\n- `uname -a`\n- `ifconfig`\n- `ip a`\n- `df -h``\n- `find /var/log/3270oe -name \"*.log\" -mtime +7 -delete`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\;`\n- `find /var/log/3270oe -name \"*.log\" -mtime +1 -exec gzip {} \\`\n## Validation\n- Disk usage percentage from `df -h` should be below the 90% warning threshold (\n\n## Failure Modes\nNot provided from available evidence.\n\n## Sources\nNot provided from available evidence."
+        }
+      ],
+      "summary": {
+        "supported_rate_pct": 100.0,
+        "citation_ok_rate_pct": 100.0,
+        "required_sections_rate_pct": 100.0,
+        "expected_command_match_rate_pct": 100.0,
+        "expected_source_match_rate_pct": 100.0
+      }
+    }
+  ],
+  "golden_integrity": {
+    "dataset_path": "data/eval/howto_eval_cases_golden.json",
+    "manifest_path": "data/eval/howto_eval_cases_golden.meta.json",
+    "expected_sha256": "b1081fc408882892c976388e978ca8eca47376f2e434cf0efd027d6b6475d68e",
+    "actual_sha256": "b1081fc408882892c976388e978ca8eca47376f2e434cf0efd027d6b6475d68e",
+    "hash_match": true,
+    "gate_eligible": true,
+    "review_status": "reviewed",
+    "reviewer": "anwarh",
+    "review_date": "2026-07-05",
+    "notes": "Human-reviewed Gate 3 golden dataset. Cases were checked for support boundaries, citation expectations, and deterministic scoring coverage before sign-off."
+  }
+}

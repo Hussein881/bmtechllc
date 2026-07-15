@@ -1,0 +1,26 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+	standard:
+		format: "%(asctime)s %(levelname)s %(name)s request_id=%(request_id)s component=%(component)s %(message)s"
+	terse:
+		format: "%(levelname)s %(name)s %(message)s"
+
+handlers:
+	console:
+		class: logging.StreamHandler
+		level: INFO
+		formatter: standard
+		stream: ext://sys.stdout
+
+root:
+	level: INFO
+	handlers: [console]
+
+loggers:
+	work_knowledge_agent:
+		level: INFO
+		handlers: [console]
+		propagate: false
+

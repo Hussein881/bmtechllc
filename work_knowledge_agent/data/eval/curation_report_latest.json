@@ -1,0 +1,95 @@
+{
+  "total_cases": 3,
+  "total_runs": 3,
+  "metrics": {
+    "expected_type_match_rate_pct": 100.0,
+    "non_empty_proposal_rate_pct": 100.0,
+    "proposal_count_avg": 1.0,
+    "latency_p50_ms": 263.284,
+    "latency_p95_ms": 278.386
+  },
+  "per_case": [
+    {
+      "id": "curation-missing-x9-failover",
+      "topic": "project x9 postgres failover architecture across eu-central and us-south",
+      "expected_types": [
+        "missing_knowledge"
+      ],
+      "proposal_count": 1,
+      "proposal_types": [
+        "missing_knowledge"
+      ],
+      "expected_type_match": true,
+      "summary": {
+        "topic": "project x9 postgres failover architecture across eu-central and us-south",
+        "retrieval_hits_before_confidentiality": 12,
+        "retrieval_hits_after_confidentiality": 12,
+        "confidentiality_filtered_out": 0,
+        "proposal_count": 1,
+        "proposal_type_counts": {
+          "missing_knowledge": 1
+        }
+      },
+      "stage_times_ms": {
+        "retrieval": 275.313,
+        "confidentiality_filter": 0.054,
+        "proposal_generation": 3.01,
+        "total": 278.386
+      }
+    },
+    {
+      "id": "curation-missing-proprietary-tool",
+      "topic": "operational runbook for proprietary tool alpha-999",
+      "expected_types": [
+        "missing_knowledge"
+      ],
+      "proposal_count": 1,
+      "proposal_types": [
+        "missing_knowledge"
+      ],
+      "expected_type_match": true,
+      "summary": {
+        "topic": "operational runbook for proprietary tool alpha-999",
+        "retrieval_hits_before_confidentiality": 12,
+        "retrieval_hits_after_confidentiality": 12,
+        "confidentiality_filtered_out": 0,
+        "proposal_count": 1,
+        "proposal_type_counts": {
+          "missing_knowledge": 1
+        }
+      },
+      "stage_times_ms": {
+        "retrieval": 259.508,
+        "confidentiality_filter": 0.027,
+        "proposal_generation": 3.744,
+        "total": 263.284
+      }
+    },
+    {
+      "id": "curation-linux-log-cleanup",
+      "topic": "linux log cleanup rollout",
+      "expected_types": [],
+      "proposal_count": 1,
+      "proposal_types": [
+        "outdated_content"
+      ],
+      "expected_type_match": true,
+      "summary": {
+        "topic": "linux log cleanup rollout",
+        "retrieval_hits_before_confidentiality": 12,
+        "retrieval_hits_after_confidentiality": 12,
+        "confidentiality_filtered_out": 0,
+        "proposal_count": 1,
+        "proposal_type_counts": {
+          "outdated_content": 1
+        }
+      },
+      "stage_times_ms": {
+        "retrieval": 257.133,
+        "confidentiality_filter": 0.028,
+        "proposal_generation": 2.171,
+        "total": 259.338
+      }
+    }
+  ]
+}

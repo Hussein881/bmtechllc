@@ -1,0 +1,140 @@
+{
+  "summary": {
+    "topic": "project x9 postgres failover architecture",
+    "curation": {
+      "topic": "project x9 postgres failover architecture",
+      "retrieval_hits_before_confidentiality": 12,
+      "retrieval_hits_after_confidentiality": 12,
+      "confidentiality_filtered_out": 0,
+      "proposal_count": 1,
+      "proposal_type_counts": {
+        "missing_knowledge": 1
+      }
+    },
+    "triage": {
+      "proposal_count": 1,
+      "accepted_count": 0,
+      "deferred_count": 1,
+      "rejected_count": 0,
+      "accepted_with_human_approval_count": 0,
+      "approval_ratio_pct": 0.0,
+      "decision_latency_ms_p50": 180000.0,
+      "decision_latency_ms_p95": 180000.0,
+      "decision_channel": "cli"
+    }
+  },
+  "stage_times_ms": {
+    "retrieval": 261.138,
+    "confidentiality_filter": 0.031,
+    "proposal_generation": 2.873,
+    "total": 264.051
+  },
+  "retrieval_hit_count": 12,
+  "triage": {
+    "topic": "project x9 postgres failover architecture",
+    "generated_at_utc": "2026-07-05T04:19:29+00:00",
+    "summary": {
+      "proposal_count": 1,
+      "accepted_count": 0,
+      "deferred_count": 1,
+      "rejected_count": 0,
+      "accepted_with_human_approval_count": 0,
+      "approval_ratio_pct": 0.0,
+      "decision_latency_ms_p50": 180000.0,
+      "decision_latency_ms_p95": 180000.0,
+      "decision_channel": "cli"
+    },
+    "items": [
+      {
+        "proposal_id": "proposal-001",
+        "proposal": {
+          "proposal_type": "missing_knowledge",
+          "title": "Missing evidence for entity-specific topic",
+          "rationale": "Retrieved content did not include one or more entity anchors from the request (x9).",
+          "actions": [
+            "Add a source explicitly covering the requested entity/system",
+            "Verify metadata tags so entity-specific docs are retrievable"
+          ],
+          "evidence": [
+            {
+              "chunk_id": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Planning and Proposals.md::chunk-0000-58c2e25cee4f673b",
+              "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Planning and Proposals.md",
+              "section_heading": "Planning/Proposals for Automation Projects",
+              "confidentiality_level": "internal",
+              "score": 1.0,
+              "provenance": {
+                "loader_version": "2.0.0",
+                "chunker_version": "2.0.0",
+                "extractor_version": "2.0.0",
+                "ingested_at": "2026-07-04T02:09:57.354732+00:00",
+                "content_hash": "aae5a9ac48fa2c7f19e6dd678e41ecd2003f9bb8a4a3d4a3093850231f8df99b",
+                "loader_route": ".md"
+              }
+            },
+            {
+              "chunk_id": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md::chunk-0014-ea9db9698eced4b2",
+              "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+              "section_heading": "\u2192 Where it's stored:",
+              "confidentiality_level": "internal",
+              "score": 0.8003,
+              "provenance": {
+                "loader_version": "2.0.0",
+                "chunker_version": "2.0.0",
+                "extractor_version": "2.0.0",
+                "ingested_at": "2026-07-04T02:09:57.382176+00:00",
+                "content_hash": "992d4306b1245c2668b0646460dd8f8f0ff54f0af249d13694099f4e64f68025",
+                "loader_route": ".md"
+              }
+            },
+            {
+              "chunk_id": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md::chunk-0006-9b58c6b1033edac7",
+              "source_file": "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+              "section_heading": "\u2192 Starting a New Project",
+              "confidentiality_level": "internal",
+              "score": 0.7272,
+              "provenance": {
+                "loader_version": "2.0.0",
+                "chunker_version": "2.0.0",
+                "extractor_version": "2.0.0",
+                "ingested_at": "2026-07-04T02:09:57.381902+00:00",
+                "content_hash": "992d4306b1245c2668b0646460dd8f8f0ff54f0af249d13694099f4e64f68025",
+                "loader_route": ".md"
+              }
+            }
+          ],
+          "confidence": 0.9
+        },
+        "decision": {
+          "proposal_id": "proposal-001",
+          "disposition": "deferred",
+          "notes": "Rolled back by anwarh at 2026-07-05T04:19:41+00:00. Reason: false positive acceptance",
+          "requires_human_approval": false
+        },
+        "decision_timestamp_utc": "2026-07-05T00:03:00+00:00",
+        "decision_latency_ms": 180000.0,
+        "audit": {
+          "audit_record_version": "1.0",
+          "decision_id": "fdd8fb093deb010c",
+          "decision_channel": "cli",
+          "proposal_generated_at_utc": "2026-07-05T00:00:00+00:00",
+          "decision_timestamp_utc": "2026-07-05T00:03:00+00:00",
+          "decision_by": "anwarh"
+        },
+        "rollback": {
+          "rolled_back": true,
+          "rolled_back_at_utc": "2026-07-05T04:19:41+00:00",
+          "rolled_back_by": "anwarh",
+          "reason": "false positive acceptance",
+          "target_decision_id": "fdd8fb093deb010c"
+        }
+      }
+    ]
+  },
+  "rollback_summary": {
+    "target_decision_id": "fdd8fb093deb010c",
+    "rolled_back": true,
+    "rolled_back_at_utc": "2026-07-05T04:19:41+00:00",
+    "rolled_back_by": "anwarh",
+    "reason": "false positive acceptance"
+  }
+}

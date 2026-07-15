@@ -1,0 +1,56 @@
+[
+  {
+    "id": "plan-restart-rollout",
+    "goal": "Plan a safe service restart rollout.",
+    "expected_tasks": [
+      "Identify prerequisites",
+      "Validate access",
+      "Execute the change"
+    ],
+    "expected_sources": [
+      "sample_runbook"
+    ]
+  },
+  {
+    "id": "plan-log-cleanup",
+    "goal": "Plan a safe rollout for investigating log growth and reducing disk pressure on Linux.",
+    "expected_tasks": [
+      "Identify affected systems",
+      "Validate current disk pressure",
+      "Run cleanup or monitoring steps"
+    ],
+    "expected_sources": [
+      "SKLM Log Cleanup",
+      "linux_commands"
+    ],
+    "expected_supported": true,
+    "min_open_questions_count": 2
+  },
+  {
+    "id": "plan-ambiguous-multi-env",
+    "goal": "Plan a safe production rollout across multiple environments with minimal risk.",
+    "expected_tasks": [
+      "Identify prerequisites",
+      "Validate access",
+      "Execute the change"
+    ],
+    "expected_sources": [
+      "sample_runbook"
+    ],
+    "expected_supported": true,
+    "required_unknown_signals": [
+      "open questions"
+    ],
+    "min_open_questions_count": 2
+  },
+  {
+    "id": "plan-out-of-corpus-failover",
+    "goal": "Plan a failover rollout for project x9 postgres cluster across eu-central and us-south with zero downtime.",
+    "expected_tasks": [],
+    "expected_sources": [],
+    "expected_supported": false,
+    "required_unknown_signals": [
+      "not provided from available evidence"
+    ]
+  }
+]

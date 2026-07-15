@@ -1,0 +1,8 @@
+{
+  "dataset_path": "data/eval/plan_eval_cases_golden.json",
+  "sha256": "e18bfb215c41b73c51707c17154ef226961ec31f1ab6eef8c5b94630d375c463",
+  "review_status": "reviewed",
+  "reviewer": "anwarh",
+  "review_date": "2026-07-04",
+  "notes": "Golden Phase 4 dataset includes answerable and adversarial ambiguity/insufficient-evidence cases authored independently from planner output snapshots. Continue using exploratory dataset for tuning-only changes."
+}

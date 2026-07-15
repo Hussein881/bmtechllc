@@ -1,0 +1,21 @@
+[
+  {
+    "id": "curation-missing-x9-failover",
+    "topic": "project x9 postgres failover architecture across eu-central and us-south",
+    "expected_types": [
+      "missing_knowledge"
+    ]
+  },
+  {
+    "id": "curation-missing-proprietary-tool",
+    "topic": "operational runbook for proprietary tool alpha-999",
+    "expected_types": [
+      "missing_knowledge"
+    ]
+  },
+  {
+    "id": "curation-linux-log-cleanup",
+    "topic": "linux log cleanup rollout",
+    "expected_types": []
+  }
+]

@@ -1,0 +1,389 @@
+{
+  "total_questions": 12,
+  "metrics": {
+    "citation_guardrail_pass_rate_pct": 66.667,
+    "retrieval_source_hit_rate_pct": 91.667,
+    "citation_source_hit_rate_pct": 91.667,
+    "refusal_accuracy_pct": 100.0,
+    "latency_p50_ms": 246.254,
+    "latency_p95_ms": 262.967
+  },
+  "per_question": [
+    {
+      "id": "q1",
+      "question": "How do I restart a service safely?",
+      "expected_answerable": true,
+      "supported": true,
+      "citation_ok": true,
+      "retrieval_hits": 8,
+      "expected_sources": [
+        "sample_runbook.md"
+      ],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/cli-guide/automation-guide.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/AROM/Loading_AROMs.md"
+      ],
+      "citation_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md"
+      ],
+      "stage_times_ms": {
+        "retrieval": 261.714,
+        "confidentiality_filter": 0.029,
+        "answer_generation": 0.777,
+        "guardrails": 0.438,
+        "total": 262.967
+      }
+    },
+    {
+      "id": "q2",
+      "question": "Where should I look for recent service failure logs?",
+      "expected_answerable": true,
+      "supported": true,
+      "citation_ok": true,
+      "retrieval_hits": 8,
+      "expected_sources": [
+        "sample_runbook.md"
+      ],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/zOS/New zOS Update Procedures/Setup Procedure.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SE_Tools/EST_Tools/myformat/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AI on Z/ZSSA/ZSSAToolHelp.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/EngineeringManagement/EWM/JOD2.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SE_Tools/ECMDs/ecmd_help.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z Configuration Help/ApplyaPfix.md"
+      ],
+      "citation_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/zOS/New zOS Update Procedures/Setup Procedure.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SE_Tools/EST_Tools/myformat/README.md"
+      ],
+      "stage_times_ms": {
+        "retrieval": 255.329,
+        "confidentiality_filter": 0.018,
+        "answer_generation": 0.616,
+        "guardrails": 0.261,
+        "total": 256.231
+      }
+    },
+    {
+      "id": "q3",
+      "question": "What is the approved cloud region failover architecture for project x9?",
+      "expected_answerable": false,
+      "supported": false,
+      "citation_ok": false,
+      "retrieval_hits": 8,
+      "expected_sources": [],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Planning and Proposals.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/hmc_howto_videos/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeSharing/InnerSource.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/GithubHelp/SystemzSWAT.md"
+      ],
+      "citation_sources": [],
+      "stage_times_ms": {
+        "retrieval": 263.464,
+        "confidentiality_filter": 0.014,
+        "answer_generation": 0.348,
+        "guardrails": 0.004,
+        "total": 263.835
+      }
+    },
+    {
+      "id": "q4",
+      "question": "How do I perform a JMET roll sequence?",
+      "expected_answerable": true,
+      "supported": true,
+      "citation_ok": true,
+      "retrieval_hits": 8,
+      "expected_sources": [
+        "How_to_Perform_a_JMET_Roll.md"
+      ],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SE_Tools/ECMDs/ecmd_help.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/reference/appendix-manual-yaml.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/TOAD_Runner/README.md"
+      ],
+      "citation_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md"
+      ],
+      "stage_times_ms": {
+        "retrieval": 247.819,
+        "confidentiality_filter": 0.011,
+        "answer_generation": 0.613,
+        "guardrails": 0.216,
+        "total": 248.664
+      }
+    },
+    {
+      "id": "q5",
+      "question": "How can I update SSH authorized keys in utility mode?",
+      "expected_answerable": true,
+      "supported": true,
+      "citation_ok": true,
+      "retrieval_hits": 8,
+      "expected_sources": [
+        "SSH access/README.md"
+      ],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/UI Guide/fetchSwatKey.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md"
+      ],
+      "citation_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/SSH access/README.md"
+      ],
+      "stage_times_ms": {
+        "retrieval": 250.316,
+        "confidentiality_filter": 0.009,
+        "answer_generation": 0.598,
+        "guardrails": 0.229,
+        "total": 251.155
+      }
+    },
+    {
+      "id": "q6",
+      "question": "For Linux disk pressure, should I clean logs first or restart services first?",
+      "expected_answerable": true,
+      "supported": true,
+      "citation_ok": true,
+      "retrieval_hits": 8,
+      "expected_sources": [],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/LinuxOnZ/ConfigureDumpVol.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/DASD Procedures/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Setup/UpdatingZoweLab.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/DASD Procedures/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/CARTES/Light Tracing/TracingLight.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/LinuxOnZ/ConfigureDumpVol.md"
+      ],
+      "citation_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/3270OE/workflows/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/LinuxOnZ/ConfigureDumpVol.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/DASD Procedures/README.md"
+      ],
+      "stage_times_ms": {
+        "retrieval": 243.411,
+        "confidentiality_filter": 0.01,
+        "answer_generation": 0.77,
+        "guardrails": 0.285,
+        "total": 244.48
+      }
+    },
+    {
+      "id": "q7",
+      "question": "What is the approved incident escalation pager rotation for project zeta-77?",
+      "expected_answerable": false,
+      "supported": false,
+      "citation_ok": false,
+      "retrieval_hits": 8,
+      "expected_sources": [],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Planning and Proposals.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeSharing/InnerSource.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/GithubHelp/SystemzSWAT.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/TOAD/how-to-contribute/developers/python-packaging-for-toad-V2.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/TOAD/how-to-contribute/developers/python-packaging-for-toad-V2.md"
+      ],
+      "citation_sources": [],
+      "stage_times_ms": {
+        "retrieval": 242.438,
+        "confidentiality_filter": 0.014,
+        "answer_generation": 0.406,
+        "guardrails": 0.005,
+        "total": 242.869
+      }
+    },
+    {
+      "id": "q8",
+      "question": "Which change ticket EXM-9091 approved last month's emergency SSH key exemption?",
+      "expected_answerable": false,
+      "supported": false,
+      "citation_ok": false,
+      "retrieval_hits": 8,
+      "expected_sources": [],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/remoteZtoolset/installRZT.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/TOAD/how-to-use/container/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/generatesshkey.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Z authorization Webapp/generatesshkey.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/TOAD/Admins/podman-image/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/TOAD/how-to-use/container/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/TOAD/how-to-use/container/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/Step CA SSH Access.md"
+      ],
+      "citation_sources": [],
+      "stage_times_ms": {
+        "retrieval": 245.677,
+        "confidentiality_filter": 0.011,
+        "answer_generation": 0.564,
+        "guardrails": 0.004,
+        "total": 246.258
+      }
+    },
+    {
+      "id": "q9",
+      "question": "What is the single authoritative rollback procedure for all environments?",
+      "expected_answerable": true,
+      "supported": true,
+      "citation_ok": true,
+      "retrieval_hits": 8,
+      "expected_sources": [],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Tools/PyThrash.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Virtual Environments.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/RSF Call home Setup.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/MAGIC/Visaulize.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/DASD Procedures/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/AROM/Loading_AROMs.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SE_Tools/i390Tools/i390_help.md"
+      ],
+      "citation_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/ZoweLab/Tools/PyThrash.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Virtual Environments.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/HMC_SE/RSF Call home Setup.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md"
+      ],
+      "stage_times_ms": {
+        "retrieval": 245.604,
+        "confidentiality_filter": 0.013,
+        "answer_generation": 0.457,
+        "guardrails": 0.17,
+        "total": 246.249
+      }
+    },
+    {
+      "id": "q10",
+      "question": "How can I inspect filesystem usage on Linux?",
+      "expected_answerable": true,
+      "supported": true,
+      "citation_ok": true,
+      "retrieval_hits": 8,
+      "expected_sources": [
+        "linux_commands.md"
+      ],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/LinuxOnZ/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/MAGIC/YAML_Formatting.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/LinuxOnZ/RundeckLinuxAutomation/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/LinuxOnZ/RundeckLinuxAutomation/rundeck.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/linux/linux_partition_configuration.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/LinuxOnZ/RundeckLinuxAutomation/rundeck.md"
+      ],
+      "citation_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/LinuxOnZ/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/MAGIC/YAML_Formatting.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/SKLM Log Cleanup/README.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/OperatingSystemsOnZ/README.md"
+      ],
+      "stage_times_ms": {
+        "retrieval": 242.361,
+        "confidentiality_filter": 0.01,
+        "answer_generation": 0.45,
+        "guardrails": 0.186,
+        "total": 243.012
+      }
+    },
+    {
+      "id": "q11",
+      "question": "Where is the JMET roll procedure documented?",
+      "expected_answerable": true,
+      "supported": true,
+      "citation_ok": true,
+      "retrieval_hits": 8,
+      "expected_sources": [
+        "How_to_Perform_a_JMET_Roll.md"
+      ],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S24.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/BundleRegressionRecommendations/Regression_Test_Summary_D61C_S25.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/EngineeringManagement/EWM/images/JoD_Text.txt"
+      ],
+      "citation_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/CommonProcedures/How_to_Perform_a_JMET_Roll.md"
+      ],
+      "stage_times_ms": {
+        "retrieval": 239.033,
+        "confidentiality_filter": 0.011,
+        "answer_generation": 0.663,
+        "guardrails": 0.227,
+        "total": 239.939
+      }
+    },
+    {
+      "id": "q12",
+      "question": "What Kubernetes namespace restart policy is approved for project x9?",
+      "expected_answerable": false,
+      "supported": false,
+      "citation_ok": false,
+      "retrieval_hits": 8,
+      "expected_sources": [],
+      "retrieved_sources": [
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/Planning and Proposals.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeSharing/InnerSource.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/sample_runbook.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/Automation Development Best Practices/AI Assistance.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/GithubHelp/SystemzSWAT.md",
+        "/Users/anwarh/Desktop/IBM/Automation/Agent/work_knowledge_agent/data/raw/work_IBM/main-EST-Users-Guide/EST-User-Guide-main/Automation/AutomationBestPractices/DeveloperGuides/CodeQuality/Poetry.md"
+      ],
+      "citation_sources": [],
+      "stage_times_ms": {
+        "retrieval": 240.523,
+        "confidentiality_filter": 0.009,
+        "answer_generation": 0.416,
+        "guardrails": 0.003,
+        "total": 240.955
+      }
+    }
+  ]
+}

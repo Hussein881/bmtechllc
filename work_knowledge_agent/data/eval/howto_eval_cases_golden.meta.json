@@ -1,0 +1,8 @@
+{
+  "dataset_path": "data/eval/howto_eval_cases_golden.json",
+  "sha256": "b1081fc408882892c976388e978ca8eca47376f2e434cf0efd027d6b6475d68e",
+  "review_status": "reviewed",
+  "reviewer": "anwarh",
+  "review_date": "2026-07-05",
+  "notes": "Human-reviewed Gate 3 golden dataset. Cases were checked for support boundaries, citation expectations, and deterministic scoring coverage before sign-off."
+}

@@ -1,0 +1,53 @@
+{
+  "total_cases": 2,
+  "metrics": {
+    "boundary_allow_rate_pct": 100.0,
+    "generation_success_rate_pct": 100.0,
+    "expected_match_rate_pct": 100.0,
+    "latency_p50_ms": 897.217,
+    "latency_p95_ms": 919.556,
+    "avg_input_tokens": 45.0,
+    "avg_output_tokens": 14.0
+  },
+  "per_case": [
+    {
+      "id": "llm-live-alpha",
+      "provider_mode": "api",
+      "confidentiality_level": "public",
+      "expected_contains": [
+        "LIVE_EVAL_ALPHA"
+      ],
+      "boundary_allowed": true,
+      "boundary_reason": "ok",
+      "success": true,
+      "expected_match": true,
+      "text": "LIVE_EVAL_ALPHA ready to assist.",
+      "latency_ms": 919.556,
+      "input_token_count": 45,
+      "output_token_count": 9,
+      "model_name": "ibm/granite-4-h-small",
+      "prompt_version": "phase3-watsonx-v1",
+      "request_id": "2b99e75d-ae93-4eac-834f-49bb65dbb906"
+    },
+    {
+      "id": "llm-live-beta",
+      "provider_mode": "api",
+      "confidentiality_level": "public",
+      "expected_contains": [
+        "OK_BETA",
+        "IBM"
+      ],
+      "boundary_allowed": true,
+      "boundary_reason": "ok",
+      "success": true,
+      "expected_match": true,
+      "text": "OK_BETA IBM is a multinational technology company headquartered in Armonk, New York.",
+      "latency_ms": 874.878,
+      "input_token_count": 45,
+      "output_token_count": 19,
+      "model_name": "ibm/granite-4-h-small",
+      "prompt_version": "phase3-watsonx-v1",
+      "request_id": "b1891bd8-8f6d-4bad-91db-3fd32b9268cd"
+    }
+  ]
+}

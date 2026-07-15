@@ -1,0 +1,22 @@
+[
+  {
+    "id": "llm-live-alpha",
+    "prompt": "Reply with exactly LIVE_EVAL_ALPHA and one short sentence confirming readiness.",
+    "context": "",
+    "expected_contains": ["LIVE_EVAL_ALPHA"],
+    "provider_mode": "api",
+    "confidentiality_level": "public",
+    "temperature": 0.0,
+    "max_output_tokens": 64
+  },
+  {
+    "id": "llm-live-beta",
+    "prompt": "Reply with OK_BETA and mention IBM in a short sentence.",
+    "context": "",
+    "expected_contains": ["OK_BETA", "IBM"],
+    "provider_mode": "api",
+    "confidentiality_level": "public",
+    "temperature": 0.0,
+    "max_output_tokens": 64
+  }
+]

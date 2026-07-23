@@ -57,7 +57,7 @@ chmod 700 ~/.ssh
 ssh-keygen -t ed25519 -a 100 -f ~/.ssh/consulting-dev
 ```
 
-When asked for a passphrase, use a password you can remember and store it in the company-approved password manager. Do not send the passphrase to anyone.
+When asked for a passphrase, use a password you can remember. Do not send the passphrase to anyone.
 
 This creates two files:
 
@@ -219,24 +219,6 @@ http://127.0.0.1:5173
 
 These addresses only work while the SSH tunnel is running.
 
-## Step 7: Verify the first connection
-
-Open **Terminal → New Terminal** inside the browser editor and run:
-
-```bash
-whoami
-git --version
-docker --version
-claude --version
-codex --version
-```
-
-`whoami` should print:
-
-```text
-developer
-```
-
 If GitHub is not connected, run:
 
 ```bash
@@ -255,30 +237,6 @@ If Claude or Codex asks you to sign in, use your individually assigned company a
 4. Work normally in the browser editor.
 5. When finished, save and push your work.
 6. Return to the local terminal and press `Ctrl+C` to close the tunnel.
-
-## Keep long-running AI sessions alive
-
-Inside the VM terminal, start Claude Code with:
-
-```bash
-tmux new -s claude
-claude
-```
-
-Detach without stopping it by pressing `Ctrl+B`, then `D`. Reconnect later with:
-
-```bash
-tmux attach -t claude
-```
-
-For Codex:
-
-```bash
-tmux new -s codex
-codex
-```
-
-Do not let Claude and Codex edit the same Git checkout simultaneously.
 
 ## Troubleshooting
 

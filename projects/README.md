@@ -5,6 +5,7 @@ All new BMTech project work starts here.
 ## Categories
 
 - `client-delivery/` — scoped work for a specific client.
+- `company-platforms/` — public and operational platforms owned by BMTech.
 - `internal-tools/` — reusable systems operated by BMTech.
 - `experiments/` — short-lived prototypes used to validate an idea.
 

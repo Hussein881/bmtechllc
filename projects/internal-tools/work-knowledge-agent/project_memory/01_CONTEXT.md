@@ -3,6 +3,7 @@
 ## Project Identity
 - Name: Work Knowledge Agent
 - Mission: Build a local-first engineering knowledge system that retrieves operational knowledge and produces grounded, cited outputs.
+- Repository location: `projects/internal-tools/work-knowledge-agent/` within the BMTech workspace.
 
 ## Problem Statement
 Engineering teams lose time due to fragmented notes, logs, scripts, and runbooks. Knowledge is hard to retrieve and often uncited, which creates operational and compliance risk.
@@ -116,4 +117,4 @@ Each chunk should carry:
 - Immediate focus: validate unified portal UX against evaluator/governance expectations and run targeted smoke checks for each route.
 
 ## Last Updated
-2026-07-05
+2026-07-27

@@ -645,5 +645,12 @@ When ending a session, append:
 - Open issues/blockers:
 - Next best task:
 
+### 2026-07-27 Repository organization
+- Summary of completed work: Moved the project from the repository root into `projects/internal-tools/work-knowledge-agent/` as part of the BMTech workspace structure.
+- Files changed: repository paths plus `IMPLEMENTATION_PLAN.md`, `project_memory/PROJECT_STRUCTURE.md`, `project_memory/01_CONTEXT.md`, and this execution log.
+- Commands run and result: `PYTHONPATH=src python3 -m unittest discover -s tests/unit -v` executed from the new project directory and passed (`Ran 36 tests`, `OK`).
+- Open issues/blockers: historical evaluation artifacts retain their original absolute source paths by design and were not rewritten.
+- Next best task: use the new repository path for future setup, testing, and project documentation updates.
+
 ## Last Updated
-2026-07-05
+2026-07-27

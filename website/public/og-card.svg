@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="BMTech — one process, one number, agreed before we start.">
+  <rect width="1200" height="630" fill="#12100E" />
+  <g transform="translate(96,96) scale(1.1)">
+    <path d="M52 10h57c25 0 41 9 41 25s-16 26-41 26H98m0 0h12c27 0 44 10 44 26s-17 19-44 19H98" fill="none" stroke="#FAF8F5" stroke-width="16" stroke-linejoin="round" />
+    <path d="M26 61h72" fill="none" stroke="#B9B1A6" stroke-width="16" />
+    <path d="M2 106h96" fill="none" stroke="#E8A25C" stroke-width="16" />
+  </g>
+  <text x="96" y="330" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#FAF8F5">
+    One process. One number.
+  </text>
+  <text x="96" y="416" font-family="Georgia, 'Times New Roman', serif" font-size="76" fill="#E8A25C">
+    Agreed before we start.
+  </text>
+  <text x="96" y="500" font-family="Helvetica, Arial, sans-serif" font-size="30" fill="#B9B1A6">
+    BMTech — AI workflows for operations-heavy businesses
+  </text>
+</svg>

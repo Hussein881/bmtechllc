@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# No Sitemap: line — a sitemap URL needs the production domain, which has not
+# been supplied. Add it at launch. See README.md, "Launch blockers".

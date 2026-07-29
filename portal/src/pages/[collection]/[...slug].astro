@@ -1,0 +1,63 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const collections = ['services', 'methodology', 'playbooks', 'reference', 'insights', 'about'] as const;
+  const paths = [];
+
+  for (const collectionName of collections) {
+    const entries = await getCollection(collectionName, ({ data }) =>
+      data.status === 'published' && data.audience === 'public'
+    );
+    for (const entry of entries) {
+      paths.push({
+        params: { collection: collectionName, slug: entry.id },
+        props: { entry },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { entry } = Astro.props;
+const { Content, headings } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+  <div class="page-meta">
+    <div class="breadcrumb">
+      <a href="/">Home</a> /
+      <a href={`/${Astro.params.collection}`}>{Astro.params.collection}</a> /
+      <span>{entry.data.title}</span>
+    </div>
+    <div class="meta-row">
+      <span>Updated: {entry.data.updated.toISOString().split('T')[0]}</span>
+      <span>Owner: {entry.data.owner}</span>
+      {entry.data.tags.length > 0 && (
+        <span class="tags">{entry.data.tags.join(', ')}</span>
+      )}
+    </div>
+  </div>
+
+  <article class="prose">
+    <Content />
+  </article>
+
+  {entry.data.related.length > 0 && (
+    <aside class="related">
+      <h2>Related</h2>
+      <ul>
+        {entry.data.related.map((slug) => (
+          <li><a href={`/${slug}`}>{slug}</a></li>
+        ))}
+      </ul>
+    </aside>
+  )}
+
+  <details class="view-source">
+    <summary>View source (Markdown)</summary>
+    <pre><code>{/* raw markdown rendered via separate .md route - see Phase 1 */}</code></pre>
+  </details>
+</BaseLayout>

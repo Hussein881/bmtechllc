@@ -1,0 +1,11 @@
+# Portal build output and generated files
+portal/dist/
+portal/node_modules/
+portal/.astro/
+
+# Website build output
+website/dist/
+website/node_modules/
+
+# OS
+.DS_Store

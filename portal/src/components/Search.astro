@@ -22,7 +22,7 @@ const searchIndexUrl = withBase('/index.json');
   </div>
 </dialog>
 
-<script define:vars={{ searchIndexUrl }}>
+<script is:inline define:vars={{ searchIndexUrl }}>
   const dialog = document.getElementById('search-dialog');
   const trigger = document.getElementById('search-trigger');
   const input = document.getElementById('search-input');

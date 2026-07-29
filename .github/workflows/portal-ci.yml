@@ -27,13 +27,13 @@ jobs:
         working-directory: portal
         run: npm ci
 
-      - name: Type check
-        working-directory: portal
-        run: npm run check
-
-      # Fails on: invalid frontmatter, rogue tags, broken internal links,
-      # missing/empty machine artifacts, or non-public content leaking
-      # into llms.txt / llms-full.txt / index.json.
-      - name: Build and run content gates
+      # `npm run build` chains astro check -> astro build -> content gates.
+      # Keeping them in one script means a green local build cannot diverge
+      # from CI, which is exactly how a type error reached main previously.
+      #
+      # Fails on: type errors, invalid frontmatter, tags outside the controlled
+      # vocabulary, unknown owners, broken internal links, unresolved redirects,
+      # or an incomplete index.json.
+      - name: Type check, build, and run content gates
         working-directory: portal
         run: npm run build

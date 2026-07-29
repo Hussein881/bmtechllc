@@ -54,8 +54,6 @@ export const TAGS = [
   'postmortem',
 ] as const;
 
-type Tag = typeof TAGS[number];
-
 // ─── Schema ──────────────────────────────────────────────────────────────────
 
 const pageSchema = z.object({
@@ -70,7 +68,9 @@ const pageSchema = z.object({
     .string()
     .min(20, 'Description must be at least 20 chars — it is the retrieval abstract.'),
 
-  tags: z.array(z.enum(TAGS as [Tag, ...Tag[]])).default([]),
+  // z.enum accepts the readonly tuple from `as const` directly. Casting it to a
+  // mutable tuple is both unnecessary and rejected by the type checker.
+  tags: z.array(z.enum(TAGS)).default([]),
 
   /**
    * Drafts and archived pages still build; the layout renders a banner.

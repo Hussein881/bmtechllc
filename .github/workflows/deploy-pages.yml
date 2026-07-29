@@ -1,10 +1,21 @@
-name: Deploy BMTech site to GitHub Pages
+name: Deploy to GitHub Pages
+
+# A repository gets exactly one GitHub Pages deployment. Publishing the website
+# and the portal from separate workflows meant whichever ran last overwrote the
+# other, so both are built here and combined into a single artifact:
+#
+#   https://<user>.github.io/bmtechllc/          -> website/
+#   https://<user>.github.io/bmtechllc/portal/   -> portal/
+#
+# These paths match the `base` already configured in website/vite.config.ts and
+# portal/astro.config.mjs. Changing one without the other will break asset URLs.
 
 on:
   push:
     branches: [main]
     paths:
       - 'website/**'
+      - 'portal/**'
       - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 
@@ -19,40 +30,73 @@ concurrency:
 
 jobs:
   build:
+    name: Build website + portal
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: website/package-lock.json
 
-      - name: Install dependencies
+      # ── Website (served at the site root) ────────────────────────────────
+      - name: Install website dependencies
         working-directory: website
         run: npm ci
 
-      - name: Build site
+      - name: Build website
         working-directory: website
         run: npm run build
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+      # ── Portal (served at /portal/) ──────────────────────────────────────
+      # Runs the full content contract gate: frontmatter schema, controlled tag
+      # vocabulary, ownership, internal links, redirects, index.json.
+      - name: Install portal dependencies
+        working-directory: portal
+        run: npm ci
 
-      - name: Upload site artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Build portal
+        working-directory: portal
+        run: npm run build
+
+      # ── Combine ──────────────────────────────────────────────────────────
+      - name: Assemble deployment artifact
+        run: |
+          mkdir -p _site
+          cp -r website/dist/. _site/
+          mkdir -p _site/portal
+          cp -r portal/dist/. _site/portal/
+
+      # The portal is internal documentation. This is a courtesy signal to
+      # well-behaved crawlers, not an access control — see the note in
+      # portal/README.md.
+      - name: Write robots.txt
+        run: |
+          cat > _site/robots.txt <<'EOF'
+          User-agent: *
+          Disallow: /bmtechllc/portal/
+          EOF
+
+      - name: Verify both surfaces exist
+        run: |
+          test -f _site/index.html || { echo "::error::website build missing"; exit 1; }
+          test -f _site/portal/index.html || { echo "::error::portal build missing"; exit 1; }
+          echo "website: $(find _site -maxdepth 1 -name '*.html' | wc -l) root page(s)"
+          echo "portal:  $(find _site/portal -name '*.html' | wc -l) page(s)"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
         with:
-          path: website/dist
+          path: _site
 
   deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment

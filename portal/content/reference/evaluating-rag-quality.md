@@ -1,11 +1,12 @@
 ---
 title: Evaluating RAG Quality — What Actually Matters
 description: A practical framework for evaluating retrieval-augmented generation systems beyond basic accuracy metrics, covering retrieval quality, answer faithfulness, and the failure modes that matter most for business applications.
-tags: [rag, llm, ai-strategy, technical, article]
-audience: public
+tags: [rag, llm, ai-strategy, reference]
 status: published
+visibility: shareable
 owner: ah
 updated: 2026-07-28
+reviewCycleMonths: 12
 order: 10
 related: [glossary, ai-readiness-assessment]
 ---

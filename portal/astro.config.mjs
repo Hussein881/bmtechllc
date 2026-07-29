@@ -1,18 +1,22 @@
 import { defineConfig } from 'astro/config';
-import sitemap from '@astrojs/sitemap';
+import { readFileSync } from 'node:fs';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeExternalLinks from 'rehype-external-links';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
+import remarkCallouts from './src/plugins/remark-callouts.mjs';
+
+// Slug renames must ship with a redirect — see redirects.json.
+const { redirects } = JSON.parse(readFileSync(new URL('./redirects.json', import.meta.url), 'utf8'));
 
 export default defineConfig({
-  site: 'https://Hussein881.github.io',
   base: '/bmtechllc/portal',
   output: 'static',
   trailingSlash: 'always',
-  integrations: [sitemap()],
+  redirects,
+  // No sitemap integration: this is an internal tool with no crawlers.
   markdown: {
-    remarkPlugins: [remarkGfm],
+    remarkPlugins: [remarkGfm, remarkCallouts],
     rehypePlugins: [
       // Must run before autolink so heading IDs exist to link to.
       rehypeSlug,

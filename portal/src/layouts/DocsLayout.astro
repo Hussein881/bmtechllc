@@ -7,6 +7,7 @@ import {
   buildBreadcrumbs,
   buildSectionTree,
   resolveRelated,
+  findBacklinks,
   withBase,
   SECTION_LABELS,
   type PageRecord,
@@ -16,43 +17,29 @@ interface Props {
   page: PageRecord;
   allPages: PageRecord[];
   headings: MarkdownHeading[];
-  /** Docs mode gets sidebar + ToC; browse mode gets a wide editorial column. */
-  mode: 'docs' | 'browse';
 }
 
-const { page, allPages, headings, mode } = Astro.props;
+const { page, allPages, headings } = Astro.props;
 
 const crumbs = buildBreadcrumbs(page);
 const tree = buildSectionTree(allPages, page.section);
+
 const related = page.related
   .map((slug) => resolveRelated(allPages, slug))
   .filter((p): p is PageRecord => p !== undefined);
 
-const updatedISO = page.updated.toISOString().split('T')[0];
+// Incoming `related` edges — cheap to compute, genuinely useful for a KB
+// where "what else references this" is a common question.
+const backlinks = findBacklinks(allPages, page).filter(
+  (b) => !related.some((r) => r.path === b.path)
+);
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'TechArticle',
-  headline: page.title,
-  description: page.description,
-  dateModified: updatedISO,
-  keywords: page.tags.join(', '),
-  articleSection: SECTION_LABELS[page.section],
-  publisher: {
-    '@type': 'Organization',
-    name: 'BenchmarkTech LLC',
-  },
-};
+const updatedISO = page.updated.toISOString().split('T')[0];
 ---
 
-<BaseLayout
-  title={page.title}
-  description={page.description}
-  jsonLd={jsonLd}
-  bodyClass={mode === 'docs' ? 'mode-docs' : 'mode-browse'}
->
-  <div class:list={['page-shell', `shell-${mode}`]}>
-    {mode === 'docs' && tree.length > 0 && (
+<BaseLayout title={page.title} description={page.description}>
+  <div class="page-shell">
+    {tree.length > 0 && (
       <aside class="sidebar" aria-label={`${SECTION_LABELS[page.section]} navigation`}>
         <p class="sidebar-heading">{SECTION_LABELS[page.section]}</p>
         <SidebarTree nodes={tree} currentPath={page.path} />
@@ -73,9 +60,38 @@ const jsonLd = {
         ))}
       </nav>
 
+      {page.status === 'draft' && (
+        <div class="status-banner banner-draft" role="status">
+          <strong>Draft</strong>
+          This page is work in progress. Treat its contents as unverified.
+        </div>
+      )}
+
+      {page.status === 'archived' && (
+        <div class="status-banner banner-archived" role="status">
+          <strong>Archived</strong>
+          Kept for historical reference. It may describe how we used to work,
+          not how we work now.
+        </div>
+      )}
+
+      {page.isStale && (
+        <div class="status-banner banner-stale" role="status">
+          <strong>Review overdue</strong>
+          Last updated {page.monthsSinceUpdate} months ago; this page is on a
+          {' '}{page.reviewCycleMonths}-month review cycle.
+          {page.owner} owns it.
+        </div>
+      )}
+
       <div class="page-meta">
         <span>Updated <time datetime={updatedISO}>{updatedISO}</time></span>
         <span>Owner: {page.owner}</span>
+        {page.visibility === 'shareable' && (
+          <span class="badge-shareable" title="Reviewed as safe to share outside the firm">
+            Shareable
+          </span>
+        )}
         {page.tags.length > 0 && <span class="tags">{page.tags.join(' · ')}</span>}
       </div>
 
@@ -97,9 +113,23 @@ const jsonLd = {
         </aside>
       )}
 
+      {backlinks.length > 0 && (
+        <aside class="related backlinks" aria-labelledby="backlinks-heading">
+          <h2 id="backlinks-heading">Referenced by</h2>
+          <ul>
+            {backlinks.map((b) => (
+              <li>
+                <a href={withBase(b.path)}>{b.title}</a>
+                <span class="related-desc">{SECTION_LABELS[b.section]}</span>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )}
+
       <div class="page-actions">
         <a class="btn-secondary" href={withBase(`${page.path.replace(/\/$/, '')}.md`)}>
-          View source (Markdown)
+          View source
         </a>
         <button
           class="btn-secondary"
@@ -111,11 +141,9 @@ const jsonLd = {
       </div>
     </main>
 
-    {mode === 'docs' && (
-      <aside class="toc-rail">
-        <TableOfContents headings={headings} />
-      </aside>
-    )}
+    <aside class="toc-rail">
+      <TableOfContents headings={headings} />
+    </aside>
   </div>
 
   <script>

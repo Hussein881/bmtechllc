@@ -1,39 +1,57 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
+/**
+ * INTERNAL KNOWLEDGE BASE CONTRACT
+ *
+ * This corpus serves the BenchmarkTech team, not prospects. Two consequences
+ * shape every decision below:
+ *
+ *   1. Everything is internal by default. There is no public/private build
+ *      gate, because there is no public build. `visibility: shareable` is an
+ *      opt-in marker for pages we would be willing to publish externally —
+ *      it changes a badge, not the build.
+ *
+ *   2. Drafts render. Internal teams collaborate on work in progress; hiding
+ *      it defeats the purpose. Drafts render with a visible banner instead.
+ */
+
 // ─── Controlled tag vocabulary ────────────────────────────────────────────────
 // Adding a tag = one-line PR here. Free-form tags are a build error.
 export const TAGS = [
-  // Practice areas
+  // Technical domains
   'ai-strategy',
-  'ai-readiness',
-  'data-engineering',
-  'machine-learning',
   'rag',
   'llm',
+  'data-engineering',
+  'machine-learning',
+  'evaluation',
   'automation',
-  'process-improvement',
-  // Delivery phases
+  'infrastructure',
+  'security',
+
+  // Engagement lifecycle
+  'scoping',
   'discovery',
   'delivery',
   'handoff',
-  'stakeholder-management',
-  // Industries
-  'financial-services',
-  'healthcare',
-  'retail',
-  'manufacturing',
-  // Content types
+  'retro',
+
+  // Operating the business
+  'onboarding',
+  'tooling',
+  'process',
+  'pricing',
+  'client-comms',
+
+  // Document type
+  'runbook',
   'playbook',
   'template',
   'checklist',
-  'case-study',
-  'article',
+  'decision',
   'reference',
-  // Audiences
-  'technical',
-  'executive',
-  'mid-market',
+  'postmortem',
 ] as const;
 
 type Tag = typeof TAGS[number];
@@ -42,53 +60,67 @@ type Tag = typeof TAGS[number];
 
 const pageSchema = z.object({
   title: z.string(),
-  description: z.string().min(20, 'Description must be at least 20 chars — it is the retrieval abstract.'),
+
+  /**
+   * The retrieval abstract. Doubles as the search-result summary and the
+   * index.json description consumed by internal agent tooling. Forcing it to
+   * exist forces every page to be summarizable — a quality gate in itself.
+   */
+  description: z
+    .string()
+    .min(20, 'Description must be at least 20 chars — it is the retrieval abstract.'),
+
   tags: z.array(z.enum(TAGS as [Tag, ...Tag[]])).default([]),
-  audience: z.enum(['public', 'client', 'internal']),
-  status: z.enum(['draft', 'published', 'archived']),
+
+  /**
+   * Drafts and archived pages still build; the layout renders a banner.
+   * Hiding in-progress work from your own team is counterproductive.
+   */
+  status: z.enum(['draft', 'published', 'archived']).default('draft'),
+
+  /** Marks pages we would be comfortable publishing externally. Display only. */
+  visibility: z.enum(['internal', 'shareable']).default('internal'),
+
+  /** Accountable maintainer. Pairs with `updated` for the staleness gate. */
   owner: z.string(),
+
   updated: z.coerce.date(),
+
+  /**
+   * Months before this page is considered stale. Reference material ages
+   * slowly; tooling and pricing notes age fast. Defaults to 6.
+   */
+  reviewCycleMonths: z.number().int().positive().default(6),
+
   order: z.number().int().default(50),
+
   related: z.array(z.string()).default([]),
 });
 
 // ─── Collections ─────────────────────────────────────────────────────────────
+// Section rationale:
+//   onboarding  — the path a new person walks, in order
+//   methodology — how we work and why (stable, slow-changing)
+//   playbooks   — how to execute a phase of an engagement
+//   runbooks    — operational procedures and incident response
+//   reference   — lookups: glossary, standards, checklists
+//   templates   — artifacts you copy from at the start of work
+//   decisions   — ADRs; why we settled a question, so we stop relitigating it
+//   engagements — per-client working notes, retros, what actually happened
 
-const services = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './content/services' }),
-  schema: pageSchema,
-});
-
-const methodology = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './content/methodology' }),
-  schema: pageSchema,
-});
-
-const playbooks = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './content/playbooks' }),
-  schema: pageSchema,
-});
-
-const reference = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './content/reference' }),
-  schema: pageSchema,
-});
-
-const insights = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './content/insights' }),
-  schema: pageSchema,
-});
-
-const about = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './content/about' }),
-  schema: pageSchema,
-});
+const section = (dir: string) =>
+  defineCollection({
+    loader: glob({ pattern: '**/*.md', base: `./content/${dir}` }),
+    schema: pageSchema,
+  });
 
 export const collections = {
-  services,
-  methodology,
-  playbooks,
-  reference,
-  insights,
-  about,
+  onboarding: section('onboarding'),
+  methodology: section('methodology'),
+  playbooks: section('playbooks'),
+  runbooks: section('runbooks'),
+  reference: section('reference'),
+  templates: section('templates'),
+  decisions: section('decisions'),
+  engagements: section('engagements'),
 };

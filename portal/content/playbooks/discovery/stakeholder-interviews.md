@@ -1,11 +1,12 @@
 ---
 title: Stakeholder Interview Playbook
 description: A step-by-step guide for conducting stakeholder interviews during the discovery phase of an AI consulting engagement, including question frameworks, facilitation techniques, and synthesis methods.
-tags: [discovery, stakeholder-management, playbook, technical, executive]
-audience: public
+tags: [discovery, client-comms, playbook]
 status: published
+visibility: internal
 owner: ah
 updated: 2026-07-28
+reviewCycleMonths: 6
 order: 10
 related: [engagement-model, ai-readiness-assessment]
 ---

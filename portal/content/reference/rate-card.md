@@ -1,11 +1,12 @@
 ---
 title: Internal Pricing Rate Card
 description: Internal-only reference for engagement pricing floors, blended rates, and discount authority. Not for client distribution under any circumstances.
-tags: [reference, executive]
-audience: internal
+tags: [reference]
 status: published
+visibility: internal
 owner: ah
 updated: 2026-07-28
+reviewCycleMonths: 12
 order: 90
 ---
 

@@ -16,7 +16,10 @@ const { nodes, currentPath, level = 0 } = Astro.props;
       {node.path ? (
         <a
           href={withBase(node.path)}
-          class:list={['sidebar-link', { active: node.path === currentPath }]}
+          class:list={[
+            'sidebar-link',
+            { active: node.path === currentPath, 'is-draft': node.status === 'draft' },
+          ]}
           aria-current={node.path === currentPath ? 'page' : undefined}
         >
           {node.label}

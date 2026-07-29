@@ -1,0 +1,8 @@
+{
+  "$comment": "Permanent slug redirects. Every entry maps an old site-root path to a current one. Renaming a page without adding an entry here breaks teammate bookmarks and any internal tooling that stored a URL. CI verifies every destination resolves to a real page.",
+  "redirects": {
+    "/services/ai-readiness-assessment": "/playbooks/scoping-readiness-assessment/",
+    "/insights/articles/evaluating-rag-quality": "/reference/evaluating-rag-quality/",
+    "/reference/internal-rate-card": "/reference/rate-card/"
+  }
+}

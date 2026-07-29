@@ -1,11 +1,12 @@
 ---
 title: Engagement Model
 description: How BenchmarkTech structures consulting engagements — from initial scoping through delivery and handoff — including how we communicate, make decisions, and handle scope changes.
-tags: [ai-strategy, delivery, stakeholder-management, technical, executive]
-audience: public
+tags: [ai-strategy, delivery, client-comms]
 status: published
+visibility: shareable
 owner: ah
 updated: 2026-07-28
+reviewCycleMonths: 12
 order: 10
 related: [ai-readiness-assessment, stakeholder-interviews]
 ---

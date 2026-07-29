@@ -1,75 +1,96 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getAllPages, SECTIONS, SECTION_LABELS, withBase } from '../lib/content';
+import {
+  getAllPages,
+  SECTIONS,
+  SECTION_LABELS,
+  SECTION_BLURBS,
+  withBase,
+} from '../lib/content';
 
 const pages = await getAllPages();
 
 const sections = SECTIONS.map((section) => {
   const sectionPages = pages.filter((p) => p.section === section);
-  const index = sectionPages.find((p) => p.isIndex);
   return {
     name: section,
     label: SECTION_LABELS[section],
-    description: index?.description ?? `${sectionPages.length} pages in this section.`,
+    blurb: SECTION_BLURBS[section],
     count: sectionPages.length,
+    stale: sectionPages.filter((p) => p.isStale).length,
   };
-}).filter((s) => s.count > 0);
+});
 
 const recent = [...pages]
   .sort((a, b) => b.updated.getTime() - a.updated.getTime())
-  .slice(0, 5);
+  .slice(0, 6);
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'BenchmarkTech LLC',
-  description:
-    'AI consulting for mid-market organizations: readiness assessments, production RAG systems, and embedded technical advisory.',
-  url: Astro.site?.href,
-};
+const needsReview = pages.filter((p) => p.isStale).slice(0, 6);
+const drafts = pages.filter((p) => p.status === 'draft').slice(0, 6);
 ---
+
 <BaseLayout
-  title="Knowledge Portal"
-  description="BenchmarkTech's public knowledge base — AI consulting methodology, delivery playbooks, and reference material for mid-market organizations."
-  jsonLd={jsonLd}
-  bodyClass="mode-browse"
+  title="Knowledge Base"
+  description="BenchmarkTech internal knowledge base — methodology, playbooks, runbooks, decisions, and engagement history."
 >
   <main id="main-content" class="home">
     <section class="hero">
-      <h1>Knowledge Portal</h1>
+      <h1>Knowledge Base</h1>
       <p class="lede">
-        The methodology, playbooks, and reference material behind how BenchmarkTech
-        takes mid-market organizations from AI curiosity to production AI capability.
+        How we work, how we deliver, and what we learned doing it.
+        Everything here is internal.
       </p>
       <p class="hero-meta">
-        {pages.length} published pages · machine-readable at
-        <a href={withBase('/llms.txt')}>llms.txt</a>
+        {pages.length} pages
+        {needsReview.length > 0 && <> · <strong>{needsReview.length} need review</strong></>}
+        {drafts.length > 0 && <> · {drafts.length} in draft</>}
+        <> · press <kbd>/</kbd> to search</>
       </p>
     </section>
 
-    <section class="section-grid" aria-label="Portal sections">
+    <section class="section-grid" aria-label="Knowledge base sections">
       {sections.map((s) => (
         <a href={withBase(`/${s.name}/`)} class="section-card">
           <h2>{s.label}</h2>
-          <p>{s.description}</p>
-          <span class="card-count">{s.count} {s.count === 1 ? 'page' : 'pages'}</span>
+          <p>{s.blurb}</p>
+          <span class="card-count">
+            {s.count} {s.count === 1 ? 'page' : 'pages'}
+            {s.stale > 0 && <span class="card-stale"> · {s.stale} stale</span>}
+          </span>
         </a>
       ))}
     </section>
 
-    <section class="recent" aria-labelledby="recent-heading">
-      <h2 id="recent-heading">Recently updated</h2>
-      <ul>
-        {recent.map((p) => (
-          <li>
-            <a href={withBase(p.path)}>{p.title}</a>
-            <span class="recent-section">{SECTION_LABELS[p.section]}</span>
-            <time datetime={p.updated.toISOString().split('T')[0]}>
-              {p.updated.toISOString().split('T')[0]}
-            </time>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <div class="home-columns">
+      <section class="recent" aria-labelledby="recent-heading">
+        <h2 id="recent-heading">Recently updated</h2>
+        <ul>
+          {recent.map((p) => (
+            <li>
+              <a href={withBase(p.path)}>{p.title}</a>
+              <span class="recent-section">{SECTION_LABELS[p.section]}</span>
+              <time datetime={p.updated.toISOString().split('T')[0]}>
+                {p.updated.toISOString().split('T')[0]}
+              </time>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {needsReview.length > 0 && (
+        <section class="recent" aria-labelledby="review-heading">
+          <h2 id="review-heading">Needs review</h2>
+          <ul>
+            {needsReview.map((p) => (
+              <li>
+                <a href={withBase(p.path)}>{p.title}</a>
+                <span class="recent-section">{p.owner}</span>
+                <span class="stale-age">{p.monthsSinceUpdate}mo</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
   </main>
 </BaseLayout>

@@ -1,11 +1,12 @@
 ---
 title: AI Readiness Assessment
 description: A four-week structured engagement that audits your data infrastructure, workflows, and stakeholder alignment to determine whether your organization is ready to deploy AI — and what needs to change if not.
-tags: [ai-readiness, ai-strategy, discovery, executive, mid-market]
-audience: public
+tags: [scoping, ai-strategy, discovery]
 status: published
+visibility: internal
 owner: ah
 updated: 2026-07-28
+reviewCycleMonths: 6
 order: 10
 related: [engagement-model, stakeholder-interviews]
 ---

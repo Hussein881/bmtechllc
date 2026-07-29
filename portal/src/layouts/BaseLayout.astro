@@ -6,13 +6,9 @@ import { SECTIONS, SECTION_LABELS, withBase } from '../lib/content';
 interface Props {
   title: string;
   description: string;
-  /** Emitted as JSON-LD; omit for non-article pages. */
-  jsonLd?: Record<string, unknown>;
-  bodyClass?: string;
 }
 
-const { title, description, jsonLd, bodyClass } = Astro.props;
-const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const { title, description } = Astro.props;
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -20,16 +16,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    <title>{title} — BenchmarkTech</title>
+    <title>{title} — BenchmarkTech KB</title>
 
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary" />
-
-    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    {/* Internal tool: no crawlers, no SEO scaffolding, no social cards. */}
+    <meta name="robots" content="noindex, nofollow" />
 
     <script is:inline>
       // Set theme before first paint to avoid a flash.
@@ -38,11 +28,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       document.documentElement.dataset.theme = preferred;
     </script>
   </head>
-  <body class={bodyClass}>
+  <body>
     <a href="#main-content" class="skip-link">Skip to content</a>
 
     <header class="site-header">
-      <a href={withBase('/')} class="site-name">BenchmarkTech</a>
+      <a href={withBase('/')} class="site-name">
+        BenchmarkTech <span class="site-tag">KB</span>
+      </a>
       <nav class="site-nav" aria-label="Main navigation">
         {SECTIONS.map((section) => (
           <a
@@ -64,11 +56,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <slot />
 
     <footer class="site-footer">
-      <p>© {new Date().getFullYear()} BenchmarkTech LLC</p>
+      <p>BenchmarkTech internal knowledge base · not for external distribution</p>
       <p class="footer-machine">
-        Machine-readable:
-        <a href={withBase('/llms.txt')}>llms.txt</a> ·
-        <a href={withBase('/llms-full.txt')}>llms-full.txt</a> ·
+        Machine-readable index for internal tooling:
         <a href={withBase('/index.json')}>index.json</a>
       </p>
     </footer>

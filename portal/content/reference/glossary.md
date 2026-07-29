@@ -2,10 +2,11 @@
 title: Glossary
 description: Definitions of key terms used across BenchmarkTech's methodology, playbooks, and client deliverables — AI, data, and consulting vocabulary standardized for consistent use.
 tags: [reference, ai-strategy, rag, llm, data-engineering]
-audience: public
 status: published
+visibility: shareable
 owner: ah
 updated: 2026-07-28
+reviewCycleMonths: 12
 order: 10
 ---
 

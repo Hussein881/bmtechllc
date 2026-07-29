@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SidebarTree from '../../components/SidebarTree.astro';
+import {
+  getAllPages,
+  buildSectionTree,
+  SECTIONS,
+  SECTION_LABELS,
+  SECTION_BLURBS,
+  withBase,
+  type PageRecord,
+  type SectionName,
+} from '../../lib/content';
+
+/**
+ * Auto-generated section landing pages.
+ *
+ * The public-site plan called for hand-written index.md overviews so an LLM
+ * retrieving "what is X's methodology" got real prose. That rationale was
+ * external-crawler-driven and does not apply here: the team already knows
+ * what these sections are. A generated listing that can never drift out of
+ * sync with the folder is strictly better for an internal tool.
+ */
+export async function getStaticPaths() {
+  const pages = await getAllPages();
+
+  return SECTIONS.map((section) => ({
+    params: { section },
+    props: {
+      section,
+      pages: pages.filter((p) => p.section === section && !p.isIndex),
+      allPages: pages,
+    },
+  }));
+}
+
+interface Props {
+  section: SectionName;
+  pages: PageRecord[];
+  allPages: PageRecord[];
+}
+
+const { section, pages, allPages } = Astro.props;
+const tree = buildSectionTree(allPages, section);
+const label = SECTION_LABELS[section];
+---
+
+<BaseLayout title={label} description={SECTION_BLURBS[section]}>
+  <div class="page-shell">
+    {tree.length > 0 && (
+      <aside class="sidebar" aria-label={`${label} navigation`}>
+        <p class="sidebar-heading">{label}</p>
+        <SidebarTree nodes={tree} currentPath={`/${section}/`} />
+      </aside>
+    )}
+
+    <main id="main-content" class="content-column">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href={withBase('/')}>Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span>{label}</span>
+      </nav>
+
+      <h1 class="section-title">{label}</h1>
+      <p class="lede">{SECTION_BLURBS[section]}</p>
+
+      {pages.length === 0 ? (
+        <p class="empty-state">
+          Nothing here yet. Add a Markdown file to
+          {' '}<code>content/{section}/</code> and it appears automatically.
+        </p>
+      ) : (
+        <ul class="page-list">
+          {pages.map((p) => (
+            <li>
+              <a href={withBase(p.path)}>{p.title}</a>
+              {p.status === 'draft' && <span class="pill pill-draft">Draft</span>}
+              {p.isStale && <span class="pill pill-stale">Review overdue</span>}
+              <p>{p.description}</p>
+              <span class="page-list-meta">
+                {p.owner} · updated {p.updated.toISOString().split('T')[0]}
+                {p.tags.length > 0 && <> · {p.tags.join(', ')}</>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </main>
+  </div>
+</BaseLayout>

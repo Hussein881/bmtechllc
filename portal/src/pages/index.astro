@@ -1,19 +1,75 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getAllPages, SECTIONS, SECTION_LABELS, withBase } from '../lib/content';
+
+const pages = await getAllPages();
+
+const sections = SECTIONS.map((section) => {
+  const sectionPages = pages.filter((p) => p.section === section);
+  const index = sectionPages.find((p) => p.isIndex);
+  return {
+    name: section,
+    label: SECTION_LABELS[section],
+    description: index?.description ?? `${sectionPages.length} pages in this section.`,
+    count: sectionPages.length,
+  };
+}).filter((s) => s.count > 0);
+
+const recent = [...pages]
+  .sort((a, b) => b.updated.getTime() - a.updated.getTime())
+  .slice(0, 5);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'BenchmarkTech LLC',
+  description:
+    'AI consulting for mid-market organizations: readiness assessments, production RAG systems, and embedded technical advisory.',
+  url: Astro.site?.href,
+};
 ---
-<BaseLayout title="BenchmarkTech Portal" description="AI consulting knowledge portal">
-  <main>
-    <h1>BenchmarkTech Knowledge Portal</h1>
-    <p>Use the navigation below to explore services, methodology, playbooks, and reference material.</p>
-    <nav>
+<BaseLayout
+  title="Knowledge Portal"
+  description="BenchmarkTech's public knowledge base — AI consulting methodology, delivery playbooks, and reference material for mid-market organizations."
+  jsonLd={jsonLd}
+  bodyClass="mode-browse"
+>
+  <main id="main-content" class="home">
+    <section class="hero">
+      <h1>Knowledge Portal</h1>
+      <p class="lede">
+        The methodology, playbooks, and reference material behind how BenchmarkTech
+        takes mid-market organizations from AI curiosity to production AI capability.
+      </p>
+      <p class="hero-meta">
+        {pages.length} published pages · machine-readable at
+        <a href={withBase('/llms.txt')}>llms.txt</a>
+      </p>
+    </section>
+
+    <section class="section-grid" aria-label="Portal sections">
+      {sections.map((s) => (
+        <a href={withBase(`/${s.name}/`)} class="section-card">
+          <h2>{s.label}</h2>
+          <p>{s.description}</p>
+          <span class="card-count">{s.count} {s.count === 1 ? 'page' : 'pages'}</span>
+        </a>
+      ))}
+    </section>
+
+    <section class="recent" aria-labelledby="recent-heading">
+      <h2 id="recent-heading">Recently updated</h2>
       <ul>
-        <li><a href="/services">Services</a></li>
-        <li><a href="/methodology">Methodology</a></li>
-        <li><a href="/playbooks">Playbooks</a></li>
-        <li><a href="/reference">Reference</a></li>
-        <li><a href="/insights">Insights</a></li>
-        <li><a href="/about">About</a></li>
+        {recent.map((p) => (
+          <li>
+            <a href={withBase(p.path)}>{p.title}</a>
+            <span class="recent-section">{SECTION_LABELS[p.section]}</span>
+            <time datetime={p.updated.toISOString().split('T')[0]}>
+              {p.updated.toISOString().split('T')[0]}
+            </time>
+          </li>
+        ))}
       </ul>
-    </nav>
+    </section>
   </main>
 </BaseLayout>

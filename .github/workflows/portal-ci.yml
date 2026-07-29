@@ -1,0 +1,39 @@
+name: Portal CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'portal/**'
+      - '.github/workflows/portal-ci.yml'
+  pull_request:
+    paths:
+      - 'portal/**'
+
+jobs:
+  build:
+    name: Build & validate content contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: portal/package-lock.json
+
+      - name: Install dependencies
+        working-directory: portal
+        run: npm ci
+
+      - name: Type check
+        working-directory: portal
+        run: npm run check
+
+      # Fails on: invalid frontmatter, rogue tags, broken internal links,
+      # missing/empty machine artifacts, or non-public content leaking
+      # into llms.txt / llms-full.txt / index.json.
+      - name: Build and run content gates
+        working-directory: portal
+        run: npm run build

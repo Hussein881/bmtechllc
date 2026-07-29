@@ -1,0 +1,136 @@
+---
+import type { MarkdownHeading } from 'astro';
+import BaseLayout from './BaseLayout.astro';
+import SidebarTree from '../components/SidebarTree.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import {
+  buildBreadcrumbs,
+  buildSectionTree,
+  resolveRelated,
+  withBase,
+  SECTION_LABELS,
+  type PageRecord,
+} from '../lib/content';
+
+interface Props {
+  page: PageRecord;
+  allPages: PageRecord[];
+  headings: MarkdownHeading[];
+  /** Docs mode gets sidebar + ToC; browse mode gets a wide editorial column. */
+  mode: 'docs' | 'browse';
+}
+
+const { page, allPages, headings, mode } = Astro.props;
+
+const crumbs = buildBreadcrumbs(page);
+const tree = buildSectionTree(allPages, page.section);
+const related = page.related
+  .map((slug) => resolveRelated(allPages, slug))
+  .filter((p): p is PageRecord => p !== undefined);
+
+const updatedISO = page.updated.toISOString().split('T')[0];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: page.title,
+  description: page.description,
+  dateModified: updatedISO,
+  keywords: page.tags.join(', '),
+  articleSection: SECTION_LABELS[page.section],
+  publisher: {
+    '@type': 'Organization',
+    name: 'BenchmarkTech LLC',
+  },
+};
+---
+
+<BaseLayout
+  title={page.title}
+  description={page.description}
+  jsonLd={jsonLd}
+  bodyClass={mode === 'docs' ? 'mode-docs' : 'mode-browse'}
+>
+  <div class:list={['page-shell', `shell-${mode}`]}>
+    {mode === 'docs' && tree.length > 0 && (
+      <aside class="sidebar" aria-label={`${SECTION_LABELS[page.section]} navigation`}>
+        <p class="sidebar-heading">{SECTION_LABELS[page.section]}</p>
+        <SidebarTree nodes={tree} currentPath={page.path} />
+      </aside>
+    )}
+
+    <main id="main-content" class="content-column">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        {crumbs.map((crumb, i) => (
+          <>
+            {crumb.path ? (
+              <a href={withBase(crumb.path)}>{crumb.label}</a>
+            ) : (
+              <span>{crumb.label}</span>
+            )}
+            {i < crumbs.length - 1 && <span class="sep" aria-hidden="true">/</span>}
+          </>
+        ))}
+      </nav>
+
+      <div class="page-meta">
+        <span>Updated <time datetime={updatedISO}>{updatedISO}</time></span>
+        <span>Owner: {page.owner}</span>
+        {page.tags.length > 0 && <span class="tags">{page.tags.join(' · ')}</span>}
+      </div>
+
+      <article class="prose">
+        <slot />
+      </article>
+
+      {related.length > 0 && (
+        <aside class="related" aria-labelledby="related-heading">
+          <h2 id="related-heading">Related</h2>
+          <ul>
+            {related.map((r) => (
+              <li>
+                <a href={withBase(r.path)}>{r.title}</a>
+                <span class="related-desc">{r.description}</span>
+              </li>
+            ))}
+          </ul>
+        </aside>
+      )}
+
+      <div class="page-actions">
+        <a class="btn-secondary" href={withBase(`${page.path.replace(/\/$/, '')}.md`)}>
+          View source (Markdown)
+        </a>
+        <button
+          class="btn-secondary"
+          id="copy-md"
+          data-md-url={withBase(`${page.path.replace(/\/$/, '')}.md`)}
+        >
+          Copy as Markdown
+        </button>
+      </div>
+    </main>
+
+    {mode === 'docs' && (
+      <aside class="toc-rail">
+        <TableOfContents headings={headings} />
+      </aside>
+    )}
+  </div>
+
+  <script>
+    const btn = document.getElementById('copy-md');
+    btn?.addEventListener('click', async () => {
+      const url = (btn as HTMLElement).dataset.mdUrl!;
+      const label = btn.textContent;
+      try {
+        const res = await fetch(url);
+        await navigator.clipboard.writeText(await res.text());
+        btn.textContent = 'Copied';
+      } catch {
+        btn.textContent = 'Copy failed';
+      }
+      setTimeout(() => (btn.textContent = label), 1600);
+    });
+  </script>
+</BaseLayout>

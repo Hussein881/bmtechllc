@@ -1,0 +1,23 @@
+---
+import { render } from 'astro:content';
+import DocsLayout from '../layouts/DocsLayout.astro';
+import { getAllPages, DOCS_SECTIONS } from '../lib/content';
+
+export async function getStaticPaths() {
+  const pages = await getAllPages();
+
+  return pages.map((page) => ({
+    // Strip leading/trailing slashes — Astro adds them back per trailingSlash config
+    params: { slug: page.path.replace(/^\/|\/$/g, '') },
+    props: { page, allPages: pages },
+  }));
+}
+
+const { page, allPages } = Astro.props;
+const { Content, headings } = await render(page.entry);
+const mode = DOCS_SECTIONS.includes(page.section) ? 'docs' : 'browse';
+---
+
+<DocsLayout page={page} allPages={allPages} headings={headings} mode={mode}>
+  <Content />
+</DocsLayout>

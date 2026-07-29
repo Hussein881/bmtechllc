@@ -1,0 +1,130 @@
+---
+import { withBase } from '../lib/content';
+const searchIndexUrl = withBase('/index.json');
+---
+
+<button id="search-trigger" class="search-trigger" aria-label="Search (press / or Cmd+K)">
+  <span>Search</span>
+  <kbd>⌘K</kbd>
+</button>
+
+<dialog id="search-dialog" class="search-dialog" aria-label="Site search">
+  <div class="search-panel">
+    <input
+      type="search"
+      id="search-input"
+      placeholder="Search the portal…"
+      autocomplete="off"
+      aria-label="Search query"
+    />
+    <ul id="search-results" class="search-results" role="listbox"></ul>
+    <p id="search-empty" class="search-empty" hidden>No results.</p>
+  </div>
+</dialog>
+
+<script define:vars={{ searchIndexUrl }}>
+  const dialog = document.getElementById('search-dialog');
+  const trigger = document.getElementById('search-trigger');
+  const input = document.getElementById('search-input');
+  const results = document.getElementById('search-results');
+  const empty = document.getElementById('search-empty');
+
+  let index = null;
+
+  async function loadIndex() {
+    if (index) return index;
+    const res = await fetch(searchIndexUrl);
+    index = await res.json();
+    return index;
+  }
+
+  function open() {
+    dialog.showModal();
+    input.value = '';
+    results.innerHTML = '';
+    empty.hidden = true;
+    input.focus();
+    loadIndex();
+  }
+
+  trigger?.addEventListener('click', open);
+
+  document.addEventListener('keydown', (e) => {
+    const typingInField =
+      e.target instanceof HTMLElement &&
+      ['INPUT', 'TEXTAREA'].includes(e.target.tagName);
+
+    if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typingInField)) {
+      e.preventDefault();
+      open();
+    }
+    if (e.key === 'Escape' && dialog.open) dialog.close();
+  });
+
+  // Click on the backdrop closes the dialog
+  dialog?.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  function score(page, terms) {
+    const title = page.title.toLowerCase();
+    const desc = page.description.toLowerCase();
+    const tags = page.tags.join(' ').toLowerCase();
+    const headings = (page.headings || []).map((h) => h.text).join(' ').toLowerCase();
+
+    let total = 0;
+    for (const term of terms) {
+      if (title.includes(term)) total += 10;
+      if (tags.includes(term)) total += 5;
+      if (desc.includes(term)) total += 3;
+      if (headings.includes(term)) total += 2;
+    }
+    return total;
+  }
+
+  let debounce;
+  input?.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(async () => {
+      const query = input.value.trim().toLowerCase();
+      results.innerHTML = '';
+
+      if (query.length < 2) {
+        empty.hidden = true;
+        return;
+      }
+
+      const data = await loadIndex();
+      const terms = query.split(/\s+/);
+      const matches = data
+        .map((page) => ({ page, score: score(page, terms) }))
+        .filter((m) => m.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+
+      empty.hidden = matches.length > 0;
+
+      for (const { page } of matches) {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = page.url;
+        a.innerHTML = '';
+
+        const title = document.createElement('strong');
+        title.textContent = page.title;
+
+        const section = document.createElement('span');
+        section.className = 'search-section';
+        section.textContent = page.section;
+
+        const desc = document.createElement('span');
+        desc.className = 'search-desc';
+        desc.textContent = page.description;
+
+        a.append(title, section, desc);
+        li.append(a);
+        results.append(li);
+      }
+    }, 120);
+  });
+</script>

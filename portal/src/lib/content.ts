@@ -1,6 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 export const SECTIONS = [
+  'guide',
   'onboarding',
   'methodology',
   'playbooks',
@@ -14,6 +15,7 @@ export const SECTIONS = [
 export type SectionName = typeof SECTIONS[number];
 
 export const SECTION_LABELS: Record<SectionName, string> = {
+  guide: 'Guide',
   onboarding: 'Onboarding',
   methodology: 'Methodology',
   playbooks: 'Playbooks',
@@ -26,6 +28,7 @@ export const SECTION_LABELS: Record<SectionName, string> = {
 
 /** One-line purpose per section, shown on the home grid and section indexes. */
 export const SECTION_BLURBS: Record<SectionName, string> = {
+  guide: 'How to use and maintain this knowledge base.',
   onboarding: 'The path a new team member walks, in order.',
   methodology: 'How we work and why. Stable, slow-changing.',
   playbooks: 'How to execute a phase of an engagement.',

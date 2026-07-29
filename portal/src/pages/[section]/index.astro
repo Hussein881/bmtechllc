@@ -1,6 +1,8 @@
 ---
+import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SidebarTree from '../../components/SidebarTree.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
 import {
   getAllPages,
   buildSectionTree,
@@ -13,13 +15,12 @@ import {
 } from '../../lib/content';
 
 /**
- * Auto-generated section landing pages.
+ * Section landing pages.
  *
- * The public-site plan called for hand-written index.md overviews so an LLM
- * retrieving "what is X's methodology" got real prose. That rationale was
- * external-crawler-driven and does not apply here: the team already knows
- * what these sections are. A generated listing that can never drift out of
- * sync with the folder is strictly better for an internal tool.
+ * The listing is always generated from the folder tree, so it can never drift
+ * out of sync. A section may optionally add an `index.md` whose prose renders
+ * above the listing — useful where the section needs a reading order or an
+ * explanation, as the Guide does.
  */
 export async function getStaticPaths() {
   const pages = await getAllPages();
@@ -28,6 +29,7 @@ export async function getStaticPaths() {
     params: { section },
     props: {
       section,
+      indexPage: pages.find((p) => p.section === section && p.isIndex) ?? null,
       pages: pages.filter((p) => p.section === section && !p.isIndex),
       allPages: pages,
     },
@@ -36,16 +38,23 @@ export async function getStaticPaths() {
 
 interface Props {
   section: SectionName;
+  indexPage: PageRecord | null;
   pages: PageRecord[];
   allPages: PageRecord[];
 }
 
-const { section, pages, allPages } = Astro.props;
+const { section, indexPage, pages, allPages } = Astro.props;
 const tree = buildSectionTree(allPages, section);
 const label = SECTION_LABELS[section];
+
+const rendered = indexPage ? await render(indexPage.entry) : null;
+const Intro = rendered?.Content;
 ---
 
-<BaseLayout title={label} description={SECTION_BLURBS[section]}>
+<BaseLayout
+  title={label}
+  description={indexPage?.description ?? SECTION_BLURBS[section]}
+>
   <div class="page-shell">
     {tree.length > 0 && (
       <aside class="sidebar" aria-label={`${label} navigation`}>
@@ -61,8 +70,16 @@ const label = SECTION_LABELS[section];
         <span>{label}</span>
       </nav>
 
-      <h1 class="section-title">{label}</h1>
-      <p class="lede">{SECTION_BLURBS[section]}</p>
+      {Intro ? (
+        <article class="prose">
+          <Intro />
+        </article>
+      ) : (
+        <>
+          <h1 class="section-title">{label}</h1>
+          <p class="lede">{SECTION_BLURBS[section]}</p>
+        </>
+      )}
 
       {pages.length === 0 ? (
         <p class="empty-state">
@@ -70,21 +87,30 @@ const label = SECTION_LABELS[section];
           {' '}<code>content/{section}/</code> and it appears automatically.
         </p>
       ) : (
-        <ul class="page-list">
-          {pages.map((p) => (
-            <li>
-              <a href={withBase(p.path)}>{p.title}</a>
-              {p.status === 'draft' && <span class="pill pill-draft">Draft</span>}
-              {p.isStale && <span class="pill pill-stale">Review overdue</span>}
-              <p>{p.description}</p>
-              <span class="page-list-meta">
-                {p.owner} · updated {p.updated.toISOString().split('T')[0]}
-                {p.tags.length > 0 && <> · {p.tags.join(', ')}</>}
-              </span>
-            </li>
-          ))}
-        </ul>
+        <>
+          {Intro && <h2 class="listing-heading">In this section</h2>}
+          <ul class="page-list">
+            {pages.map((p) => (
+              <li>
+                <a href={withBase(p.path)}>{p.title}</a>
+                {p.status === 'draft' && <span class="pill pill-draft">Draft</span>}
+                {p.isStale && <span class="pill pill-stale">Review overdue</span>}
+                <p>{p.description}</p>
+                <span class="page-list-meta">
+                  {p.owner} · updated {p.updated.toISOString().split('T')[0]}
+                  {p.tags.length > 0 && <> · {p.tags.join(', ')}</>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
     </main>
+
+    {rendered && (
+      <aside class="toc-rail">
+        <TableOfContents headings={rendered.headings} />
+      </aside>
+    )}
   </div>
 </BaseLayout>

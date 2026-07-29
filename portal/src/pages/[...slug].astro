@@ -6,11 +6,16 @@ import { getAllPages } from '../lib/content';
 export async function getStaticPaths() {
   const pages = await getAllPages();
 
-  return pages.map((page) => ({
-    // Strip leading/trailing slashes — Astro adds them back per trailingSlash config
-    params: { slug: page.path.replace(/^\/|\/$/g, '') },
-    props: { page, allPages: pages },
-  }));
+  return pages
+    // Section index pages are owned by [section]/index.astro, which renders
+    // their prose above the generated page listing. Excluded here to avoid a
+    // route collision on /{section}/.
+    .filter((page) => !page.isIndex)
+    .map((page) => ({
+      // Strip leading/trailing slashes — Astro adds them back per trailingSlash config
+      params: { slug: page.path.replace(/^\/|\/$/g, '') },
+      props: { page, allPages: pages },
+    }));
 }
 
 const { page, allPages } = Astro.props;

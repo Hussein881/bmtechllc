@@ -99,6 +99,7 @@ const pageSchema = z.object({
 
 // ─── Collections ─────────────────────────────────────────────────────────────
 // Section rationale:
+//   guide       — how to use and maintain this knowledge base itself
 //   onboarding  — the path a new person walks, in order
 //   methodology — how we work and why (stable, slow-changing)
 //   playbooks   — how to execute a phase of an engagement
@@ -115,6 +116,7 @@ const section = (dir: string) =>
   });
 
 export const collections = {
+  guide: section('guide'),
   onboarding: section('onboarding'),
   methodology: section('methodology'),
   playbooks: section('playbooks'),

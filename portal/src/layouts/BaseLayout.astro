@@ -46,6 +46,7 @@ const { title, description } = Astro.props;
         ))}
       </nav>
       <div class="header-actions">
+        <a class="new-page-link" href={withBase('/new/')}>Create page</a>
         <Search />
         <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
           <span aria-hidden="true">◐</span>

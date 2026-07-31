@@ -2,6 +2,7 @@
 portal/dist/
 portal/node_modules/
 portal/.astro/
+service/node_modules/
 
 # Website build output
 website/dist/

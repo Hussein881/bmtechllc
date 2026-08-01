@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TAGS, SECTIONS } from '../lib/page-contract';
+
+const apiUrl = import.meta.env.PUBLIC_PAGE_AUTHORING_API_URL ?? '';
+const loginUrl = import.meta.env.PUBLIC_PAGE_AUTHORING_LOGIN_URL ?? '';
+---
+
+<BaseLayout title="Create page" description="Create a proposed knowledge-base page for review.">
+  <main id="main-content" class="authoring-page">
+    <div class="authoring-heading">
+      <p class="eyebrow">Authenticated authoring</p>
+      <h1>Create a knowledge-base page</h1>
+      <p>Submit a draft for review. Your content is committed to a branch and published only after its pull request is approved and merged.</p>
+    </div>
+
+    {!apiUrl ? (
+      <aside class="authoring-notice" role="status">
+        Page creation is not configured for this deployment. Set <code>PUBLIC_PAGE_AUTHORING_API_URL</code> to the authenticated authoring service.
+      </aside>
+    ) : (
+      <form id="page-form" class="page-form" novalidate data-api-url={apiUrl} data-login-url={loginUrl}>
+        <div id="form-message" class="form-message" aria-live="polite"></div>
+        <div class="form-grid">
+          <label>Section <select name="section" required>{SECTIONS.map((section) => <option value={section}>{section}</option>)}</select></label>
+          <label>Title <input name="title" required maxlength="160" autocomplete="off" /></label>
+          <label class="wide">Description <textarea name="description" required minlength="20" maxlength="500" rows="3" aria-describedby="description-help"></textarea><small id="description-help">A 20–500 character retrieval summary.</small></label>
+          <label>Owner <input name="owner" required maxlength="80" placeholder="Initials or team name" /></label>
+          <label>Status <select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
+          <label>Visibility <select name="visibility"><option value="internal">Internal</option><option value="shareable">Shareable</option></select></label>
+          <label>Review cycle (months) <input name="reviewCycleMonths" type="number" min="1" max="120" value="6" required /></label>
+          <label>Order <input name="order" type="number" min="-10000" max="10000" value="50" required /></label>
+          <fieldset class="wide"><legend>Tags</legend><div class="tag-options">{TAGS.map((tag) => <label><input type="checkbox" name="tags" value={tag} /> {tag}</label>)}</div></fieldset>
+          <label class="wide">Related page IDs <input name="related" maxlength="1000" placeholder="Comma-separated, e.g. glossary, engagement-model" /><small>Use existing page IDs; these are checked by portal CI.</small></label>
+          <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true" placeholder="# A useful title\n\nExplain the decision, procedure, or lesson."></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
+        </div>
+        <div class="authoring-preview"><p class="eyebrow">Safe preview</p><p id="slug-preview">Proposed path: choose a title</p><article id="markdown-preview" class="prose preview-body">Your Markdown preview will appear here.</article></div>
+        <button class="btn-primary" type="submit">Create review pull request</button>
+      </form>
+    )}
+  </main>
+</BaseLayout>
+
+<script is:inline define:vars={{ apiUrl, loginUrl }}>
+  const form = document.querySelector('#page-form');
+  const message = document.querySelector('#form-message');
+  const preview = document.querySelector('#markdown-preview');
+  const slugPreview = document.querySelector('#slug-preview');
+
+  const slugify = (value) => value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80);
+  const escapeHtml = (value) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character]);
+  const renderPreview = (markdown) => {
+    const escaped = escapeHtml(markdown);
+    return escaped
+      .replace(/^### (.*)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.*)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.*)$/gm, '<h1>$1</h1>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\n{2,}/g, '</p><p>')
+      .replace(/\n/g, '<br>');
+  };
+  const updatePreview = () => {
+    if (!form || !preview || !slugPreview) return;
+    const title = form.elements.title.value;
+    const section = form.elements.section.value;
+    const slug = slugify(title);
+    slugPreview.textContent = slug ? `Proposed path: content/${section}/${slug}.md` : 'Proposed path: choose a title';
+    preview.innerHTML = `<p>${renderPreview(form.elements.body.value || 'Your Markdown preview will appear here.')}</p>`;
+  };
+  form?.addEventListener('input', updatePreview);
+  form?.addEventListener('change', updatePreview);
+  updatePreview();
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form.reportValidity() || !message) return;
+    const data = new FormData(form);
+    const payload = Object.fromEntries(data.entries());
+    payload.tags = data.getAll('tags');
+    payload.related = String(payload.related || '').split(',').map((item) => item.trim()).filter(Boolean);
+    payload.reviewCycleMonths = Number(payload.reviewCycleMonths);
+    payload.order = Number(payload.order);
+    // The service owns the canonical value; this supplies the required
+    // frontmatter date without relying on an author to remember it.
+    payload.updated = new Date().toISOString().slice(0, 10);
+    message.textContent = 'Creating your review pull request…';
+    message.className = 'form-message';
+    try {
+      // An OIDC/SSO integration can provide a short-lived access token without
+      // putting an OAuth client secret in this static site.
+      const token = await window.BMTECH_PORTAL_AUTH?.getAccessToken?.();
+      const headers = { 'content-type': 'application/json' };
+      if (token) headers.authorization = `Bearer ${token}`;
+      const response = await fetch(apiUrl, { method: 'POST', credentials: 'include', headers, body: JSON.stringify(payload) });
+      const result = await response.json().catch(() => ({}));
+      if (response.status === 401 && loginUrl) {
+        message.replaceChildren('Please ', Object.assign(document.createElement('a'), { href: loginUrl, textContent: 'sign in' }), ' before submitting a page.');
+        return;
+      }
+      if (!response.ok) throw new Error(result.error || 'The page could not be submitted.');
+      message.className = 'form-message success';
+      const link = Object.assign(document.createElement('a'), { href: result.pullRequestUrl, target: '_blank', rel: 'noreferrer', textContent: `open pull request #${result.pullRequestNumber}` });
+      message.replaceChildren('Review pull request created: ', link, '.');
+      form.reset(); updatePreview();
+    } catch (error) {
+      message.className = 'form-message error';
+      message.textContent = error instanceof Error ? error.message : 'The page could not be submitted.';
+    }
+  });
+</script>

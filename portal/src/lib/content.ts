@@ -1,16 +1,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-
-export const SECTIONS = [
-  'guide',
-  'onboarding',
-  'methodology',
-  'playbooks',
-  'runbooks',
-  'reference',
-  'templates',
-  'decisions',
-  'engagements',
-] as const;
+import { SECTIONS } from './page-contract';
+export { SECTIONS } from './page-contract';
 
 export type SectionName = typeof SECTIONS[number];
 

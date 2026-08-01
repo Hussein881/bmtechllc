@@ -1,5 +1,7 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { pageSchema } from './lib/page-contract';
+export { TAGS } from './lib/page-contract';
 
 /**
  * INTERNAL KNOWLEDGE BASE CONTRACT
@@ -18,85 +20,6 @@ import { glob } from 'astro/loaders';
 
 // ─── Controlled tag vocabulary ────────────────────────────────────────────────
 // Adding a tag = one-line PR here. Free-form tags are a build error.
-export const TAGS = [
-  // Technical domains
-  'ai-strategy',
-  'rag',
-  'llm',
-  'data-engineering',
-  'machine-learning',
-  'evaluation',
-  'automation',
-  'infrastructure',
-  'security',
-
-  // Engagement lifecycle
-  'scoping',
-  'discovery',
-  'delivery',
-  'handoff',
-  'retro',
-
-  // Operating the business
-  'onboarding',
-  'tooling',
-  'process',
-  'pricing',
-  'client-comms',
-
-  // Document type
-  'runbook',
-  'playbook',
-  'template',
-  'checklist',
-  'decision',
-  'reference',
-  'postmortem',
-] as const;
-
-// ─── Schema ──────────────────────────────────────────────────────────────────
-
-const pageSchema = z.object({
-  title: z.string(),
-
-  /**
-   * The retrieval abstract. Doubles as the search-result summary and the
-   * index.json description consumed by internal agent tooling. Forcing it to
-   * exist forces every page to be summarizable — a quality gate in itself.
-   */
-  description: z
-    .string()
-    .min(20, 'Description must be at least 20 chars — it is the retrieval abstract.'),
-
-  // z.enum accepts the readonly tuple from `as const` directly. Casting it to a
-  // mutable tuple is both unnecessary and rejected by the type checker.
-  tags: z.array(z.enum(TAGS)).default([]),
-
-  /**
-   * Drafts and archived pages still build; the layout renders a banner.
-   * Hiding in-progress work from your own team is counterproductive.
-   */
-  status: z.enum(['draft', 'published', 'archived']).default('draft'),
-
-  /** Marks pages we would be comfortable publishing externally. Display only. */
-  visibility: z.enum(['internal', 'shareable']).default('internal'),
-
-  /** Accountable maintainer. Pairs with `updated` for the staleness gate. */
-  owner: z.string(),
-
-  updated: z.coerce.date(),
-
-  /**
-   * Months before this page is considered stale. Reference material ages
-   * slowly; tooling and pricing notes age fast. Defaults to 6.
-   */
-  reviewCycleMonths: z.number().int().positive().default(6),
-
-  order: z.number().int().default(50),
-
-  related: z.array(z.string()).default([]),
-});
-
 // ─── Collections ─────────────────────────────────────────────────────────────
 // Section rationale:
 //   guide       — how to use and maintain this knowledge base itself

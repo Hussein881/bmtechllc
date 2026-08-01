@@ -50,6 +50,10 @@ related: [engagement-model]
 
 Full authoring guide: [Contributing to the Knowledge Base](content/onboarding/contributing.md).
 
+### Authenticated authoring UI
+
+The portal also exposes `/new/`, which submits a proposed Markdown page to a separately deployed authenticated service. It creates a branch and pull request; it never writes to `main`, and it never exposes GitHub credentials in the static site. Configure `PUBLIC_PAGE_AUTHORING_API_URL` at build time and deploy [`../service`](../service) with an OIDC issuer plus a least-privilege GitHub App. Without that public URL, the UI is deliberately disabled.
+
 ## How this differs from a public docs site
 
 Most of the conventions you would expect from a public documentation site are

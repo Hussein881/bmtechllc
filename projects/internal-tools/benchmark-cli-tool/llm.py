@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
-from typing import Any, Sequence
+from typing import Any, Sequence, TypeVar
 
 from openai import OpenAI
 from openai.types.chat import ChatCompletion
+from pydantic import BaseModel
 
 from config import OPENAI_API_KEY, get_model_config
 from logger import log_usage
 
 _client: OpenAI | None = None
+StructuredResponse = TypeVar("StructuredResponse", bound=BaseModel)
 
 
 def _get_client() -> OpenAI:
@@ -37,6 +39,20 @@ def _question_from_messages(messages: Sequence[dict[str, Any]]) -> str:
     return ""
 
 
+def _log_completion_usage(
+    completion: Any, *, tier: str, messages: Sequence[dict[str, Any]]
+) -> None:
+    """Persist telemetry for either a regular or parsed chat completion."""
+    usage = completion.usage
+    log_usage(
+        question=_question_from_messages(messages),
+        tier=tier,
+        model_config=get_model_config(tier),
+        prompt_tokens=usage.prompt_tokens if usage is not None else 0,
+        completion_tokens=usage.completion_tokens if usage is not None else 0,
+    )
+
+
 def call_llm(
     tier: str,
     messages: list[dict[str, Any]],
@@ -58,16 +74,50 @@ def call_llm(
     }
     if tools is not None:
         request["tools"] = tools
+        # GPT-5.6 model tiers require an explicit non-reasoning setting when
+        # function tools are used with the Chat Completions endpoint.
+        request["reasoning_effort"] = "none"
     if response_format is not None:
         request["response_format"] = response_format
 
     completion = _get_client().chat.completions.create(**request)
-    usage = completion.usage
-    log_usage(
-        question=_question_from_messages(messages),
-        tier=tier,
-        model_config=model_config,
-        prompt_tokens=usage.prompt_tokens if usage is not None else 0,
-        completion_tokens=usage.completion_tokens if usage is not None else 0,
-    )
+    _log_completion_usage(completion, tier=tier, messages=messages)
     return completion
+
+
+def call_llm_structured(
+    prompt: str,
+    system_prompt: str,
+    response_schema: type[StructuredResponse],
+    tier: str = "cheap",
+) -> StructuredResponse:
+    """Return an SDK-parsed and Pydantic-validated structured model response.
+
+    This is the application gateway for structured answers. It uses the SDK's
+    parsed Chat Completions API, records token usage, and never returns raw JSON.
+    """
+    if not prompt.strip():
+        raise ValueError("prompt must not be empty.")
+    if not system_prompt.strip():
+        raise ValueError("system_prompt must not be empty.")
+
+    messages: list[dict[str, str]] = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": prompt},
+    ]
+    model_config = get_model_config(tier)
+    completion = _get_client().beta.chat.completions.parse(
+        model=model_config.model,
+        messages=messages,
+        response_format=response_schema,
+    )
+    _log_completion_usage(completion, tier=tier, messages=messages)
+
+    parsed = completion.choices[0].message.parsed
+    if parsed is None:
+        refusal = completion.choices[0].message.refusal
+        detail = f" Model refusal: {refusal}" if refusal else ""
+        raise RuntimeError(f"The model did not return a parsed structured response.{detail}")
+    if not isinstance(parsed, response_schema):
+        raise RuntimeError("The model returned an unexpected structured response type.")
+    return parsed

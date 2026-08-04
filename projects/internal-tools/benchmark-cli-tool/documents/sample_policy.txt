@@ -2,3 +2,8 @@ Acme Corp Remote Work & Equipment Policy (2026):
 1. Work Location: Employees may work remotely up to 3 days per week with manager approval.
 2. Hours: Core working hours for all remote team members are 10:00 AM to 3:00 PM EST.
 3. Equipment Stipend: An annual stipend of $500 is provided upon hiring anniversary.
+4. Travel & Expense Reimbursement:
+   Eligible equipment includes a laptop, monitor, keyboard, and headset purchased
+   for approved work use. Travel meals are reimbursable up to $75 per day during
+   approved business travel with itemized receipts; alcohol is not reimbursable.
+   Submit expense reports within 10 business days of returning.

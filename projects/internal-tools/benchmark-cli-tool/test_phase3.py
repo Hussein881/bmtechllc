@@ -70,11 +70,27 @@ def test_agent_tiers() -> list[dict[str, Any]]:
     return warnings
 
 
+def test_agent_missing_context() -> None:
+    """Ensure missing document and section requests become safe zero-confidence answers."""
+    for tier in ("cheap", "flagship"):
+        missing_document = run_agent(
+            "Read nonexistent_policy.txt and tell me its vacation policy.", tier=tier
+        )
+        assert missing_document.confidence == 0.0
+
+        missing_section = run_agent(
+            "Read the Missing Section section of sample_policy.txt and summarize it.",
+            tier=tier,
+        )
+        assert missing_section.confidence == 0.0
+
+
 def main() -> None:
     """Run local retrieval checks, both model tiers, and telemetry validation."""
     before = len(read_usage_rows(USAGE_LOG_PATH))
     test_local_tools()
     warnings = test_agent_tiers()
+    test_agent_missing_context()
     new_rows = read_usage_rows(USAGE_LOG_PATH)[before:]
     assert {row["tier"] for row in new_rows} >= {"cheap", "flagship"}
     for row in new_rows:

@@ -9,6 +9,7 @@ from typing import Any
 
 DOCUMENTS_DIR = Path(__file__).with_name("documents")
 _SECTION_PATTERN = re.compile(r"^\s*(?:\d+[.)]\s*)?([^:]{2,100}):(?:\s|$)")
+_NUMBERED_HEADING_PATTERN = re.compile(r"^\s*\d+(?:\.\d+)*\.?\s+(.{2,100})\s*$")
 _YEAR_PATTERN = re.compile(r"\b(20\d{2})\b")
 
 
@@ -31,6 +32,9 @@ def _section_title(line: str, line_number: int) -> str | None:
     match = _SECTION_PATTERN.match(stripped)
     if match:
         return match.group(1).strip()
+    numbered_heading = _NUMBERED_HEADING_PATTERN.match(stripped)
+    if numbered_heading:
+        return numbered_heading.group(1).strip()
     if line_number == 1:
         return stripped.rstrip(":")
     return None
@@ -151,7 +155,7 @@ TOOLS: list[dict[str, Any]] = [
         "type": "function",
         "function": {
             "name": "read_doc",
-            "description": "Read a document or a named section from the document library.",
+            "description": "Read a document or named section; omit section to inspect the full document when no exact section title is available.",
             "parameters": {
                 "type": "object",
                 "properties": {

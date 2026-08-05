@@ -7,23 +7,9 @@ import argparse
 from typing import Any
 
 from llm import call_llm
+from prompts import AGENT_SYSTEM_PROMPT
 from schema import QAResponse
 from tools import TOOLS, execute_tool
-
-AGENT_SYSTEM_PROMPT = """You answer questions using only the company document library.
-Use the retrieval tools in this order whenever context is needed:
-1. list_docs() to discover exact filenames.
-2. search_docs(query) to find relevant passages.
-3. read_doc(filename, section) to read the source text before answering.
-For reimbursement and travel questions, use the search query exactly
-"reimbursement travel" after list_docs(), then read the matching
-"Travel & Expense Reimbursement" section from the relevant document.
-You may repeat search or read calls when needed, but do not invent filenames.
-Return exactly a JSON object with answer (string), confidence (number 0.0-1.0),
-and source_quote (string). If the documents do not contain the answer, say so,
-set confidence to 0.0, and set source_quote to 'N/A'. Tool errors are context
-failures to report, not reasons to crash.
-"""
 
 
 def _response_from_content(content: str | None) -> QAResponse:
@@ -114,10 +100,13 @@ def run_agent(question: str, tier: str = "cheap", max_iterations: int = 5) -> QA
                 no_matching_evidence=zero_hit_seen and not search_hit_seen,
             )
 
-    return QAResponse(
-        answer="The agent reached its tool-call limit before completing the answer.",
-        confidence=0.0,
-        source_quote="N/A",
+    # The tool-call budget is exhausted, but the accumulated tool messages may
+    # still contain enough evidence for a final answer. Give the model one
+    # synthesis turn without tools; the five-call retrieval limit remains intact.
+    final_completion = call_llm(tier=tier, messages=messages)
+    return _enforce_retrieval_refusal(
+        _response_from_content(final_completion.choices[0].message.content),
+        no_matching_evidence=zero_hit_seen and not search_hit_seen,
     )
 
 

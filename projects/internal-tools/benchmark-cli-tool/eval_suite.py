@@ -12,6 +12,7 @@ from typing import Any
 
 from agent import run_agent
 from logger import USAGE_LOG_PATH
+from prompts import AGENT_PROMPT_VERSION
 from router import classify_query
 from schema import QAResponse
 
@@ -27,9 +28,23 @@ class EvalCase:
 
 
 EVAL_CASES: tuple[EvalCase, ...] = (
-    EvalCase("What are the core working hours for remote team members?", "easy", "cheap"),
-    EvalCase("How many days per week may employees work remotely?", "easy", "cheap"),
-    EvalCase("What is the annual equipment stipend?", "easy", "cheap"),
+    # --- Easy Questions (Target: cheap tier) ---
+    EvalCase(
+        "What are the core working hours for remote team members?",
+        "easy",
+        "cheap",
+    ),
+    EvalCase(
+        "How many days per week may employees work remotely?",
+        "easy",
+        "cheap",
+    ),
+    EvalCase(
+        "What is the annual equipment stipend?",
+        "easy",
+        "cheap",
+    ),
+    # --- Complex Questions (Target: flagship tier) ---
     EvalCase(
         "List all equipment eligible for reimbursement and detail the travel meal policy requirements.",
         "complex",
@@ -45,6 +60,7 @@ EVAL_CASES: tuple[EvalCase, ...] = (
         "complex",
         "flagship",
     ),
+    # --- Edge Cases (Zero-hit search & Missing Document) ---
     EvalCase(
         "Search the documents for a quantum relocation allowance and report whether any matching passage exists.",
         "edge-zero-hit",
@@ -57,6 +73,7 @@ EVAL_CASES: tuple[EvalCase, ...] = (
         "cheap",
         0.0,
     ),
+    # --- Out-of-bounds Questions (Grounded Refusal) ---
     EvalCase(
         "Does the supplied policy document describe parental leave benefits?",
         "out-of-bounds",
@@ -94,6 +111,7 @@ def run_case(case: EvalCase) -> dict[str, Any]:
         "question": case.question,
         "category": case.category,
         "expected_tier": case.expected_tier,
+        "prompt_version": AGENT_PROMPT_VERSION,
     }
     try:
         selected_tier = classify_query(case.question)
@@ -183,6 +201,7 @@ def main() -> None:
         "=" * 28,
         "",
         "COST COMPARISON",
+        f"Agent prompt version: {AGENT_PROMPT_VERSION}",
         format_table(
             [
                 ("Evaluation cases", str(len(EVAL_CASES))),

@@ -43,6 +43,13 @@ def _response_from_content(content: str | None) -> QAResponse:
             return QAResponse(answer=content.strip(), confidence=0.0, source_quote="N/A")
 
 
+def _enforce_retrieval_refusal(response: QAResponse, no_matching_evidence: bool) -> QAResponse:
+    """Prevent unsupported confidence after retrieval reports no matching evidence."""
+    if no_matching_evidence and response.source_quote == "N/A" and response.confidence > 0.0:
+        return response.model_copy(update={"confidence": 0.0})
+    return response
+
+
 def run_agent(question: str, tier: str = "cheap", max_iterations: int = 5) -> QAResponse:
     """Run a bounded tool-calling conversation and return a validated answer."""
     if not question.strip():
@@ -54,11 +61,16 @@ def run_agent(question: str, tier: str = "cheap", max_iterations: int = 5) -> QA
         {"role": "system", "content": AGENT_SYSTEM_PROMPT},
         {"role": "user", "content": question.strip()},
     ]
+    zero_hit_seen = False
+    search_hit_seen = False
     for _ in range(max_iterations):
         completion = call_llm(tier=tier, messages=messages, tools=TOOLS)
         message = completion.choices[0].message
         if not message.tool_calls:
-            return _response_from_content(message.content)
+            return _enforce_retrieval_refusal(
+                _response_from_content(message.content),
+                no_matching_evidence=zero_hit_seen and not search_hit_seen,
+            )
 
         assistant_message: dict[str, Any] = {
             "role": "assistant",
@@ -77,6 +89,11 @@ def run_agent(question: str, tier: str = "cheap", max_iterations: int = 5) -> QA
                 result: Any = f"Error: Invalid tool arguments: {exc}"
             else:
                 result = execute_tool(tool_call.function.name, arguments)
+            if tool_call.function.name == "search_docs":
+                if isinstance(result, list) and result:
+                    search_hit_seen = True
+                elif result == []:
+                    zero_hit_seen = True
             if not isinstance(result, str):
                 result = json.dumps(result, ensure_ascii=False)
             tool_error_seen = tool_error_seen or result.startswith("Error:")
@@ -92,7 +109,10 @@ def run_agent(question: str, tier: str = "cheap", max_iterations: int = 5) -> QA
             # one final turn without tools so it can produce a zero-confidence
             # explanation instead of repeatedly retrying the failed lookup.
             final_completion = call_llm(tier=tier, messages=messages)
-            return _response_from_content(final_completion.choices[0].message.content)
+            return _enforce_retrieval_refusal(
+                _response_from_content(final_completion.choices[0].message.content),
+                no_matching_evidence=zero_hit_seen and not search_hit_seen,
+            )
 
     return QAResponse(
         answer="The agent reached its tool-call limit before completing the answer.",

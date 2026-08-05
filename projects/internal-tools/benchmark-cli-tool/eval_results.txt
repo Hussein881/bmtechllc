@@ -1,0 +1,60 @@
+PHASE 4 EVALUATION RESULTS
+============================
+
+COST COMPARISON
+Evaluation cases           | 10
+Recorded API calls         | 47
+Prompt tokens              | 20,309
+Completion tokens          | 1,401
+Routed execution cost      | $0.07685100
+Flagship-only hypothetical | $0.14357500
+Estimated savings          | $0.06672400
+
+QUALITY SUMMARY
+Routing accuracy (easy + complex): 6/6
+Tool-chain reliability (list -> search -> read): 6/6
+Edge/refusal safety: 4/4
+Cheap-tier degradation notes:
+- none observed
+
+QUESTION RESULTS
+1. [easy] What are the core working hours for remote team members?
+   selected_tier: cheap | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("core working hours remote team members")', '[TOOL CALL] read_doc("sample_policy.txt", "Hours")']
+   QAResponse: {'answer': 'Core working hours for remote team members are 10:00 AM to 3:00 PM EST.', 'confidence': 1.0, 'source_quote': 'Core working hours for all remote team members are 10:00 AM to 3:00 PM EST.'}
+2. [easy] How many days per week may employees work remotely?
+   selected_tier: cheap | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("remote work days per week")', '[TOOL CALL] search_docs("remote employees work week")', '[TOOL CALL] read_doc("sample_policy.txt")']
+   QAResponse: {'answer': 'Employees may work remotely up to 3 days per week, with manager approval.', 'confidence': 1.0, 'source_quote': 'Employees may work remotely up to 3 days per week with manager approval.'}
+3. [easy] What is the annual equipment stipend?
+   selected_tier: cheap | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("equipment stipend")', '[TOOL CALL] read_doc("sample_policy.txt", "Equipment Stipend")']
+   QAResponse: {'answer': 'The annual equipment stipend is $500, provided on the employee’s hiring anniversary.', 'confidence': 1.0, 'source_quote': 'An annual stipend of $500 is provided upon hiring anniversary.'}
+4. [complex] List all equipment eligible for reimbursement and detail the travel meal policy requirements.
+   selected_tier: flagship | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("reimbursement travel")', '[TOOL CALL] read_doc("sample_policy.txt", "Travel & Expense Reimbursement")']
+   QAResponse: {'answer': 'Eligible reimbursable equipment: laptop, monitor, keyboard, and headset purchased for approved work use. Travel meals are reimbursable up to $75 per day during approved business travel. Itemized receipts are required, alcohol is not reimbursable, and expense reports must be submitted within 10 business days after returning.', 'confidence': 1.0, 'source_quote': 'Eligible equipment includes a laptop, monitor, keyboard, and headset purchased for approved work use. Travel meals are reimbursable up to $75 per day during approved business travel with itemized receipts; alcohol is not reimbursable. Submit expense reports within 10 business days of returning.'}
+5. [complex] Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.
+   selected_tier: flagship | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("remote work approval rule")', '[TOOL CALL] search_docs("core hours requirement managers")', '[TOOL CALL] read_doc("sample_policy.txt")', '[TOOL CALL] read_doc("demo_policy.txt")']
+   QAResponse: {'answer': 'At Acme Corp, remote work is discretionary: employees may work remotely up to three days per week only with manager approval. Once approved, all remote team members must be available during 10:00 AM–3:00 PM EST. Thus, approval controls whether and how often remote work occurs, while core hours impose a separate scheduling requirement on approved remote days. Practical manager risks include approving arrangements that cannot reliably cover EST core hours, applying approval criteria inconsistently, failing to clarify time-zone expectations, and treating approval as permission to ignore core-hour coverage. Managers should document approved days and confirm each employee’s ability to meet the EST overlap. The documents do not specify approval criteria, exceptions, revocation procedures, or consequences for noncompliance, so managers lack explicit guidance in those areas.', 'confidence': 0.96, 'source_quote': 'Employees may work remotely up to 3 days per week with manager approval. Core working hours for all remote team members are 10:00 AM to 3:00 PM EST.'}
+6. [complex] Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.
+   selected_tier: flagship | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("reimbursement travel")', '[TOOL CALL] read_doc("sample_policy.txt", "Travel & Expense Reimbursement")']
+   QAResponse: {'answer': 'Employee compliance checklist:\n- Confirm business travel is approved.\n- Keep travel meal expenses at or below $75 per day.\n- Do not claim alcohol expenses.\n- Obtain and submit itemized receipts for travel meals.\n- Submit the expense report within 10 business days after returning.', 'confidence': 1.0, 'source_quote': 'Travel meals are reimbursable up to $75 per day during approved business travel with itemized receipts; alcohol is not reimbursable. Submit expense reports within 10 business days of returning.'}
+7. [edge-zero-hit] Search the documents for a quantum relocation allowance and report whether any matching passage exists.
+   selected_tier: cheap | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("quantum relocation allowance")']
+   QAResponse: {'answer': 'No matching passage for a quantum relocation allowance exists in the company documents.', 'confidence': 0.0, 'source_quote': 'N/A'}
+8. [edge-missing-document] Read nonexistent_policy.txt, section Missing Section, and tell me its vacation policy.
+   selected_tier: flagship | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()']
+   QAResponse: {'answer': 'The document library does not contain nonexistent_policy.txt, so I cannot determine its vacation policy.', 'confidence': 0.0, 'source_quote': 'N/A'}
+9. [out-of-bounds] Does the supplied policy document describe parental leave benefits?
+   selected_tier: cheap | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("parental leave benefits")', '[TOOL CALL] search_docs("parental leave")', '[TOOL CALL] search_docs("leave benefits")']
+   QAResponse: {'answer': 'No. The supplied policy documents do not describe parental leave benefits.', 'confidence': 0.0, 'source_quote': 'N/A'}
+10. [out-of-bounds] What is Acme Corp's stock ticker and current share price according to the policy?
+   selected_tier: cheap | status: passed
+   tool_trace: ['[TOOL CALL] list_docs()', '[TOOL CALL] search_docs("Acme Corp stock ticker current share price")', '[TOOL CALL] read_doc("sample_policy.txt")']
+   QAResponse: {'answer': 'The policy does not contain Acme Corp’s stock ticker or current share price.', 'confidence': 0.0, 'source_quote': 'N/A'}

@@ -1288,3 +1288,124 @@ What are the core working hours? Could you convert those times into EAT?",flagsh
 2026-08-06T14:35:46.159313+00:00,what's the policy regarding movies?,cheap,gpt-5.6-luna,630,19,0.0007440000
 2026-08-06T14:35:47.659191+00:00,what's the policy regarding movies?,cheap,gpt-5.6-luna,661,21,0.0007870000
 2026-08-06T14:35:48.868311+00:00,what's the policy regarding movies?,cheap,gpt-5.6-luna,694,30,0.0008740000
+2026-08-06T14:52:09.687367+00:00,what are the payment terms?,cheap,gpt-5.6-luna,64,5,0.0000940000
+2026-08-06T14:52:11.563430+00:00,what are the payment terms?,cheap,gpt-5.6-luna,390,13,0.0004680000
+2026-08-06T14:52:12.817140+00:00,what are the payment terms?,cheap,gpt-5.6-luna,629,18,0.0007370000
+2026-08-06T14:52:16.519477+00:00,what are the payment terms?,cheap,gpt-5.6-luna,774,28,0.0009420000
+2026-08-06T14:52:18.746306+00:00,what are the payment terms?,cheap,gpt-5.6-luna,873,119,0.0015870000
+2026-08-06T14:57:26.189576+00:00,What are the core working hours?,cheap,gpt-5.6-luna,65,5,0.0000950000
+2026-08-06T14:57:28.171977+00:00,What are the core working hours?,cheap,gpt-5.6-luna,778,77,0.0012400000
+2026-08-06T15:04:06.717861+00:00,What are the core working hours for remote team members?,cheap,gpt-5.6-luna,69,5,0.0000990000
+2026-08-06T15:04:07.947952+00:00,What are the core working hours for remote team members?,cheap,gpt-5.6-luna,395,13,0.0004730000
+2026-08-06T15:04:10.206085+00:00,What are the core working hours for remote team members?,cheap,gpt-5.6-luna,634,22,0.0007660000
+2026-08-06T15:04:11.643924+00:00,What are the core working hours for remote team members?,cheap,gpt-5.6-luna,772,25,0.0009220000
+2026-08-06T15:04:13.296407+00:00,What are the core working hours for remote team members?,cheap,gpt-5.6-luna,894,96,0.0014700000
+2026-08-06T15:04:14.199793+00:00,How many days per week may employees work remotely?,cheap,gpt-5.6-luna,68,5,0.0000980000
+2026-08-06T15:04:15.923133+00:00,How many days per week may employees work remotely?,cheap,gpt-5.6-luna,394,13,0.0004720000
+2026-08-06T15:04:17.870249+00:00,How many days per week may employees work remotely?,cheap,gpt-5.6-luna,633,22,0.0007650000
+2026-08-06T15:04:20.893278+00:00,How many days per week may employees work remotely?,cheap,gpt-5.6-luna,760,25,0.0009100000
+2026-08-06T15:04:22.787229+00:00,How many days per week may employees work remotely?,cheap,gpt-5.6-luna,871,80,0.0013510000
+2026-08-06T15:04:23.734197+00:00,What is the annual equipment stipend?,cheap,gpt-5.6-luna,65,5,0.0000950000
+2026-08-06T15:04:26.484343+00:00,What is the annual equipment stipend?,cheap,gpt-5.6-luna,391,13,0.0004690000
+2026-08-06T15:04:27.756194+00:00,What is the annual equipment stipend?,cheap,gpt-5.6-luna,630,19,0.0007440000
+2026-08-06T15:04:29.131453+00:00,What is the annual equipment stipend?,cheap,gpt-5.6-luna,730,32,0.0009220000
+2026-08-06T15:04:34.411793+00:00,What is the annual equipment stipend?,cheap,gpt-5.6-luna,824,90,0.0013640000
+2026-08-06T15:04:35.848720+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,cheap,gpt-5.6-luna,72,43,0.0003300000
+2026-08-06T15:04:37.474034+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,398,13,0.0023800000
+2026-08-06T15:04:40.335822+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,637,104,0.0063050000
+2026-08-06T15:04:42.735007+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,760,80,0.0062000000
+2026-08-06T15:04:45.603091+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,952,115,0.0082100000
+2026-08-06T15:04:47.712351+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,1896,19,0.0100500000
+2026-08-06T15:04:55.082759+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,2391,447,0.0253650000
+2026-08-06T15:04:56.340740+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",cheap,gpt-5.6-luna,77,5,0.0001070000
+2026-08-06T15:04:58.398530+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,403,13,0.0024050000
+2026-08-06T15:05:00.511394+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,642,79,0.0055800000
+2026-08-06T15:05:03.614939+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,739,66,0.0056750000
+2026-08-06T15:05:06.476273+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,1238,92,0.0089500000
+2026-08-06T15:05:09.147800+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,1541,25,0.0084550000
+2026-08-06T15:05:19.984634+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,1389,469,0.0210150000
+2026-08-06T15:05:21.358850+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",cheap,gpt-5.6-luna,76,5,0.0001060000
+2026-08-06T15:05:23.050187+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,402,13,0.0024000000
+2026-08-06T15:05:26.590312+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,641,82,0.0056650000
+2026-08-06T15:05:29.214376+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,741,70,0.0058050000
+2026-08-06T15:05:42.789006+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,2254,551,0.0278000000
+2026-08-06T15:05:43.722029+00:00,Search the documents for a quantum relocation allowance and report whether any matching passage exists.,cheap,gpt-5.6-luna,74,5,0.0001040000
+2026-08-06T15:05:44.740808+00:00,Search the documents for a quantum relocation allowance and report whether any matching passage exists.,cheap,gpt-5.6-luna,400,13,0.0004780000
+2026-08-06T15:05:46.837233+00:00,Search the documents for a quantum relocation allowance and report whether any matching passage exists.,cheap,gpt-5.6-luna,639,68,0.0010470000
+2026-08-06T15:05:51.401221+00:00,Search the documents for a quantum relocation allowance and report whether any matching passage exists.,cheap,gpt-5.6-luna,725,32,0.0009170000
+2026-08-06T15:05:52.329965+00:00,Read the Nonexistent Section section of sample_policy.txt and summarize it.,cheap,gpt-5.6-luna,72,5,0.0001020000
+2026-08-06T15:05:53.359627+00:00,Read the Nonexistent Section section of sample_policy.txt and summarize it.,cheap,gpt-5.6-luna,398,13,0.0004760000
+2026-08-06T15:05:54.525990+00:00,Read the Nonexistent Section section of sample_policy.txt and summarize it.,cheap,gpt-5.6-luna,637,25,0.0007870000
+2026-08-06T15:05:56.298206+00:00,Read the Nonexistent Section section of sample_policy.txt and summarize it.,cheap,gpt-5.6-luna,492,40,0.0007320000
+2026-08-06T15:05:58.104857+00:00,Does the supplied policy document describe parental leave benefits?,cheap,gpt-5.6-luna,68,5,0.0000980000
+2026-08-06T15:05:59.870182+00:00,Does the supplied policy document describe parental leave benefits?,cheap,gpt-5.6-luna,394,13,0.0004720000
+2026-08-06T15:06:03.571270+00:00,Does the supplied policy document describe parental leave benefits?,cheap,gpt-5.6-luna,633,26,0.0007890000
+2026-08-06T15:06:05.943736+00:00,Does the supplied policy document describe parental leave benefits?,cheap,gpt-5.6-luna,671,19,0.0007850000
+2026-08-06T15:06:09.756003+00:00,Does the supplied policy document describe parental leave benefits?,cheap,gpt-5.6-luna,702,30,0.0008820000
+2026-08-06T15:06:11.923687+00:00,What is Acme Corp's stock ticker and current share price according to the policy?,cheap,gpt-5.6-luna,75,31,0.0002610000
+2026-08-06T15:06:14.050935+00:00,What is Acme Corp's stock ticker and current share price according to the policy?,cheap,gpt-5.6-luna,401,13,0.0004790000
+2026-08-06T15:06:16.632217+00:00,What is Acme Corp's stock ticker and current share price according to the policy?,cheap,gpt-5.6-luna,640,25,0.0007900000
+2026-08-06T15:06:18.103810+00:00,What is Acme Corp's stock ticker and current share price according to the policy?,cheap,gpt-5.6-luna,677,35,0.0008870000
+2026-08-06T15:06:19.338105+00:00,What are the core working hours for remote team members?,flagship,gpt-5.6-sol,395,13,0.0023650000
+2026-08-06T15:06:21.318914+00:00,What are the core working hours for remote team members?,flagship,gpt-5.6-sol,634,22,0.0038300000
+2026-08-06T15:06:23.378514+00:00,What are the core working hours for remote team members?,flagship,gpt-5.6-sol,772,25,0.0046100000
+2026-08-06T15:06:31.435873+00:00,What are the core working hours for remote team members?,flagship,gpt-5.6-sol,894,89,0.0071400000
+2026-08-06T15:06:33.435623+00:00,How many days per week may employees work remotely?,flagship,gpt-5.6-sol,394,13,0.0023600000
+2026-08-06T15:06:35.493334+00:00,How many days per week may employees work remotely?,flagship,gpt-5.6-sol,633,25,0.0039150000
+2026-08-06T15:06:37.000233+00:00,How many days per week may employees work remotely?,flagship,gpt-5.6-sol,763,25,0.0045650000
+2026-08-06T15:06:39.124105+00:00,How many days per week may employees work remotely?,flagship,gpt-5.6-sol,874,65,0.0063200000
+2026-08-06T15:06:41.646092+00:00,What is the annual equipment stipend?,flagship,gpt-5.6-sol,391,13,0.0023450000
+2026-08-06T15:06:43.315547+00:00,What is the annual equipment stipend?,flagship,gpt-5.6-sol,630,19,0.0037200000
+2026-08-06T15:06:59.618943+00:00,What is the annual equipment stipend?,flagship,gpt-5.6-sol,730,27,0.0044600000
+2026-08-06T15:07:01.504283+00:00,What is the annual equipment stipend?,flagship,gpt-5.6-sol,819,55,0.0057450000
+2026-08-06T15:07:03.023995+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,398,13,0.0023800000
+2026-08-06T15:07:05.128563+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,637,96,0.0060650000
+2026-08-06T15:07:12.334549+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,752,81,0.0061900000
+2026-08-06T15:07:16.093731+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,1063,122,0.0089750000
+2026-08-06T15:07:18.844130+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,1726,111,0.0119600000
+2026-08-06T15:07:22.905208+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,flagship,gpt-5.6-sol,1736,60,0.0104800000
+2026-08-06T15:07:27.165743+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,403,13,0.0024050000
+2026-08-06T15:07:29.256070+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,642,80,0.0056100000
+2026-08-06T15:07:32.165608+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,740,63,0.0055900000
+2026-08-06T15:07:33.783818+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,1467,32,0.0082950000
+2026-08-06T15:07:35.964224+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,1543,63,0.0096050000
+2026-08-06T15:07:46.008162+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",flagship,gpt-5.6-sol,1594,536,0.0240500000
+2026-08-06T15:07:48.003213+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,402,13,0.0024000000
+2026-08-06T15:07:50.048149+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,641,81,0.0056350000
+2026-08-06T15:07:52.155887+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,740,77,0.0060100000
+2026-08-06T15:07:54.650911+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,1806,136,0.0131100000
+2026-08-06T15:07:56.532383+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,2118,53,0.0121800000
+2026-08-06T15:08:04.339246+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",flagship,gpt-5.6-sol,3085,603,0.0335150000
+2026-08-06T15:08:05.737022+00:00,Search the documents for a quantum relocation allowance and report whether any matching passage exists.,flagship,gpt-5.6-sol,400,13,0.0023900000
+2026-08-06T15:08:07.850049+00:00,Search the documents for a quantum relocation allowance and report whether any matching passage exists.,flagship,gpt-5.6-sol,639,20,0.0037950000
+2026-08-06T15:08:10.415303+00:00,Search the documents for a quantum relocation allowance and report whether any matching passage exists.,flagship,gpt-5.6-sol,671,35,0.0044050000
+2026-08-06T15:08:12.081999+00:00,Read the Nonexistent Section section of sample_policy.txt and summarize it.,flagship,gpt-5.6-sol,398,13,0.0023800000
+2026-08-06T15:08:13.470710+00:00,Read the Nonexistent Section section of sample_policy.txt and summarize it.,flagship,gpt-5.6-sol,637,19,0.0037550000
+2026-08-06T15:08:14.973943+00:00,Read the Nonexistent Section section of sample_policy.txt and summarize it.,flagship,gpt-5.6-sol,668,25,0.0040900000
+2026-08-06T15:08:16.837179+00:00,Read the Nonexistent Section section of sample_policy.txt and summarize it.,flagship,gpt-5.6-sol,523,41,0.0038450000
+2026-08-06T15:08:18.730076+00:00,Does the supplied policy document describe parental leave benefits?,flagship,gpt-5.6-sol,394,13,0.0023600000
+2026-08-06T15:08:21.671339+00:00,Does the supplied policy document describe parental leave benefits?,flagship,gpt-5.6-sol,633,24,0.0038850000
+2026-08-06T15:08:23.521110+00:00,Does the supplied policy document describe parental leave benefits?,flagship,gpt-5.6-sol,669,18,0.0038850000
+2026-08-06T15:08:24.933852+00:00,Does the supplied policy document describe parental leave benefits?,flagship,gpt-5.6-sol,699,19,0.0040650000
+2026-08-06T15:08:27.699306+00:00,Does the supplied policy document describe parental leave benefits?,flagship,gpt-5.6-sol,1383,66,0.0088950000
+2026-08-06T15:08:28.961329+00:00,What is Acme Corp's stock ticker and current share price according to the policy?,flagship,gpt-5.6-sol,401,13,0.0023950000
+2026-08-06T15:08:30.328806+00:00,What is Acme Corp's stock ticker and current share price according to the policy?,flagship,gpt-5.6-sol,640,22,0.0038600000
+2026-08-06T15:08:32.137572+00:00,What is Acme Corp's stock ticker and current share price according to the policy?,flagship,gpt-5.6-sol,674,62,0.0052300000
+2026-08-06T15:08:33.944678+00:00,What is Acme Corp's stock ticker and current share price according to the policy?,flagship,gpt-5.6-sol,754,36,0.0048500000
+2026-08-06T15:08:35.884711+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,cheap,gpt-5.6-luna,398,13,0.0004760000
+2026-08-06T15:08:43.830272+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,cheap,gpt-5.6-luna,637,23,0.0007750000
+2026-08-06T15:08:48.477891+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,cheap,gpt-5.6-luna,672,27,0.0008340000
+2026-08-06T15:08:50.793259+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,cheap,gpt-5.6-luna,711,17,0.0008130000
+2026-08-06T15:08:51.993124+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,cheap,gpt-5.6-luna,859,18,0.0009670000
+2026-08-06T15:09:08.956812+00:00,List all equipment eligible for reimbursement and detail the travel meal policy requirements.,cheap,gpt-5.6-luna,812,94,0.0013760000
+2026-08-06T15:09:10.063999+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",cheap,gpt-5.6-luna,403,13,0.0004810000
+2026-08-06T15:09:11.531341+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",cheap,gpt-5.6-luna,642,62,0.0010140000
+2026-08-06T15:09:31.461645+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",cheap,gpt-5.6-luna,721,18,0.0008290000
+2026-08-06T15:09:33.569387+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",cheap,gpt-5.6-luna,1033,74,0.0014770000
+2026-08-06T15:09:35.263021+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",cheap,gpt-5.6-luna,1333,25,0.0014830000
+2026-08-06T15:09:41.325436+00:00,"Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",cheap,gpt-5.6-luna,1266,535,0.0044760000
+2026-08-06T15:09:42.654196+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",cheap,gpt-5.6-luna,402,13,0.0004800000
+2026-08-06T15:09:44.630475+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",cheap,gpt-5.6-luna,641,96,0.0012170000
+2026-08-06T15:09:46.316206+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",cheap,gpt-5.6-luna,756,70,0.0011760000
+2026-08-06T15:09:47.506389+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",cheap,gpt-5.6-luna,2269,37,0.0024910000
+2026-08-06T15:09:52.019492+00:00,"Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",cheap,gpt-5.6-luna,2349,507,0.0053910000

@@ -32,8 +32,10 @@ python agent.py --question "What is the travel meal policy?"
 python agent.py --tier flagship --question "Compare travel and reimbursement requirements."
 ```
 
-The agent prints its tool trace and returns a validated `QAResponse`. It uses at
-most five tool-calling turns followed by one final synthesis turn.
+The first command routes automatically and prints `[ROUTING] Selected tier: …`
+before its tool trace; `--tier` is an explicit override. The agent returns a
+validated `QAResponse` and uses at most five tool-calling turns followed by one
+final synthesis turn.
 
 ## Tests and evaluation
 

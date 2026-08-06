@@ -8,6 +8,7 @@ from typing import Any
 
 from llm import call_llm
 from prompts import AGENT_SYSTEM_PROMPT
+from router import classify_query
 from schema import QAResponse
 from tools import TOOLS, execute_tool
 
@@ -167,9 +168,16 @@ def main() -> None:
     """Run the agent from the command line."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--question", required=True, help="Question to answer from the documents.")
-    parser.add_argument("--tier", choices=("cheap", "flagship"), default="cheap")
+    parser.add_argument(
+        "--tier",
+        choices=("cheap", "flagship"),
+        help="Bypass routing and force a model tier.",
+    )
     args = parser.parse_args()
-    response = run_agent(args.question, tier=args.tier)
+    tier = args.tier or classify_query(args.question)
+    routing_mode = "override" if args.tier else "routed"
+    print(f"[ROUTING] Selected tier: {tier} ({routing_mode})")
+    response = run_agent(args.question, tier=tier)
     print(response.model_dump_json(indent=2))
 
 

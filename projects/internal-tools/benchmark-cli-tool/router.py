@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import warnings
 from typing import Final
 
 from llm import call_llm
@@ -33,7 +34,10 @@ def classify_query(question: str) -> str:
     content = completion.choices[0].message.content or ""
     label_match = re.search(r"\b(EASY|HARD)\b", content.upper())
     if label_match is None:
-        raise RuntimeError(
-            f"Query classifier returned an invalid label: {content!r}. Expected EASY or HARD."
+        warnings.warn(
+            f"Query classifier returned an invalid label {content!r}; defaulting to flagship.",
+            RuntimeWarning,
+            stacklevel=2,
         )
+        return "flagship"
     return _VALID_LABELS[label_match.group(1)]

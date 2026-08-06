@@ -12,21 +12,47 @@ from schema import QAResponse
 from tools import TOOLS, execute_tool
 
 
-def _response_from_content(content: str | None) -> QAResponse:
-    """Parse the model's final JSON, with a safe refusal fallback for malformed text."""
+def _response_from_content(
+    content: str | None, metadata: dict[str, Any] | None = None
+) -> QAResponse:
+    """Parse validated JSON, recording malformed structured-output failures."""
     if not content or not content.strip():
+        if metadata is not None:
+            metadata["schema_valid"] = False
+            metadata["schema_error"] = "empty model response"
         return QAResponse(
-            answer="The document does not contain the required information.",
+            answer="The model returned no structured answer.",
             confidence=0.0,
             source_quote="N/A",
         )
     try:
-        return QAResponse.model_validate_json(content)
-    except ValueError:
-        try:
-            return QAResponse.model_validate(json.loads(content))
-        except (ValueError, TypeError):
-            return QAResponse(answer=content.strip(), confidence=0.0, source_quote="N/A")
+        response = QAResponse.model_validate_json(content)
+    except ValueError as exc:
+        if metadata is not None:
+            metadata["schema_valid"] = False
+            metadata["schema_error"] = str(exc)
+        print("[SCHEMA VALIDATION FAILED] Final model response was not a valid QAResponse.")
+        return QAResponse(
+            answer="The model returned an invalid structured response.",
+            confidence=0.0,
+            source_quote="N/A",
+        )
+    if metadata is not None:
+        metadata["schema_valid"] = True
+    return response
+
+
+def _finalise_response(
+    content: str | None,
+    *,
+    no_matching_evidence: bool,
+    metadata: dict[str, Any] | None,
+) -> QAResponse:
+    """Parse a final response and apply retrieval-based refusal safeguards."""
+    return _enforce_retrieval_refusal(
+        _response_from_content(content, metadata),
+        no_matching_evidence=no_matching_evidence,
+    )
 
 
 def _enforce_retrieval_refusal(response: QAResponse, no_matching_evidence: bool) -> QAResponse:
@@ -36,7 +62,12 @@ def _enforce_retrieval_refusal(response: QAResponse, no_matching_evidence: bool)
     return response
 
 
-def run_agent(question: str, tier: str = "cheap", max_iterations: int = 5) -> QAResponse:
+def run_agent(
+    question: str,
+    tier: str = "cheap",
+    max_iterations: int = 5,
+    metadata: dict[str, Any] | None = None,
+) -> QAResponse:
     """Run a bounded tool-calling conversation and return a validated answer."""
     if not question.strip():
         raise ValueError("question must not be empty.")
@@ -53,9 +84,10 @@ def run_agent(question: str, tier: str = "cheap", max_iterations: int = 5) -> QA
         completion = call_llm(tier=tier, messages=messages, tools=TOOLS)
         message = completion.choices[0].message
         if not message.tool_calls:
-            return _enforce_retrieval_refusal(
-                _response_from_content(message.content),
+            return _finalise_response(
+                message.content,
                 no_matching_evidence=zero_hit_seen and not search_hit_seen,
+                metadata=metadata,
             )
 
         assistant_message: dict[str, Any] = {
@@ -95,18 +127,20 @@ def run_agent(question: str, tier: str = "cheap", max_iterations: int = 5) -> QA
             # one final turn without tools so it can produce a zero-confidence
             # explanation instead of repeatedly retrying the failed lookup.
             final_completion = call_llm(tier=tier, messages=messages)
-            return _enforce_retrieval_refusal(
-                _response_from_content(final_completion.choices[0].message.content),
+            return _finalise_response(
+                final_completion.choices[0].message.content,
                 no_matching_evidence=zero_hit_seen and not search_hit_seen,
+                metadata=metadata,
             )
 
     # The tool-call budget is exhausted, but the accumulated tool messages may
     # still contain enough evidence for a final answer. Give the model one
     # synthesis turn without tools; the five-call retrieval limit remains intact.
     final_completion = call_llm(tier=tier, messages=messages)
-    return _enforce_retrieval_refusal(
-        _response_from_content(final_completion.choices[0].message.content),
+    return _finalise_response(
+        final_completion.choices[0].message.content,
         no_matching_evidence=zero_hit_seen and not search_hit_seen,
+        metadata=metadata,
     )
 
 

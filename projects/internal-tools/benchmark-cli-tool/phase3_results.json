@@ -16,7 +16,7 @@
           "tool": "read_doc",
           "arguments": {
             "filename": "sample_policy.txt",
-            "section": "Hours"
+            "section": "Core Working Hours"
           }
         }
       ],
@@ -42,7 +42,7 @@
           "tool": "read_doc",
           "arguments": {
             "filename": "sample_policy.txt",
-            "section": "Hours"
+            "section": "Core Working Hours"
           }
         }
       ],

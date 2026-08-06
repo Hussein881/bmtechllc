@@ -55,6 +55,11 @@ def _section_blocks(text: str) -> list[tuple[str, int, int]]:
     return blocks
 
 
+def _normalise_section_name(value: str) -> str:
+    """Normalise a section label for tolerant matching."""
+    return " ".join(re.findall(r"[a-z0-9]+", value.casefold()))
+
+
 def list_docs() -> list[dict[str, str]]:
     """Return metadata for every text document in the local document library."""
     documents: list[dict[str, str]] = []
@@ -117,11 +122,19 @@ def read_doc(filename: str, section: str | None = None) -> str:
     if section is None:
         return text
 
-    requested = section.strip().casefold()
-    for title, start, end in _section_blocks(text):
-        if title.casefold() == requested:
-            lines = text.splitlines()
-            return "\n".join(lines[start - 1 : end]).strip()
+    requested = _normalise_section_name(section)
+    blocks = _section_blocks(text)
+    exact_matches = [block for block in blocks if _normalise_section_name(block[0]) == requested]
+    near_matches = [
+        block
+        for block in blocks
+        if requested and (requested in _normalise_section_name(block[0]) or _normalise_section_name(block[0]) in requested)
+    ]
+    matches = exact_matches or near_matches
+    if len(matches) == 1:
+        _, start, end = matches[0]
+        lines = text.splitlines()
+        return "\n".join(lines[start - 1 : end]).strip()
     return "Error: Document or section not found."
 
 

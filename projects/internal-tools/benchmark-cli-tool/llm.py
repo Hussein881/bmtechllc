@@ -13,6 +13,7 @@ from logger import log_usage
 
 _client: OpenAI | None = None
 StructuredResponse = TypeVar("StructuredResponse", bound=BaseModel)
+MAX_LOGGED_QUESTION_CHARS = 200
 
 
 def _get_client() -> OpenAI:
@@ -28,14 +29,16 @@ def _get_client() -> OpenAI:
 
 
 def _question_from_messages(messages: Sequence[dict[str, Any]]) -> str:
-    """Extract the latest plain-text user prompt for cost telemetry."""
+    """Extract a bounded user question for telemetry without storing document text."""
     for message in reversed(messages):
         if message.get("role") != "user":
             continue
         content = message.get("content", "")
         if isinstance(content, str):
-            return content
-        return str(content)
+            question_marker = "\n\nQuestion:\n"
+            question = content.rsplit(question_marker, maxsplit=1)[-1]
+            return question[:MAX_LOGGED_QUESTION_CHARS]
+        return str(content)[:MAX_LOGGED_QUESTION_CHARS]
     return ""
 
 

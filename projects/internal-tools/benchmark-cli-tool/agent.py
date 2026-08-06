@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import argparse
+import sys
 from typing import Any
 
 from llm import call_llm
@@ -32,7 +33,10 @@ def _response_from_content(
         if metadata is not None:
             metadata["schema_valid"] = False
             metadata["schema_error"] = str(exc)
-        print("[SCHEMA VALIDATION FAILED] Final model response was not a valid QAResponse.")
+        print(
+            "[SCHEMA VALIDATION FAILED] Final model response was not a valid QAResponse.",
+            file=sys.stderr,
+        )
         return QAResponse(
             answer="The model returned an invalid structured response.",
             confidence=0.0,
@@ -46,19 +50,19 @@ def _response_from_content(
 def _finalise_response(
     content: str | None,
     *,
-    no_matching_evidence: bool,
+    no_usable_evidence: bool,
     metadata: dict[str, Any] | None,
 ) -> QAResponse:
     """Parse a final response and apply retrieval-based refusal safeguards."""
     return _enforce_retrieval_refusal(
         _response_from_content(content, metadata),
-        no_matching_evidence=no_matching_evidence,
+        no_usable_evidence=no_usable_evidence,
     )
 
 
-def _enforce_retrieval_refusal(response: QAResponse, no_matching_evidence: bool) -> QAResponse:
-    """Prevent unsupported confidence after retrieval reports no matching evidence."""
-    if no_matching_evidence and response.source_quote == "N/A" and response.confidence > 0.0:
+def _enforce_retrieval_refusal(response: QAResponse, no_usable_evidence: bool) -> QAResponse:
+    """Prevent unsupported confidence only when retrieval yielded no usable evidence."""
+    if no_usable_evidence and response.source_quote == "N/A" and response.confidence > 0.0:
         return response.model_copy(update={"confidence": 0.0})
     return response
 
@@ -80,14 +84,15 @@ def run_agent(
         {"role": "user", "content": question.strip()},
     ]
     zero_hit_seen = False
-    search_hit_seen = False
+    evidence_seen = False
+    tool_error_seen = False
     for _ in range(max_iterations):
         completion = call_llm(tier=tier, messages=messages, tools=TOOLS)
         message = completion.choices[0].message
         if not message.tool_calls:
             return _finalise_response(
                 message.content,
-                no_matching_evidence=zero_hit_seen and not search_hit_seen,
+                no_usable_evidence=(zero_hit_seen or tool_error_seen) and not evidence_seen,
                 metadata=metadata,
             )
 
@@ -97,7 +102,6 @@ def run_agent(
             "tool_calls": [call.model_dump() for call in message.tool_calls],
         }
         messages.append(assistant_message)
-        tool_error_seen = False
         for tool_call in message.tool_calls:
             print(_format_tool_call(tool_call.function.name, tool_call.function.arguments))
             try:
@@ -110,9 +114,15 @@ def run_agent(
                 result = execute_tool(tool_call.function.name, arguments)
             if tool_call.function.name == "search_docs":
                 if isinstance(result, list) and result:
-                    search_hit_seen = True
+                    evidence_seen = True
                 elif result == []:
                     zero_hit_seen = True
+            elif (
+                tool_call.function.name == "read_doc"
+                and isinstance(result, str)
+                and not result.startswith("Error:")
+            ):
+                evidence_seen = True
             if not isinstance(result, str):
                 result = json.dumps(result, ensure_ascii=False)
             tool_error_seen = tool_error_seen or result.startswith("Error:")
@@ -130,7 +140,7 @@ def run_agent(
             final_completion = call_llm(tier=tier, messages=messages)
             return _finalise_response(
                 final_completion.choices[0].message.content,
-                no_matching_evidence=zero_hit_seen and not search_hit_seen,
+                no_usable_evidence=(zero_hit_seen or tool_error_seen) and not evidence_seen,
                 metadata=metadata,
             )
 
@@ -140,7 +150,7 @@ def run_agent(
     final_completion = call_llm(tier=tier, messages=messages)
     return _finalise_response(
         final_completion.choices[0].message.content,
-        no_matching_evidence=zero_hit_seen and not search_hit_seen,
+        no_usable_evidence=(zero_hit_seen or tool_error_seen) and not evidence_seen,
         metadata=metadata,
     )
 

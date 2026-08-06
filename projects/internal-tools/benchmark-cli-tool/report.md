@@ -1,39 +1,55 @@
 # Performance Write-Up
 
-The Phase 4 benchmark ran 10 routed questions, the same 10 questions forced to
+The final Phase 4 evaluation ran 11 routed questions, the same 11 questions on
 the flagship tier, and the three complex questions forced to the cheap tier.
-The complete traces, responses, and per-call telemetry are in
+The complete responses, tool traces, token counts, and cost records are in
 `eval_results.txt`.
 
 ## Prompt evolution
 
-The first agent prompt embedded travel-specific retrieval behavior. The current
-versioned `agent-v2` prompt in `prompts.py` instead instructs the model to use
-document metadata and search locations generically, then to read the full
-document if there is no exact section title. This removes filename and
-policy-specific assumptions while retaining the ordered retrieval workflow.
+The original prompt contained a policy-specific retrieval shortcut:
+
+```text
+For reimbursement and travel questions, use the search query exactly
+"reimbursement travel" after list_docs(), then read the matching
+"Travel & Expense Reimbursement" section from the relevant document.
+```
+
+The versioned `agent-v2` prompt replaced it with a generic rule:
+
+```text
+Use the filename and location returned by search_docs. If a result has no exact
+section title, call read_doc(filename) without a section to inspect the full
+matching document. You may repeat searches or reads when needed, but do not
+invent filenames or facts.
+```
+
+This removes hidden filename and policy assumptions while preserving the
+`list_docs → search_docs → read_doc` retrieval workflow.
 
 ## Model, cost, and observed quality
 
-The configured tier rates are verified against the [OpenAI model catalog](https://developers.openai.com/api/docs/models): `gpt-5.6-luna` is
-$1.00 input / $6.00 output per million tokens, and `gpt-5.6-sol` is $5.00
-input / $30.00 output per million tokens. The measured comparison derives all
-rates from `config.MODEL_TIERS`.
+The configured rates are verified against the [OpenAI model catalog](https://developers.openai.com/api/docs/models): `gpt-5.6-luna` is $1.00 input / $6.00 output per million tokens, and `gpt-5.6-sol` is $5.00 input / $30.00 output per million tokens. All calculations derive from `config.MODEL_TIERS`.
 
 | Execution mode | API calls | Measured cost |
 | --- | ---: | ---: |
-| Routed (production behavior) | 50 | $0.164071 |
-| Flagship-only (real run) | 45 | $0.291125 |
-| Forced cheap, complex cases | 16 | $0.024573 |
+| Routed production behavior | 55 | $0.188662 |
+| Flagship-only, real run | 47 | $0.301855 |
+| Forced cheap, complex cases | 18 | $0.026588 |
 
-Routing saved $0.127054 against the measured flagship-only run (about 43.6%).
-The router selected the expected tier for all six easy/complex cases. All six
-retrieval lookups requiring source detail followed the `list_docs → search_docs
-→ read_doc` sequence, and all four edge/out-of-bounds cases safely returned a
-zero-confidence refusal.
+This run saved $0.113193, or about 37.5%, against the measured flagship-only
+run. It selected the intended tier for all six easy/complex cases, and all
+three cases that required full-text retrieval completed the
+`list_docs → search_docs → read_doc` sequence. All five edge and
+out-of-bounds cases failed safely with confidence `0.0`; the missing-file case
+is a natural library lookup, while the direct missing-file tool error remains
+covered by `test_phase3.py`.
 
-Every routed result parsed into `QAResponse`; schema-validation failures were
-zero. The forced-cheap complex run did not show a tool-chain, JSON, or answer
-completion failure in this sample, so the current evidence records “none
-observed,” rather than claiming the cheap tier is universally equivalent. The
-suite retains that stress run specifically to make future degradation visible.
+Every routed final response parsed into `QAResponse`; no schema-validation
+failures occurred. The forced-cheap complex run completed without a failure in
+this sample, but prior repeated runs recorded zero-confidence and chain
+deviations. Across the observed runs, routing savings ranged from roughly 25%
+to 44%. Extra searches and retries by a cheaper model reduce both answer
+reliability and the cost advantage, so this range is more useful than treating
+one benchmark run as a guaranteed saving. This is evidence for routing, not a
+claim that either tier behaves deterministically on every run.

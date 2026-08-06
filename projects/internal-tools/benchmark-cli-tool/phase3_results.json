@@ -35,7 +35,31 @@
         {
           "tool": "search_docs",
           "arguments": {
-            "query": "core working hours"
+            "query": "core working hours workday availability time zone"
+          }
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "core hours"
+          }
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "working hours"
+          }
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "business hours"
+          }
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "availability overlap"
           }
         },
         {
@@ -54,7 +78,7 @@
     }
   },
   "telemetry": {
-    "new_call_count": 8,
+    "new_call_count": 9,
     "tiers_seen": [
       "cheap",
       "flagship"

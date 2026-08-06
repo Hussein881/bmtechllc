@@ -65,8 +65,17 @@ def test_agent_tiers() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]
         )
         assert response.answer
         names = [name for name, _ in trace]
-        expected = ["list_docs", "search_docs", "read_doc"]
-        chain_ok = names[:3] == expected
+        try:
+            list_index = names.index("list_docs")
+            search_index = next(
+                index for index in range(list_index + 1, len(names)) if names[index] == "search_docs"
+            )
+            read_index = next(
+                index for index in range(search_index + 1, len(names)) if names[index] == "read_doc"
+            )
+            chain_ok = list_index < search_index < read_index
+        except (StopIteration, ValueError):
+            chain_ok = False
         arguments_ok = all(isinstance(arguments, dict) for _, arguments in trace)
         tier_warnings: list[str] = []
         if not chain_ok:

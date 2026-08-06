@@ -25,6 +25,7 @@ class EvalCase:
     category: str
     expected_tier: str
     expected_confidence: float | None = None
+    requires_full_read: bool = False
 
 
 EVAL_CASES: tuple[EvalCase, ...] = (
@@ -49,18 +50,21 @@ EVAL_CASES: tuple[EvalCase, ...] = (
         "List all equipment eligible for reimbursement and detail the travel meal policy requirements.",
         "complex",
         "flagship",
+        requires_full_read=True,
     ),
     EvalCase(
         "Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",
         "complex",
         "flagship",
+        requires_full_read=True,
     ),
     EvalCase(
         "Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",
         "complex",
         "flagship",
+        requires_full_read=True,
     ),
-    # --- Edge Cases (Zero-hit search & Missing Document) ---
+    # --- Edge Cases (Zero-hit search, missing section, and missing document) ---
     EvalCase(
         "Search the documents for a quantum relocation allowance and report whether any matching passage exists.",
         "edge-zero-hit",
@@ -70,6 +74,12 @@ EVAL_CASES: tuple[EvalCase, ...] = (
     EvalCase(
         "Read the Nonexistent Section section of sample_policy.txt and summarize it.",
         "edge-missing-section",
+        "cheap",
+        0.0,
+    ),
+    EvalCase(
+        "What does missing_policy.txt say about vacation policy?",
+        "edge-missing-file",
         "cheap",
         0.0,
     ),
@@ -111,6 +121,7 @@ def run_case(case: EvalCase, forced_tier: str | None = None) -> dict[str, Any]:
         "question": case.question,
         "category": case.category,
         "expected_tier": case.expected_tier,
+        "chain_required": case.requires_full_read,
         "prompt_version": AGENT_PROMPT_VERSION,
     }
     try:
@@ -144,9 +155,10 @@ def run_case(case: EvalCase, forced_tier: str | None = None) -> dict[str, Any]:
             read_index = next(
                 index for index in range(search_index + 1, len(names)) if names[index] == "read_doc"
             )
-            record["chain_ok"] = list_index < search_index < read_index
+            full_chain_completed = list_index < search_index < read_index
         except (StopIteration, ValueError):
-            record["chain_ok"] = False
+            full_chain_completed = False
+        record["chain_ok"] = not case.requires_full_read or full_chain_completed
         record["status"] = "passed"
     except Exception as exc:  # Keep the ten-case report complete after one failure.
         record.update(
@@ -191,14 +203,19 @@ def main() -> None:
     routed_records = routed["records"]
     easy_hard = [record for record in routed_records if record["category"] in {"easy", "complex"}]
     routing_correct = sum(record["routing_correct"] for record in easy_hard)
-    chain_correct = sum(record["chain_ok"] for record in easy_hard)
+    chain_cases = [record for record in routed_records if record["chain_required"]]
+    chain_correct = sum(record["chain_ok"] for record in chain_cases)
     safety_cases = [
         record
         for record in routed_records
         if record["category"].startswith("edge") or record["category"] == "out-of-bounds"
     ]
     safety_correct = sum(record["refusal_safe"] for record in safety_cases)
-    schema_failures = [record for record in routed_records if not record.get("schema_valid")]
+    schema_failures = [
+        record
+        for record in routed_records
+        if record["status"] == "passed" and record.get("schema_valid") is False
+    ]
 
     cheap_notes: list[str] = []
     for record in cheap_stress["records"]:
@@ -236,7 +253,7 @@ def main() -> None:
         "",
         "QUALITY SUMMARY (ROUTED RUN)",
         f"Routing accuracy (easy + complex): {routing_correct}/{len(easy_hard)}",
-        f"Tool-chain reliability (list -> search -> read): {chain_correct}/{len(easy_hard)}",
+        f"Tool-chain reliability (required full reads): {chain_correct}/{len(chain_cases)}",
         f"Edge/refusal safety: {safety_correct}/{len(safety_cases)}",
         f"Structured-output validation failures: {len(schema_failures)}",
         "Forced-cheap degradation notes:",

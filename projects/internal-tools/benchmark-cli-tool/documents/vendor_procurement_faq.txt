@@ -1,0 +1,16 @@
+ACME ENTERPRISE VENDOR ONBOARDING AND PROCUREMENT GUIDELINES
+Document Reference: PROC-FAQ-2026-04
+Effective Date: April 12, 2026
+Target Audience: Project Managers, Finance Lead, Department Heads, and External Vendors
+
+1. PROCUREMENT PROCESS OVERVIEW
+Acme Enterprise enforces rigorous procurement standards to ensure risk mitigation, budget alignment, and competitive commercial terms for all third-party vendor relationships.
+
+2. CONTRACT APPROVAL THRESHOLDS AND LEGAL REVIEW
+Engagement contracts, statements of work (SOW), master services agreements (MSA), and software subscriptions must adhere to explicit financial threshold rules.
+
+2.1 Threshold Approvals
+Any vendor contract valued over $10,000 requires legal and procurement sign-off prior to execution. Contracts below $10,000 may be approved directly by a Department Director provided the expenditure is accounted for within approved department budgets.
+
+2.2 Standard Payment Terms
+Standard payment terms for all corporate vendors are Net 45 days from receipt of invoice following satisfactory verification of deliverables. Early payment terms (e.g., Net 15) must offer a minimum 2% early settlement discount and receive explicit written authorization from Corporate Treasury.

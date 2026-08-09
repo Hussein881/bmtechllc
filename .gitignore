@@ -9,9 +9,5 @@ portal/.env.*
 website/dist/
 website/node_modules/
 
-# Device-flow relay (Cloudflare Worker) build output and local state
-device-flow-relay/node_modules/
-device-flow-relay/.wrangler/
-
 # OS
 .DS_Store

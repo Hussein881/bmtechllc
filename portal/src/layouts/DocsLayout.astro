@@ -21,9 +21,6 @@ interface Props {
 
 const { page, allPages, headings } = Astro.props;
 
-const clientId = import.meta.env.PUBLIC_GITHUB_APP_CLIENT_ID && import.meta.env.PUBLIC_GITHUB_DEVICE_FLOW_RELAY_URL
-  ? import.meta.env.PUBLIC_GITHUB_APP_CLIENT_ID
-  : '';
 const repoPath = `portal/content/${page.section}/${page.id}.md`;
 // Handed to /edit/ via sessionStorage so it can prefill instantly without an
 // auth round trip; escaped so a `</script>` in a page body can't break out.
@@ -161,20 +158,16 @@ const updatedISO = page.updated.toISOString().split('T')[0];
         >
           Copy as Markdown
         </button>
-        {clientId && (
-          <>
-            <a class="btn-secondary" id="edit-page-link" href={`${withBase('/edit/')}?path=${encodeURIComponent(repoPath)}`}>
-              Edit page
-            </a>
-            <button class="btn-secondary" id="delete-page-btn" type="button" data-path={repoPath} data-title={page.title} data-client-id={clientId}>
-              Delete page
-            </button>
-          </>
-        )}
+        <a class="btn-secondary" id="edit-page-link" href={`${withBase('/edit/')}?path=${encodeURIComponent(repoPath)}`}>
+          Edit page
+        </a>
+        <button class="btn-secondary" id="delete-page-btn" type="button" data-path={repoPath} data-title={page.title}>
+          Delete page
+        </button>
       </div>
     </main>
 
-    {clientId && <script is:inline type="application/json" id="edit-payload" set:html={editPayload} />}
+    <script is:inline type="application/json" id="edit-payload" set:html={editPayload} />
 
     <aside class="toc-rail">
       <TableOfContents headings={headings} />
@@ -210,15 +203,14 @@ const updatedISO = page.updated.toISOString().split('T')[0];
     deleteBtn?.addEventListener('click', async () => {
       const path = deleteBtn.dataset.path!;
       const title = deleteBtn.dataset.title!;
-      const clientId = deleteBtn.dataset.clientId!;
       if (!confirm(`Delete "${title}"? This opens a pull request removing the page — nothing is deleted until it is reviewed and merged.`)) return;
 
       deleteBtn.disabled = true;
       const originalText = deleteBtn.textContent;
       deleteBtn.textContent = 'Preparing pull request…';
       try {
-        const { sha } = await fetchPage(clientId, path);
-        const result = await deletePage(clientId, { path, sha, title });
+        const { sha } = await fetchPage(path);
+        const result = await deletePage({ path, sha, title });
         const link = Object.assign(document.createElement('a'), { href: result.url, target: '_blank', rel: 'noreferrer', textContent: `removal PR #${result.number}` });
         deleteBtn.replaceWith('Opened ', link, '.');
       } catch (error) {

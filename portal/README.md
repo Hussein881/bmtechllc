@@ -54,12 +54,11 @@ Full authoring guide: [Contributing to the Knowledge Base](content/onboarding/co
 
 The portal also exposes `/new/` (linked as "Add a page" from every section) and,
 on each page, "Edit page" / "Delete page". These write directly to this repo
-from the browser via a GitHub App's Device Flow — no backend service is
-deployed or required. Every action opens a branch and pull request; none of
-them ever write to `main` directly. See
-[`docs/github-app-setup.md`](docs/github-app-setup.md) for the one-time App
-registration, then set `PUBLIC_GITHUB_APP_CLIENT_ID` at build time. Without
-that variable, the UI is deliberately disabled.
+from the browser using a Personal Access Token you paste in once per session —
+no backend service, no separately hosted relay, nothing beyond GitHub itself.
+Every action opens a branch and pull request; none of them ever write to
+`main` directly. See [`docs/authoring-access.md`](docs/authoring-access.md)
+for how to create that token.
 
 ## How this differs from a public docs site
 

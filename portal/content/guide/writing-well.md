@@ -11,8 +11,6 @@ order: 30
 related: [adding-a-page, frontmatter-reference]
 ---
 
-# Writing Well
-
 These conventions are not style preferences. Each one exists because a page here
 is read two ways: by a teammate scanning for an answer, and by our own retrieval
 tooling pulling a section out of context. Both readers need the same things.

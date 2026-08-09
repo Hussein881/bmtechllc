@@ -11,8 +11,6 @@ order: 40
 related: [frontmatter-reference]
 ---
 
-# Maintaining the Knowledge Base
-
 A knowledge base fails slowly. Nobody deletes it; it just accumulates pages that
 used to be true until people stop trusting any of it. Everything below exists to
 delay that.

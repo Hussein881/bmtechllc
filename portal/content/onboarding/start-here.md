@@ -11,8 +11,6 @@ order: 1
 related: [engagement-model, glossary]
 ---
 
-# Start Here
-
 Welcome. This page is the reading order for your first week. Work through it in
 sequence — each section assumes the one before it.
 

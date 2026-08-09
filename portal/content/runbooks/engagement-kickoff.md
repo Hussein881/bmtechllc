@@ -11,8 +11,6 @@ order: 10
 related: [engagement-model, readiness-checklist]
 ---
 
-# Engagement Kickoff Runbook
-
 The first week sets the tone for everything that follows. This runbook exists so
 kickoff is a repeatable sequence rather than an improvisation.
 

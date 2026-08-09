@@ -11,8 +11,6 @@ order: 15
 related: [portal-authoring-architecture, adding-a-page]
 ---
 
-# Adding a Page From the Portal
-
 You can add, edit, and delete pages without cloning the repo or touching a
 terminal. Everything happens in the browser, and nothing you do publishes
 immediately — every change opens a pull request that a person reviews first.

@@ -11,8 +11,6 @@ order: 10
 related: [engagement-model, ai-readiness-assessment]
 ---
 
-# Stakeholder Interview Playbook
-
 Stakeholder interviews are the highest-leverage activity in the discovery phase. Done well, they surface the real problem (rarely identical to the stated problem), reveal organizational constraints that will determine what is actually buildable, and create the alignment that makes delivery possible.
 
 Done poorly, they produce a collection of quotes that confirm whatever hypothesis you walked in with.

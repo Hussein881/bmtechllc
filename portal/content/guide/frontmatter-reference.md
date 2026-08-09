@@ -11,8 +11,6 @@ order: 20
 related: [adding-a-page]
 ---
 
-# Frontmatter Reference
-
 Frontmatter is validated against a schema at build time. A page that violates
 the contract fails the build rather than rendering something subtly wrong.
 

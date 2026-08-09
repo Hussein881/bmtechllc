@@ -11,8 +11,6 @@ order: 20
 related: [stakeholder-interviews, engagement-model]
 ---
 
-# Discovery Readiness Checklist
-
 Discovery phases fail on logistics more often than on method. This checklist covers what must be in place before day one so the first week produces findings instead of access requests.
 
 Run this during scoping, not at discovery kickoff. Items that are not resolved before the phase begins consume the phase.

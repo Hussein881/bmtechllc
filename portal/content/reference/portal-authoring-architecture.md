@@ -11,8 +11,6 @@ order: 40
 related: [adding-a-page-from-the-portal, adding-a-page]
 ---
 
-# Portal Authoring Architecture
-
 This explains what happens when you use **Add a page**, **Edit page**, or
 **Delete page**. For the steps themselves, see
 [Adding a Page From the Portal](/bmtechllc/portal/runbooks/adding-a-page-from-the-portal/).

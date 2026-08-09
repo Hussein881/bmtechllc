@@ -10,8 +10,6 @@ reviewCycleMonths: 12
 order: 1
 ---
 
-# Guide
-
 This knowledge base is where BenchmarkTech writes down how it works — so that
 knowledge survives past the person who happens to be holding it.
 

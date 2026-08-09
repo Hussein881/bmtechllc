@@ -10,9 +10,7 @@ reviewCycleMonths: 12
 order: 10
 ---
 
-# Glossary
-
-Definitions used consistently across all BenchmarkTech materials. When a term appears in a deliverable or playbook, it means what is written here — nothing assumed.
+When a term appears in a deliverable or playbook, it means what is written here — nothing assumed.
 
 ## A
 

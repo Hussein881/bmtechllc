@@ -11,8 +11,6 @@ order: 10
 related: [engagement-model, stakeholder-interviews]
 ---
 
-# AI Readiness Assessment
-
 A four-week structured engagement that gives you a clear, honest answer to one question: *Is your organization ready to deploy AI — and if not, what specifically needs to change first?*
 
 ## What we assess

@@ -11,8 +11,6 @@ order: 50
 related: []
 ---
 
-# Agentic AI — Reference Notes
-
 Source: *AI Agents in 38 Minutes — Complete Course from Beginner to Pro* (YouTube).
 Scope: design patterns, quality/cost/latency levers, observability, and security for LLM agent systems.
 

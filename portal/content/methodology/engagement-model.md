@@ -11,10 +11,6 @@ order: 10
 related: [ai-readiness-assessment, stakeholder-interviews]
 ---
 
-# Engagement Model
-
-How an engagement with BenchmarkTech works, from first conversation to final handoff.
-
 ## Engagement phases
 
 ### Phase 1 — Scoping (1–2 weeks)

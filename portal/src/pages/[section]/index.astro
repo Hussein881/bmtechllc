@@ -70,19 +70,24 @@ const Intro = rendered?.Content;
         <span>{label}</span>
       </nav>
 
+      {/*
+        Title and one-line purpose render for every section, so the answer to
+        "what belongs here" is always in the same place. A section's optional
+        index.md adds detail below rather than replacing them.
+      */}
       <div class="section-heading-row">
-        {Intro ? (
-          <article class="prose">
-            <Intro />
-          </article>
-        ) : (
-          <div>
-            <h1 class="section-title">{label}</h1>
-            <p class="lede">{SECTION_BLURBS[section]}</p>
-          </div>
-        )}
+        <div>
+          <h1 class="section-title">{label}</h1>
+          <p class="lede">{SECTION_BLURBS[section]}</p>
+        </div>
         <a class="btn-secondary" href={withBase(`/new/?section=${section}`)}>Add a page</a>
       </div>
+
+      {Intro && (
+        <article class="prose section-intro">
+          <Intro />
+        </article>
+      )}
 
       {pages.length === 0 ? (
         <p class="empty-state">

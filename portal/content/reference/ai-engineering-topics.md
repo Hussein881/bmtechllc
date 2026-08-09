@@ -11,9 +11,7 @@ order: 50
 related: [agentic-ai-in-38-min]
 ---
 
-# AI Engineering Guide: LLMs, RAG, Production Systems, and ML Fundamentals
-
-An internal reference covering the questions engineers most often need answered before working on LLM or agentic systems. Each entry gives a working answer plus one recommended resource for going deeper.
+Each entry gives a working answer plus one recommended resource for going deeper.
 
 **Companion doc:** *Agentic AI — Reference Notes* (design patterns, evaluation, cost, observability, security).
 

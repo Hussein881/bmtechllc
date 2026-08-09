@@ -10,8 +10,6 @@ reviewCycleMonths: 12
 order: 90
 ---
 
-# Internal Pricing Rate Card
-
 This page exists to verify that `audience: internal` content is excluded from
 every public output — HTML pages, llms.txt, llms-full.txt, and index.json.
 

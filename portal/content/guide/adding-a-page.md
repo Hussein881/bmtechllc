@@ -11,8 +11,6 @@ order: 10
 related: [frontmatter-reference, writing-well]
 ---
 
-# Adding a Page
-
 Adding a topic never requires an application change. Create a Markdown file in
 the right folder and it becomes a page, appears in navigation, and enters the
 search index automatically.

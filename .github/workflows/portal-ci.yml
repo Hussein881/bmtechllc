@@ -6,9 +6,10 @@ on:
     paths:
       - 'portal/**'
       - '.github/workflows/portal-ci.yml'
+  # No path filter here: this is a required status check on main, and a
+  # required check that never runs (e.g. on a website-only PR) blocks merge
+  # forever rather than being skipped. The build itself is fast regardless.
   pull_request:
-    paths:
-      - 'portal/**'
 
 jobs:
   build:

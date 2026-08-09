@@ -70,16 +70,19 @@ const Intro = rendered?.Content;
         <span>{label}</span>
       </nav>
 
-      {Intro ? (
-        <article class="prose">
-          <Intro />
-        </article>
-      ) : (
-        <>
-          <h1 class="section-title">{label}</h1>
-          <p class="lede">{SECTION_BLURBS[section]}</p>
-        </>
-      )}
+      <div class="section-heading-row">
+        {Intro ? (
+          <article class="prose">
+            <Intro />
+          </article>
+        ) : (
+          <div>
+            <h1 class="section-title">{label}</h1>
+            <p class="lede">{SECTION_BLURBS[section]}</p>
+          </div>
+        )}
+        <a class="btn-secondary" href={withBase(`/new/?section=${section}`)}>Add a page</a>
+      </div>
 
       {pages.length === 0 ? (
         <p class="empty-state">

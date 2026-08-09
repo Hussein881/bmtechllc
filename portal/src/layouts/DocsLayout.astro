@@ -21,6 +21,29 @@ interface Props {
 
 const { page, allPages, headings } = Astro.props;
 
+const clientId = import.meta.env.PUBLIC_GITHUB_APP_CLIENT_ID && import.meta.env.PUBLIC_GITHUB_DEVICE_FLOW_RELAY_URL
+  ? import.meta.env.PUBLIC_GITHUB_APP_CLIENT_ID
+  : '';
+const repoPath = `portal/content/${page.section}/${page.id}.md`;
+// Handed to /edit/ via sessionStorage so it can prefill instantly without an
+// auth round trip; escaped so a `</script>` in a page body can't break out.
+const editPayload = JSON.stringify({
+  path: repoPath,
+  frontmatter: {
+    title: page.title,
+    description: page.description,
+    tags: page.tags,
+    status: page.status,
+    visibility: page.visibility,
+    owner: page.owner,
+    updated: page.updated.toISOString().slice(0, 10),
+    reviewCycleMonths: page.reviewCycleMonths,
+    order: page.order,
+    related: page.related,
+  },
+  body: page.entry.body ?? '',
+}).replace(/</g, '\\u003c');
+
 const crumbs = buildBreadcrumbs(page);
 const tree = buildSectionTree(allPages, page.section);
 
@@ -138,8 +161,20 @@ const updatedISO = page.updated.toISOString().split('T')[0];
         >
           Copy as Markdown
         </button>
+        {clientId && (
+          <>
+            <a class="btn-secondary" id="edit-page-link" href={`${withBase('/edit/')}?path=${encodeURIComponent(repoPath)}`}>
+              Edit page
+            </a>
+            <button class="btn-secondary" id="delete-page-btn" type="button" data-path={repoPath} data-title={page.title} data-client-id={clientId}>
+              Delete page
+            </button>
+          </>
+        )}
       </div>
     </main>
+
+    {clientId && <script is:inline type="application/json" id="edit-payload" set:html={editPayload} />}
 
     <aside class="toc-rail">
       <TableOfContents headings={headings} />
@@ -159,6 +194,38 @@ const updatedISO = page.updated.toISOString().split('T')[0];
         btn.textContent = 'Copy failed';
       }
       setTimeout(() => (btn.textContent = label), 1600);
+    });
+  </script>
+
+  <script>
+    import { fetchPage, deletePage } from '../lib/github-content-client';
+
+    const editLink = document.getElementById('edit-page-link');
+    editLink?.addEventListener('click', () => {
+      const payloadEl = document.getElementById('edit-payload');
+      if (payloadEl?.textContent) sessionStorage.setItem('bmtech-edit-payload', payloadEl.textContent);
+    });
+
+    const deleteBtn = document.getElementById('delete-page-btn') as HTMLButtonElement | null;
+    deleteBtn?.addEventListener('click', async () => {
+      const path = deleteBtn.dataset.path!;
+      const title = deleteBtn.dataset.title!;
+      const clientId = deleteBtn.dataset.clientId!;
+      if (!confirm(`Delete "${title}"? This opens a pull request removing the page — nothing is deleted until it is reviewed and merged.`)) return;
+
+      deleteBtn.disabled = true;
+      const originalText = deleteBtn.textContent;
+      deleteBtn.textContent = 'Preparing pull request…';
+      try {
+        const { sha } = await fetchPage(clientId, path);
+        const result = await deletePage(clientId, { path, sha, title });
+        const link = Object.assign(document.createElement('a'), { href: result.url, target: '_blank', rel: 'noreferrer', textContent: `removal PR #${result.number}` });
+        deleteBtn.replaceWith('Opened ', link, '.');
+      } catch (error) {
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = originalText;
+        alert(error instanceof Error ? error.message : 'Could not delete that page.');
+      }
     });
   </script>
 </BaseLayout>

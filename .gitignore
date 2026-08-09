@@ -2,11 +2,16 @@
 portal/dist/
 portal/node_modules/
 portal/.astro/
-service/node_modules/
+portal/.env
+portal/.env.*
 
 # Website build output
 website/dist/
 website/node_modules/
+
+# Device-flow relay (Cloudflare Worker) build output and local state
+device-flow-relay/node_modules/
+device-flow-relay/.wrangler/
 
 # OS
 .DS_Store

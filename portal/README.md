@@ -52,7 +52,14 @@ Full authoring guide: [Contributing to the Knowledge Base](content/onboarding/co
 
 ### Authenticated authoring UI
 
-The portal also exposes `/new/`, which submits a proposed Markdown page to a separately deployed authenticated service. It creates a branch and pull request; it never writes to `main`, and it never exposes GitHub credentials in the static site. Configure `PUBLIC_PAGE_AUTHORING_API_URL` at build time and deploy [`../service`](../service) with an OIDC issuer plus a least-privilege GitHub App. Without that public URL, the UI is deliberately disabled.
+The portal also exposes `/new/` (linked as "Add a page" from every section) and,
+on each page, "Edit page" / "Delete page". These write directly to this repo
+from the browser via a GitHub App's Device Flow — no backend service is
+deployed or required. Every action opens a branch and pull request; none of
+them ever write to `main` directly. See
+[`docs/github-app-setup.md`](docs/github-app-setup.md) for the one-time App
+registration, then set `PUBLIC_GITHUB_APP_CLIENT_ID` at build time. Without
+that variable, the UI is deliberately disabled.
 
 ## How this differs from a public docs site
 

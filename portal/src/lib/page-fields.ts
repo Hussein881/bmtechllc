@@ -8,5 +8,4 @@ export const TAGS = [
 
 export const SECTIONS = [
   'guide', 'onboarding', 'methodology', 'playbooks', 'runbooks', 'reference',
-  'templates', 'decisions', 'engagements',
 ] as const;

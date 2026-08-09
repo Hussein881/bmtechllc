@@ -25,8 +25,6 @@ someone for:
 - How we run an engagement, phase by phase
 - Procedures we repeat and should not reinvent each time
 - Definitions we want used consistently in client-facing documents
-- Decisions we already settled, and the reasoning behind them
-- What actually happened on past engagements, including what went wrong
 
 ## What does not belong here
 
@@ -41,7 +39,7 @@ tracking. If it stops being true once the work is done, it is not a KB page.
 
 ## How it is organized
 
-Nine sections, each answering a different question:
+Six sections, each answering a different question:
 
 | Section | Answers |
 |---|---|
@@ -51,9 +49,6 @@ Nine sections, each answering a different question:
 | **Playbooks** | How do I execute this phase of an engagement? |
 | **Runbooks** | What are the exact steps for this recurring operation? |
 | **Reference** | What does this term mean? What is the standard? |
-| **Templates** | What do I copy from to start this artifact? |
-| **Decisions** | Why did we settle this question the way we did? |
-| **Engagements** | What happened on that project? |
 
 The distinction that trips people up most is **playbook vs. runbook**. A playbook
 teaches judgment for a phase of work that varies by situation — how to run

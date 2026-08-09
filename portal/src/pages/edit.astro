@@ -26,13 +26,17 @@ import { TAGS } from '../lib/page-contract';
         <label class="wide">Related page IDs <input name="related" maxlength="1000" placeholder="Comma-separated, e.g. glossary, engagement-model" /><small>Use existing page IDs; these are checked by portal CI.</small></label>
         <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true"></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
       </div>
-      <button class="btn-primary" type="submit" id="submit-btn" hidden>Update via pull request</button>
+      <div class="form-submit-row">
+        <button class="btn-primary" type="submit" id="submit-btn" hidden>Update via pull request</button>
+        <button class="btn-secondary" type="button" id="forget-token" hidden>Use a different GitHub token</button>
+      </div>
     </form>
   </main>
 </BaseLayout>
 
 <script>
   import { fetchPage, updatePage } from '../lib/github-content-client';
+  import { hasCachedToken, clearCachedToken } from '../lib/github-token-auth';
   import type { PageFrontmatter } from '../lib/github-content-client';
 
   const HANDOFF_KEY = 'bmtech-edit-payload';
@@ -43,6 +47,18 @@ import { TAGS } from '../lib/page-contract';
   const fields = document.querySelector<HTMLElement>('#form-fields');
   const submitBtn = document.querySelector<HTMLButtonElement>('#submit-btn');
   const path = new URLSearchParams(location.search).get('path') ?? '';
+
+  const forgetBtn = document.querySelector<HTMLButtonElement>('#forget-token');
+  const syncForgetBtn = () => { if (forgetBtn) forgetBtn.hidden = !hasCachedToken(); };
+  syncForgetBtn();
+  forgetBtn?.addEventListener('click', () => {
+    clearCachedToken();
+    syncForgetBtn();
+    if (message) {
+      message.className = 'form-message';
+      message.textContent = 'Token forgotten. You will be asked for a new one on your next submit.';
+    }
+  });
 
   interface EditPayload { path: string; frontmatter: PageFrontmatter; body: string }
 
@@ -116,6 +132,7 @@ import { TAGS } from '../lib/page-contract';
 
     message.textContent = 'Fetching the current version and creating your review pull request…';
     message.className = 'form-message';
+    message.scrollIntoView({ behavior: 'smooth', block: 'center' });
     try {
       // Re-fetch the sha right before writing so a concurrent edit can't be
       // silently overwritten — GitHub rejects the write if it doesn't match.
@@ -124,9 +141,11 @@ import { TAGS } from '../lib/page-contract';
       message.className = 'form-message success';
       const link = Object.assign(document.createElement('a'), { href: result.url, target: '_blank', rel: 'noreferrer', textContent: `open pull request #${result.number}` });
       message.replaceChildren('Review pull request created: ', link, '.');
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch (error) {
       message.className = 'form-message error';
       message.textContent = error instanceof Error ? error.message : 'The update could not be submitted.';
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   });
 </script>

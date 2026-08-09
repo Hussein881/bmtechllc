@@ -12,6 +12,9 @@
 
 const STORAGE_KEY = 'bmtech-portal-gh-token';
 const TOKEN_SETTINGS_URL = 'https://github.com/settings/personal-access-tokens/new';
+// Named here rather than imported from github-content-client to avoid a cycle:
+// that module imports this one.
+const REPO_SLUG = 'Hussein881/bmtechllc';
 
 function renderDialog(): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -19,13 +22,13 @@ function renderDialog(): Promise<string> {
     dialog.className = 'gh-auth-dialog';
     dialog.innerHTML = `
       <p class="eyebrow">GitHub access needed</p>
-      <p>
-        Create a fine-grained token at
-        <a href="${TOKEN_SETTINGS_URL}" target="_blank" rel="noreferrer">github.com/settings/personal-access-tokens/new</a>,
-        scoped to the <strong>Hussein881/bmtechllc</strong> repository only, with
-        <strong>Contents</strong> and <strong>Pull requests</strong> permissions set to
-        Read and write. Then paste it below.
-      </p>
+      <p><a href="${TOKEN_SETTINGS_URL}" target="_blank" rel="noreferrer">Create a fine-grained token</a> with:</p>
+      <ul class="gh-auth-perms">
+        <li>Repository access — <strong>${REPO_SLUG}</strong> only</li>
+        <li>Contents — <strong>Read and write</strong></li>
+        <li>Pull requests — <strong>Read and write</strong></li>
+      </ul>
+      <p class="gh-auth-hint">Leave Account permissions untouched.</p>
       <input type="password" class="gh-token-input" placeholder="github_pat_…" autocomplete="off" spellcheck="false" />
       <p class="gh-auth-status"></p>
       <div class="gh-auth-actions">
@@ -55,7 +58,9 @@ function renderDialog(): Promise<string> {
         status.textContent = 'Paste a token first.';
         return;
       }
-      sessionStorage.setItem(STORAGE_KEY, token);
+      // Deliberately not cached here — a token is only remembered once it has
+      // actually completed a request (see rememberToken), so a token with the
+      // wrong permissions re-prompts instead of silently failing all session.
       cleanup();
       resolve(token);
     };
@@ -70,8 +75,8 @@ function renderDialog(): Promise<string> {
 }
 
 /**
- * Resolves with a GitHub token, prompting the user to paste one if it isn't
- * already cached for this tab session.
+ * Resolves with a GitHub token, prompting the user to paste one if a working
+ * one isn't already cached for this tab session.
  */
 export async function getAccessToken(): Promise<string> {
   const cached = sessionStorage.getItem(STORAGE_KEY);
@@ -79,7 +84,17 @@ export async function getAccessToken(): Promise<string> {
   return renderDialog();
 }
 
-/** Forget the cached token, e.g. after a 401 from the GitHub API. */
+/** Cache a token that has now proven it works, so the tab stops asking. */
+export function rememberToken(token: string): void {
+  sessionStorage.setItem(STORAGE_KEY, token);
+}
+
+/** Whether this tab is currently holding a token. */
+export function hasCachedToken(): boolean {
+  return sessionStorage.getItem(STORAGE_KEY) !== null;
+}
+
+/** Forget the cached token, e.g. after GitHub rejects it. */
 export function clearCachedToken(): void {
   sessionStorage.removeItem(STORAGE_KEY);
 }

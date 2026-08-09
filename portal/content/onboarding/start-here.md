@@ -42,8 +42,6 @@ Discovery is where most engagements are won or lost.
    — what must be true before discovery starts
 2. [Stakeholder Interview Playbook](/bmtechllc/portal/playbooks/discovery/stakeholder-interviews/)
    — the highest-leverage activity we do
-3. [Discovery Summary Template](/bmtechllc/portal/templates/discovery-summary/)
-   — what discovery produces
 
 ## Day 3 — The technical work
 

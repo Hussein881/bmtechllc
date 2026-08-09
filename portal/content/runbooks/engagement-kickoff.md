@@ -25,7 +25,6 @@ kickoff is a repeatable sequence rather than an improvisation.
 | Step | Owner | Notes |
 |---|---|---|
 | File the countersigned SOW | ah | Store alongside the engagement folder |
-| Create `content/engagements/{client}/` | ah | Working notes live here from day one |
 | Draft the kickoff agenda | ah | Circulate at least 48h before the session |
 
 ## Day 1–2 — Access and logistics

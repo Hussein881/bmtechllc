@@ -38,11 +38,9 @@ are and what makes each one complete.
 
 Discovery is where most engagements are won or lost.
 
-1. [Discovery Readiness Checklist](/bmtechllc/portal/playbooks/discovery/readiness-checklist/)
-   — what must be true before discovery starts
-2. [Stakeholder Interview Playbook](/bmtechllc/portal/playbooks/discovery/stakeholder-interviews/)
+1. [Stakeholder Interview Playbook](/bmtechllc/portal/playbooks/discovery/stakeholder-interviews/)
    — the highest-leverage activity we do
-3. [Discovery Summary Template](/bmtechllc/portal/templates/discovery-summary/)
+2. [Discovery Summary Template](/bmtechllc/portal/templates/discovery-summary/)
    — what discovery produces
 
 ## Day 3 — The technical work

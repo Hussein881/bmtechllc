@@ -107,10 +107,9 @@ Match it to how fast the content actually decays:
 
 | Content | Suggested | Why |
 |---|---|---|
-| Engagement notes, runbooks, pricing | 3 | Tied to current tooling and rates |
-| Playbooks, templates, onboarding | 6 | Change as practice evolves |
+| Runbooks, pricing | 3 | Tied to current tooling and rates |
+| Playbooks, onboarding | 6 | Change as practice evolves |
 | Methodology, reference | 12 | Deliberately stable |
-| Decisions (ADRs) | 24 | A record of what was decided, not a living document |
 
 Overdue pages produce a build **warning**, not a failure, and surface in the
 "Needs review" list on the home page.

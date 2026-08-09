@@ -21,19 +21,37 @@ import { SECTIONS } from '../lib/page-contract';
         <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true" placeholder="# A useful title&#10;&#10;Explain the decision, procedure, or lesson."></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
       </div>
       <div class="authoring-preview"><p class="eyebrow">Safe preview</p><p id="slug-preview">Proposed path: choose a title</p><article id="markdown-preview" class="prose preview-body">Your Markdown preview will appear here.</article></div>
-      <button class="btn-primary" type="submit">Create review pull request</button>
+      <div class="form-submit-row">
+        <button class="btn-primary" type="submit">Create review pull request</button>
+        <button class="btn-secondary" type="button" id="forget-token" hidden>Use a different GitHub token</button>
+      </div>
     </form>
   </main>
 </BaseLayout>
 
 <script>
   import { createPage, slugify } from '../lib/github-content-client';
+  import { hasCachedToken, clearCachedToken } from '../lib/github-token-auth';
   import type { PageFrontmatter } from '../lib/github-content-client';
 
   const form = document.querySelector<HTMLFormElement>('#page-form');
   const message = document.querySelector('#form-message');
   const preview = document.querySelector('#markdown-preview');
   const slugPreview = document.querySelector('#slug-preview');
+
+  // Only meaningful once a token is held for this tab, so it stays hidden
+  // until there is actually something to forget.
+  const forgetBtn = document.querySelector<HTMLButtonElement>('#forget-token');
+  const syncForgetBtn = () => { if (forgetBtn) forgetBtn.hidden = !hasCachedToken(); };
+  syncForgetBtn();
+  forgetBtn?.addEventListener('click', () => {
+    clearCachedToken();
+    syncForgetBtn();
+    if (message) {
+      message.className = 'form-message';
+      message.textContent = 'Token forgotten. You will be asked for a new one on your next submit.';
+    }
+  });
 
   // Preselect the section when arriving from a section page's "Add a page" link.
   const requestedSection = new URLSearchParams(location.search).get('section');
@@ -88,16 +106,19 @@ import { SECTIONS } from '../lib/page-contract';
 
     message.textContent = 'Creating your review pull request…';
     message.className = 'form-message';
+    message.scrollIntoView({ behavior: 'smooth', block: 'center' });
     try {
       const result = await createPage({ section, frontmatter, body });
       message.className = 'form-message success';
       const link = Object.assign(document.createElement('a'), { href: result.url, target: '_blank', rel: 'noreferrer', textContent: `open pull request #${result.number}` });
       message.replaceChildren('Review pull request created: ', link, '.');
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
       form.reset();
       updatePreview();
     } catch (error) {
       message.className = 'form-message error';
       message.textContent = error instanceof Error ? error.message : 'The page could not be submitted.';
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   });
 </script>

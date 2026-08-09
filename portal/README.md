@@ -25,10 +25,7 @@ content/
 ├── methodology/   how we work and why
 ├── playbooks/     how to execute a phase of an engagement
 ├── runbooks/      operational procedures and incident response
-├── reference/     lookups: glossary, standards, checklists
-├── templates/     artifacts you copy from at the start of work
-├── decisions/     ADRs, so we stop relitigating settled questions
-└── engagements/   per-client notes, retros, what actually happened
+└── reference/     lookups: glossary, standards, checklists
 ```
 
 Required frontmatter:

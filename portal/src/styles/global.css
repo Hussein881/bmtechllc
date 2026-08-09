@@ -552,6 +552,10 @@ a:hover { color: var(--accent-hover); }
 .gh-auth-dialog { border: none; border-radius: 10px; padding: 1.5rem; width: min(28rem, 90vw); background: var(--bg); color: var(--text); box-shadow: 0 16px 48px rgb(0 0 0 / 0.22); }
 .gh-auth-dialog::backdrop { background: rgb(0 0 0 / 0.4); }
 .gh-auth-dialog p { margin: 0.6rem 0; font-size: 0.88rem; }
+.form-submit-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.gh-auth-perms { margin: 0.4rem 0; padding-left: 1.1rem; font-size: 0.85rem; }
+.gh-auth-perms li { margin: 0.15rem 0; }
+.gh-auth-hint { color: var(--text-faint); font-size: 0.8rem; }
 .gh-token-input { width: 100%; font: inherit; font-family: var(--font-mono); font-size: 0.82rem; color: var(--text); background: var(--bg); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 0.55rem 0.65rem; }
 .gh-auth-status { color: var(--text-muted); font-size: 0.82rem; min-height: 1.2em; }
 .gh-auth-actions { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 0.8rem; }
@@ -624,6 +628,11 @@ a:hover { color: var(--accent-hover); }
 .banner-draft    { background: var(--accent-subtle); border-color: var(--accent); }
 .banner-archived { background: var(--bg-inset); border-color: var(--border-strong); color: var(--text-muted); }
 .banner-stale    { background: var(--warn-subtle); border-color: var(--warn); }
+
+/* Pending review — a deletion is the one worth reading as a warning. */
+.banner-pending        { background: var(--accent-subtle); border-color: var(--accent); }
+.banner-pending-delete { background: var(--warn-subtle); border-color: var(--warn); }
+.banner-pending a      { text-decoration: underline; }
 
 .badge-shareable {
   font-size: 0.65rem;

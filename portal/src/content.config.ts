@@ -28,9 +28,6 @@ export { TAGS } from './lib/page-contract';
 //   playbooks   — how to execute a phase of an engagement
 //   runbooks    — operational procedures and incident response
 //   reference   — lookups: glossary, standards, checklists
-//   templates   — artifacts you copy from at the start of work
-//   decisions   — ADRs; why we settled a question, so we stop relitigating it
-//   engagements — per-client working notes, retros, what actually happened
 
 const section = (dir: string) =>
   defineCollection({
@@ -45,7 +42,4 @@ export const collections = {
   playbooks: section('playbooks'),
   runbooks: section('runbooks'),
   reference: section('reference'),
-  templates: section('templates'),
-  decisions: section('decisions'),
-  engagements: section('engagements'),
 };

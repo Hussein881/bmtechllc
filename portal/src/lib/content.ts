@@ -11,9 +11,6 @@ export const SECTION_LABELS: Record<SectionName, string> = {
   playbooks: 'Playbooks',
   runbooks: 'Runbooks',
   reference: 'Reference',
-  templates: 'Templates',
-  decisions: 'Decisions',
-  engagements: 'Engagements',
 };
 
 /** One-line purpose per section, shown on the home grid and section indexes. */
@@ -24,9 +21,6 @@ export const SECTION_BLURBS: Record<SectionName, string> = {
   playbooks: 'How to execute a phase of an engagement.',
   runbooks: 'Operational procedures and incident response.',
   reference: 'Lookups: glossary, standards, checklists.',
-  templates: 'Artifacts you copy from at the start of work.',
-  decisions: 'Why we settled a question, so we stop relitigating it.',
-  engagements: 'Per-client working notes, retros, what actually happened.',
 };
 
 /**
@@ -235,4 +229,29 @@ export function findBacklinks(pages: PageRecord[], target: PageRecord): PageReco
       p.path !== target.path &&
       p.related.some((slug) => resolveRelated(pages, slug)?.path === target.path)
   );
+}
+
+/**
+ * Every page that would be left with a dangling reference if `target` were
+ * deleted — both `related:` edges and inline body links.
+ *
+ * This is broader than findBacklinks on purpose: the build gate fails on any
+ * broken internal link, including ones written inline in prose, which the
+ * `related`-only view misses. Used to warn before proposing a deletion, since
+ * otherwise the problem only surfaces as a red CI run on the resulting PR.
+ */
+export function findInboundReferences(pages: PageRecord[], target: PageRecord): PageRecord[] {
+  const withoutBase = target.path;
+  const withBasePath = `${base}${target.path}`;
+  // Trailing slash is optional in authored links, so match the path stem and
+  // accept either form.
+  const stems = [withoutBase, withBasePath].map((p) => p.replace(/\/$/, ''));
+
+  return pages.filter((page) => {
+    if (page.path === target.path) return false;
+    if (page.related.some((slug) => resolveRelated(pages, slug)?.path === target.path)) return true;
+
+    const body = page.entry.body ?? '';
+    return stems.some((stem) => body.includes(`](${stem})`) || body.includes(`](${stem}/)`));
+  });
 }

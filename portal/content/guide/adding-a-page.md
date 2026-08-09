@@ -26,9 +26,6 @@ Ask what question the page answers:
 | "How do I execute this phase?" (judgment required) | `playbooks/` |
 | "What are the exact steps?" (same every time) | `runbooks/` |
 | "What does this mean?" | `reference/` |
-| "What do I copy to start?" | `templates/` |
-| "Why did we decide this?" | `decisions/` |
-| "What happened on that project?" | `engagements/` |
 | "How do we work, and why?" | `methodology/` |
 
 If two sections seem equally right, the page is probably two pages.

@@ -8,7 +8,7 @@ owner: ah
 updated: 2026-07-28
 reviewCycleMonths: 12
 order: 40
-related: [frontmatter-reference, 0001-internal-only-knowledge-base]
+related: [frontmatter-reference]
 ---
 
 # Maintaining the Knowledge Base
@@ -115,13 +115,3 @@ closed so that filtering stays meaningful — a tag used on one page is noise.
 
 Edit `KNOWN_OWNERS` in `scripts/check-build.mjs`. Use initials, matching the
 convention already in use.
-
-## Keeping the loop closed
-
-The habit that makes this compound rather than accumulate: when an engagement
-ends, read its retro and ask what generalizes. Findings that apply beyond one
-client belong in a playbook, runbook, or reference page — not buried in an
-engagement folder nobody will reopen.
-
-Knowledge that stays in `engagements/` is a record. Knowledge that graduates out
-of it is an asset.

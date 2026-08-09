@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { TAGS } from '../lib/page-contract';
+
+const clientId = import.meta.env.PUBLIC_GITHUB_APP_CLIENT_ID ?? '';
+const relayConfigured = Boolean(import.meta.env.PUBLIC_GITHUB_DEVICE_FLOW_RELAY_URL);
+---
+
+<BaseLayout title="Edit page" description="Edit an existing knowledge-base page and propose the change for review.">
+  <main id="main-content" class="authoring-page">
+    <div class="authoring-heading">
+      <p class="eyebrow">Authenticated authoring</p>
+      <h1>Edit a knowledge-base page</h1>
+      <p>Changes are committed to a branch and opened as a pull request — the live page is untouched until that PR is approved and merged.</p>
+    </div>
+
+    {!clientId || !relayConfigured ? (
+      <aside class="authoring-notice" role="status">
+        Page editing is not configured for this deployment. Register a GitHub App with Device Flow enabled, deploy <code>device-flow-relay/</code>, and set <code>PUBLIC_GITHUB_APP_CLIENT_ID</code> and <code>PUBLIC_GITHUB_DEVICE_FLOW_RELAY_URL</code> at build time.
+      </aside>
+    ) : (
+      <form id="page-form" class="page-form" novalidate data-client-id={clientId}>
+        <div id="form-message" class="form-message" aria-live="polite">Loading current content&hellip;</div>
+        <p id="path-display" class="path-display"></p>
+        <div class="form-grid" hidden id="form-fields">
+          <label>Title <input name="title" required maxlength="160" autocomplete="off" /></label>
+          <label>Owner <input name="owner" required maxlength="80" placeholder="Initials or team name" /></label>
+          <label class="wide">Description <textarea name="description" required minlength="20" maxlength="500" rows="3" aria-describedby="description-help"></textarea><small id="description-help">A 20–500 character retrieval summary.</small></label>
+          <label>Status <select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
+          <label>Visibility <select name="visibility"><option value="internal">Internal</option><option value="shareable">Shareable</option></select></label>
+          <label>Review cycle (months) <input name="reviewCycleMonths" type="number" min="1" max="120" value="6" required /></label>
+          <label>Order <input name="order" type="number" min="-10000" max="10000" value="50" required /></label>
+          <fieldset class="wide"><legend>Tags</legend><div class="tag-options">{TAGS.map((tag) => <label><input type="checkbox" name="tags" value={tag} /> {tag}</label>)}</div></fieldset>
+          <label class="wide">Related page IDs <input name="related" maxlength="1000" placeholder="Comma-separated, e.g. glossary, engagement-model" /><small>Use existing page IDs; these are checked by portal CI.</small></label>
+          <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true"></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
+        </div>
+        <button class="btn-primary" type="submit" id="submit-btn" hidden>Update via pull request</button>
+      </form>
+    )}
+  </main>
+</BaseLayout>
+
+<script>
+  import { fetchPage, updatePage } from '../lib/github-content-client';
+  import type { PageFrontmatter } from '../lib/github-content-client';
+
+  const HANDOFF_KEY = 'bmtech-edit-payload';
+
+  const form = document.querySelector<HTMLFormElement>('#page-form');
+  const message = document.querySelector('#form-message');
+  const pathDisplay = document.querySelector('#path-display');
+  const fields = document.querySelector<HTMLElement>('#form-fields');
+  const submitBtn = document.querySelector<HTMLButtonElement>('#submit-btn');
+  const clientId = form?.dataset.clientId ?? '';
+  const path = new URLSearchParams(location.search).get('path') ?? '';
+
+  interface EditPayload { path: string; frontmatter: PageFrontmatter; body: string }
+
+  function fillForm(frontmatter: PageFrontmatter, body: string) {
+    if (!form) return;
+    (form.elements.namedItem('title') as HTMLInputElement).value = frontmatter.title;
+    (form.elements.namedItem('description') as HTMLTextAreaElement).value = frontmatter.description;
+    (form.elements.namedItem('owner') as HTMLInputElement).value = frontmatter.owner;
+    (form.elements.namedItem('status') as HTMLSelectElement).value = frontmatter.status;
+    (form.elements.namedItem('visibility') as HTMLSelectElement).value = frontmatter.visibility;
+    (form.elements.namedItem('reviewCycleMonths') as HTMLInputElement).value = String(frontmatter.reviewCycleMonths);
+    (form.elements.namedItem('order') as HTMLInputElement).value = String(frontmatter.order);
+    (form.elements.namedItem('related') as HTMLInputElement).value = frontmatter.related.join(', ');
+    (form.elements.namedItem('body') as HTMLTextAreaElement).value = body;
+    for (const checkbox of form.querySelectorAll<HTMLInputElement>('input[name="tags"]')) {
+      checkbox.checked = frontmatter.tags.includes(checkbox.value);
+    }
+  }
+
+  async function init() {
+    if (!form || !message || !path) {
+      if (message) message.textContent = 'Missing page path — open Edit from the page itself.';
+      return;
+    }
+    pathDisplay!.textContent = `Editing: ${path}`;
+
+    const raw = sessionStorage.getItem(HANDOFF_KEY);
+    sessionStorage.removeItem(HANDOFF_KEY);
+    const handoff: EditPayload | null = raw ? JSON.parse(raw) : null;
+
+    if (handoff && handoff.path === path) {
+      fillForm(handoff.frontmatter, handoff.body);
+      message.textContent = '';
+      fields!.hidden = false;
+      submitBtn!.hidden = false;
+      return;
+    }
+
+    try {
+      const { frontmatter, body } = await fetchPage(clientId, path);
+      fillForm(frontmatter, body);
+      message.textContent = '';
+      fields!.hidden = false;
+      submitBtn!.hidden = false;
+    } catch (error) {
+      message.className = 'form-message error';
+      message.textContent = error instanceof Error ? error.message : 'Could not load that page.';
+    }
+  }
+  init();
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form.reportValidity() || !message) return;
+    const data = new FormData(form);
+    const frontmatter: PageFrontmatter = {
+      title: String(data.get('title') || ''),
+      description: String(data.get('description') || ''),
+      tags: data.getAll('tags').map(String),
+      status: String(data.get('status') || 'draft'),
+      visibility: String(data.get('visibility') || 'internal'),
+      owner: String(data.get('owner') || ''),
+      updated: new Date().toISOString().slice(0, 10),
+      reviewCycleMonths: Number(data.get('reviewCycleMonths')),
+      order: Number(data.get('order')),
+      related: String(data.get('related') || '').split(',').map((item) => item.trim()).filter(Boolean),
+    };
+    const body = String(data.get('body') || '');
+
+    message.textContent = 'Fetching the current version and creating your review pull request…';
+    message.className = 'form-message';
+    try {
+      // Re-fetch the sha right before writing so a concurrent edit can't be
+      // silently overwritten — GitHub rejects the write if it doesn't match.
+      const { sha } = await fetchPage(clientId, path);
+      const result = await updatePage(clientId, { path, sha, frontmatter, body });
+      message.className = 'form-message success';
+      const link = Object.assign(document.createElement('a'), { href: result.url, target: '_blank', rel: 'noreferrer', textContent: `open pull request #${result.number}` });
+      message.replaceChildren('Review pull request created: ', link, '.');
+    } catch (error) {
+      message.className = 'form-message error';
+      message.textContent = error instanceof Error ? error.message : 'The update could not be submitted.';
+    }
+  });
+</script>

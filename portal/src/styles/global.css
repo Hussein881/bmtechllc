@@ -543,6 +543,20 @@ a:hover { color: var(--accent-hover); }
 .preview-body { min-height: 5rem; padding-top: 0.5rem; }
 .btn-primary { justify-self: start; font: inherit; font-size: 0.86rem; color: #fff; background: var(--accent); border: 1px solid var(--accent); padding: 0.6rem 0.9rem; border-radius: var(--radius); cursor: pointer; }
 .btn-primary:hover { background: var(--accent-hover); }
+.path-display { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-faint); }
+
+.section-heading-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1.5rem; }
+.section-heading-row > *:first-child { flex: 1; }
+
+/* ── GitHub device-flow sign-in dialog ────────────────────────────────────── */
+.gh-auth-dialog { border: none; border-radius: 10px; padding: 1.5rem; width: min(26rem, 90vw); background: var(--bg); color: var(--text); box-shadow: 0 16px 48px rgb(0 0 0 / 0.22); text-align: center; }
+.gh-auth-dialog::backdrop { background: rgb(0 0 0 / 0.4); }
+.gh-auth-dialog p { margin: 0.6rem 0; }
+.gh-auth-code { font-family: var(--font-mono); font-size: 1.6rem; font-weight: 650; letter-spacing: 0.08em; background: var(--bg-inset); border-radius: var(--radius); padding: 0.5rem; }
+.gh-auth-status { color: var(--text-muted); font-size: 0.85rem; }
+.gh-auth-cancel { margin-top: 0.4rem; }
+
+#delete-page-btn:hover { color: #c66956; border-color: #c66956; }
 
 /* ── Embedded video (e.g. YouTube) inside Markdown content ───────────────── */
 .video-embed { position: relative; width: 100%; aspect-ratio: 16 / 9; margin: 1.5rem 0; }

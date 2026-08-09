@@ -8,7 +8,7 @@ owner: ah
 updated: 2026-07-28
 reviewCycleMonths: 3
 order: 10
-related: [engagement-model, readiness-checklist]
+related: [engagement-model]
 ---
 
 # Engagement Kickoff Runbook
@@ -33,8 +33,7 @@ kickoff is a repeatable sequence rather than an improvisation.
 Chase access early. Waiting on credentials is the single most common cause of a
 wasted first week.
 
-- Request the accounts and data access listed in the
-  [Discovery Readiness Checklist](/bmtechllc/portal/playbooks/discovery/readiness-checklist/)
+- Request the accounts and data access discovery will depend on
 - Confirm the three stakeholder interview slots are booked
 - Verify we can reach any system we are expected to integrate with
 

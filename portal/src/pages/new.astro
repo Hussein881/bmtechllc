@@ -1,9 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SECTIONS } from '../lib/page-contract';
-
-const clientId = import.meta.env.PUBLIC_GITHUB_APP_CLIENT_ID ?? '';
-const relayConfigured = Boolean(import.meta.env.PUBLIC_GITHUB_DEVICE_FLOW_RELAY_URL);
 ---
 
 <BaseLayout title="Create page" description="Create a proposed knowledge-base page for review.">
@@ -11,27 +8,21 @@ const relayConfigured = Boolean(import.meta.env.PUBLIC_GITHUB_DEVICE_FLOW_RELAY_
     <div class="authoring-heading">
       <p class="eyebrow">Authenticated authoring</p>
       <h1>Create a knowledge-base page</h1>
-      <p>Submit a draft for review. Signing in with GitHub commits your content to a branch and opens a pull request — it is published only after that PR is approved and merged.</p>
+      <p>Submit a draft for review. Your content is committed to a branch and a pull request is opened — it is published only after that PR is approved and merged. You'll be asked for a GitHub token scoped to this repo the first time you submit.</p>
     </div>
 
-    {!clientId || !relayConfigured ? (
-      <aside class="authoring-notice" role="status">
-        Page creation is not configured for this deployment. Register a GitHub App with Device Flow enabled, deploy <code>device-flow-relay/</code>, and set <code>PUBLIC_GITHUB_APP_CLIENT_ID</code> and <code>PUBLIC_GITHUB_DEVICE_FLOW_RELAY_URL</code> at build time.
-      </aside>
-    ) : (
-      <form id="page-form" class="page-form" novalidate data-client-id={clientId}>
-        <div id="form-message" class="form-message" aria-live="polite"></div>
-        <div class="form-grid">
-          <label>Section <select name="section" required>{SECTIONS.map((section) => <option value={section}>{section}</option>)}</select></label>
-          <label>Title <input name="title" required maxlength="160" autocomplete="off" /></label>
-          <label class="wide">Description <textarea name="description" required minlength="20" maxlength="500" rows="3" aria-describedby="description-help"></textarea><small id="description-help">A 20–500 character retrieval summary.</small></label>
-          <label>Owner <input name="owner" required maxlength="80" placeholder="Initials or team name" /></label>
-          <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true" placeholder="# A useful title&#10;&#10;Explain the decision, procedure, or lesson."></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
-        </div>
-        <div class="authoring-preview"><p class="eyebrow">Safe preview</p><p id="slug-preview">Proposed path: choose a title</p><article id="markdown-preview" class="prose preview-body">Your Markdown preview will appear here.</article></div>
-        <button class="btn-primary" type="submit">Create review pull request</button>
-      </form>
-    )}
+    <form id="page-form" class="page-form" novalidate>
+      <div id="form-message" class="form-message" aria-live="polite"></div>
+      <div class="form-grid">
+        <label>Section <select name="section" required>{SECTIONS.map((section) => <option value={section}>{section}</option>)}</select></label>
+        <label>Title <input name="title" required maxlength="160" autocomplete="off" /></label>
+        <label class="wide">Description <textarea name="description" required minlength="20" maxlength="500" rows="3" aria-describedby="description-help"></textarea><small id="description-help">A 20–500 character retrieval summary.</small></label>
+        <label>Owner <input name="owner" required maxlength="80" placeholder="Initials or team name" /></label>
+        <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true" placeholder="# A useful title&#10;&#10;Explain the decision, procedure, or lesson."></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
+      </div>
+      <div class="authoring-preview"><p class="eyebrow">Safe preview</p><p id="slug-preview">Proposed path: choose a title</p><article id="markdown-preview" class="prose preview-body">Your Markdown preview will appear here.</article></div>
+      <button class="btn-primary" type="submit">Create review pull request</button>
+    </form>
   </main>
 </BaseLayout>
 
@@ -43,7 +34,6 @@ const relayConfigured = Boolean(import.meta.env.PUBLIC_GITHUB_DEVICE_FLOW_RELAY_
   const message = document.querySelector('#form-message');
   const preview = document.querySelector('#markdown-preview');
   const slugPreview = document.querySelector('#slug-preview');
-  const clientId = form?.dataset.clientId ?? '';
 
   // Preselect the section when arriving from a section page's "Add a page" link.
   const requestedSection = new URLSearchParams(location.search).get('section');
@@ -99,7 +89,7 @@ const relayConfigured = Boolean(import.meta.env.PUBLIC_GITHUB_DEVICE_FLOW_RELAY_
     message.textContent = 'Creating your review pull request…';
     message.className = 'form-message';
     try {
-      const result = await createPage(clientId, { section, frontmatter, body });
+      const result = await createPage({ section, frontmatter, body });
       message.className = 'form-message success';
       const link = Object.assign(document.createElement('a'), { href: result.url, target: '_blank', rel: 'noreferrer', textContent: `open pull request #${result.number}` });
       message.replaceChildren('Review pull request created: ', link, '.');

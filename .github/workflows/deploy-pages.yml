@@ -58,8 +58,6 @@ jobs:
       - name: Build portal
         working-directory: portal
         run: npm run build
-        env:
-          PUBLIC_GITHUB_APP_CLIENT_ID: ${{ vars.PUBLIC_GITHUB_APP_CLIENT_ID }}
 
       # ── Combine ──────────────────────────────────────────────────────────
       - name: Assemble deployment artifact

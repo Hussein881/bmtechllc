@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest';
 import yaml from 'js-yaml';
-import { getAccessToken } from './github-device-auth';
+import { getAccessToken, clearCachedToken } from './github-token-auth';
 
 export const OWNER = 'Hussein881';
 export const REPO = 'bmtechllc';
@@ -75,9 +75,17 @@ function timestampSuffix(): string {
   return new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14);
 }
 
-async function getOctokit(clientId: string): Promise<Octokit> {
-  const token = await getAccessToken(clientId);
-  return new Octokit({ auth: token });
+async function getOctokit(): Promise<Octokit> {
+  const token = await getAccessToken();
+  const octokit = new Octokit({ auth: token });
+  // A cached token that's expired or been revoked would otherwise fail
+  // silently on every call until the tab is closed; drop it so the next
+  // attempt re-prompts instead.
+  octokit.hook.error('request', (error) => {
+    if ((error as { status?: number }).status === 401) clearCachedToken();
+    throw error;
+  });
+  return octokit;
 }
 
 async function branchFromDefault(octokit: Octokit, branch: string): Promise<void> {
@@ -96,7 +104,6 @@ async function pathExists(octokit: Octokit, path: string): Promise<boolean> {
 }
 
 export async function createPage(
-  clientId: string,
   input: { section: string; frontmatter: PageFrontmatter; body: string }
 ): Promise<PullRequestResult> {
   assertSafeMarkdown(input.body);
@@ -104,7 +111,7 @@ export async function createPage(
   if (!slug) throw new Error('Title must contain at least one letter or number.');
   const path = contentPath(input.section, slug);
 
-  const octokit = await getOctokit(clientId);
+  const octokit = await getOctokit();
   if (await pathExists(octokit, path)) {
     throw new Error('A page with this title already exists in that section.');
   }
@@ -131,10 +138,9 @@ export async function createPage(
 }
 
 export async function fetchPage(
-  clientId: string,
   path: string
 ): Promise<{ sha: string; frontmatter: PageFrontmatter; body: string }> {
-  const octokit = await getOctokit(clientId);
+  const octokit = await getOctokit();
   const { data } = await octokit.rest.repos.getContent({ owner: OWNER, repo: REPO, path });
   if (Array.isArray(data) || data.type !== 'file' || !data.content) {
     throw new Error('Could not read that page from GitHub.');
@@ -144,11 +150,10 @@ export async function fetchPage(
 }
 
 export async function updatePage(
-  clientId: string,
   input: { path: string; sha: string; frontmatter: PageFrontmatter; body: string }
 ): Promise<PullRequestResult> {
   assertSafeMarkdown(input.body);
-  const octokit = await getOctokit(clientId);
+  const octokit = await getOctokit();
   const slug = input.path.split('/').pop()!.replace(/\.md$/, '');
   const branch = `pages/edit-${slug}-${timestampSuffix()}`;
   await branchFromDefault(octokit, branch);
@@ -173,10 +178,9 @@ export async function updatePage(
 }
 
 export async function deletePage(
-  clientId: string,
   input: { path: string; sha: string; title: string }
 ): Promise<PullRequestResult> {
-  const octokit = await getOctokit(clientId);
+  const octokit = await getOctokit();
   const slug = input.path.split('/').pop()!.replace(/\.md$/, '');
   const branch = `pages/delete-${slug}-${timestampSuffix()}`;
   await branchFromDefault(octokit, branch);

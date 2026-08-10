@@ -1,9 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { TAGS, SECTIONS } from '../lib/page-contract';
-
-const apiUrl = import.meta.env.PUBLIC_PAGE_AUTHORING_API_URL ?? '';
-const loginUrl = import.meta.env.PUBLIC_PAGE_AUTHORING_LOGIN_URL ?? '';
+import { SECTIONS, TAGS } from '../lib/page-contract';
 ---
 
 <BaseLayout title="Create page" description="Create a proposed knowledge-base page for review.">
@@ -11,45 +8,61 @@ const loginUrl = import.meta.env.PUBLIC_PAGE_AUTHORING_LOGIN_URL ?? '';
     <div class="authoring-heading">
       <p class="eyebrow">Authenticated authoring</p>
       <h1>Create a knowledge-base page</h1>
-      <p>Submit a draft for review. Your content is committed to a branch and published only after its pull request is approved and merged.</p>
+      <p>Submit a draft for review. Your content is committed to a branch and a pull request is opened — it is published only after that PR is approved and merged. You'll be asked for a GitHub token scoped to this repo the first time you submit.</p>
     </div>
 
-    {!apiUrl ? (
-      <aside class="authoring-notice" role="status">
-        Page creation is not configured for this deployment. Set <code>PUBLIC_PAGE_AUTHORING_API_URL</code> to the authenticated authoring service.
-      </aside>
-    ) : (
-      <form id="page-form" class="page-form" novalidate data-api-url={apiUrl} data-login-url={loginUrl}>
-        <div id="form-message" class="form-message" aria-live="polite"></div>
-        <div class="form-grid">
-          <label>Section <select name="section" required>{SECTIONS.map((section) => <option value={section}>{section}</option>)}</select></label>
-          <label>Title <input name="title" required maxlength="160" autocomplete="off" /></label>
-          <label class="wide">Description <textarea name="description" required minlength="20" maxlength="500" rows="3" aria-describedby="description-help"></textarea><small id="description-help">A 20–500 character retrieval summary.</small></label>
-          <label>Owner <input name="owner" required maxlength="80" placeholder="Initials or team name" /></label>
-          <label>Status <select name="status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></label>
-          <label>Visibility <select name="visibility"><option value="internal">Internal</option><option value="shareable">Shareable</option></select></label>
-          <label>Review cycle (months) <input name="reviewCycleMonths" type="number" min="1" max="120" value="6" required /></label>
-          <label>Order <input name="order" type="number" min="-10000" max="10000" value="50" required /></label>
-          <fieldset class="wide"><legend>Tags</legend><div class="tag-options">{TAGS.map((tag) => <label><input type="checkbox" name="tags" value={tag} /> {tag}</label>)}</div></fieldset>
-          <label class="wide">Related page IDs <input name="related" maxlength="1000" placeholder="Comma-separated, e.g. glossary, engagement-model" /><small>Use existing page IDs; these are checked by portal CI.</small></label>
-          <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true" placeholder="# A useful title\n\nExplain the decision, procedure, or lesson."></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
-        </div>
-        <div class="authoring-preview"><p class="eyebrow">Safe preview</p><p id="slug-preview">Proposed path: choose a title</p><article id="markdown-preview" class="prose preview-body">Your Markdown preview will appear here.</article></div>
+    <form id="page-form" class="page-form" novalidate>
+      <div id="form-message" class="form-message" aria-live="polite"></div>
+      <div class="form-grid">
+        <label>Section <select name="section" required>{SECTIONS.map((section) => <option value={section}>{section}</option>)}</select></label>
+        <label>Title <input name="title" required maxlength="160" autocomplete="off" /></label>
+        <label class="wide">Description <textarea name="description" required minlength="20" maxlength="500" rows="3" aria-describedby="description-help"></textarea><small id="description-help">A 20–500 character retrieval summary.</small></label>
+        <label>Owner <input name="owner" required maxlength="80" placeholder="Initials or team name" /></label>
+        <label>Status <select name="status"><option value="draft">Draft — still being worked out</option><option value="published">Published — ready to rely on</option></select></label>
+        <fieldset class="wide"><legend>Tags</legend><div class="tag-options">{TAGS.map((tag) => <label><input type="checkbox" name="tags" value={tag} /> {tag}</label>)}</div><small>Shown on the page and used by search. Untagged pages are harder to find.</small></fieldset>
+        <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true" placeholder="Explain the decision, procedure, or lesson. Start with a heading like ## Overview — the page title comes from the Title field above."></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
+      </div>
+      <div class="authoring-preview"><p class="eyebrow">Safe preview</p><p id="slug-preview">Proposed path: choose a title</p><article id="markdown-preview" class="prose preview-body">Your Markdown preview will appear here.</article></div>
+      <div class="form-submit-row">
         <button class="btn-primary" type="submit">Create review pull request</button>
-      </form>
-    )}
+        <button class="btn-secondary" type="button" id="forget-token" hidden>Use a different GitHub token</button>
+      </div>
+    </form>
   </main>
 </BaseLayout>
 
-<script is:inline define:vars={{ apiUrl, loginUrl }}>
-  const form = document.querySelector('#page-form');
+<script>
+  import { createPage, slugify } from '../lib/github-content-client';
+  import { hasCachedToken, clearCachedToken } from '../lib/github-token-auth';
+  import type { PageFrontmatter } from '../lib/github-content-client';
+
+  const form = document.querySelector<HTMLFormElement>('#page-form');
   const message = document.querySelector('#form-message');
   const preview = document.querySelector('#markdown-preview');
   const slugPreview = document.querySelector('#slug-preview');
 
-  const slugify = (value) => value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '').slice(0, 80);
-  const escapeHtml = (value) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character]);
-  const renderPreview = (markdown) => {
+  // Only meaningful once a token is held for this tab, so it stays hidden
+  // until there is actually something to forget.
+  const forgetBtn = document.querySelector<HTMLButtonElement>('#forget-token');
+  const syncForgetBtn = () => { if (forgetBtn) forgetBtn.hidden = !hasCachedToken(); };
+  syncForgetBtn();
+  forgetBtn?.addEventListener('click', () => {
+    clearCachedToken();
+    syncForgetBtn();
+    if (message) {
+      message.className = 'form-message';
+      message.textContent = 'Token forgotten. You will be asked for a new one on your next submit.';
+    }
+  });
+
+  // Preselect the section when arriving from a section page's "Add a page" link.
+  const requestedSection = new URLSearchParams(location.search).get('section');
+  if (form && requestedSection && form.elements.namedItem('section')) {
+    (form.elements.namedItem('section') as HTMLSelectElement).value = requestedSection;
+  }
+
+  const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[character]!);
+  const renderPreview = (markdown: string) => {
     const escaped = escapeHtml(markdown);
     return escaped
       .replace(/^### (.*)$/gm, '<h3>$1</h3>')
@@ -62,11 +75,11 @@ const loginUrl = import.meta.env.PUBLIC_PAGE_AUTHORING_LOGIN_URL ?? '';
   };
   const updatePreview = () => {
     if (!form || !preview || !slugPreview) return;
-    const title = form.elements.title.value;
-    const section = form.elements.section.value;
+    const title = (form.elements.namedItem('title') as HTMLInputElement).value;
+    const section = (form.elements.namedItem('section') as HTMLSelectElement).value;
     const slug = slugify(title);
     slugPreview.textContent = slug ? `Proposed path: content/${section}/${slug}.md` : 'Proposed path: choose a title';
-    preview.innerHTML = `<p>${renderPreview(form.elements.body.value || 'Your Markdown preview will appear here.')}</p>`;
+    preview.innerHTML = `<p>${renderPreview((form.elements.namedItem('body') as HTMLTextAreaElement).value || 'Your Markdown preview will appear here.')}</p>`;
   };
   form?.addEventListener('input', updatePreview);
   form?.addEventListener('change', updatePreview);
@@ -76,36 +89,38 @@ const loginUrl = import.meta.env.PUBLIC_PAGE_AUTHORING_LOGIN_URL ?? '';
     event.preventDefault();
     if (!form.reportValidity() || !message) return;
     const data = new FormData(form);
-    const payload = Object.fromEntries(data.entries());
-    payload.tags = data.getAll('tags');
-    payload.related = String(payload.related || '').split(',').map((item) => item.trim()).filter(Boolean);
-    payload.reviewCycleMonths = Number(payload.reviewCycleMonths);
-    payload.order = Number(payload.order);
-    // The service owns the canonical value; this supplies the required
-    // frontmatter date without relying on an author to remember it.
-    payload.updated = new Date().toISOString().slice(0, 10);
+    const section = String(data.get('section'));
+    const frontmatter: PageFrontmatter = {
+      title: String(data.get('title') || ''),
+      description: String(data.get('description') || ''),
+      owner: String(data.get('owner') || ''),
+      updated: new Date().toISOString().slice(0, 10),
+      tags: data.getAll('tags').map(String),
+      status: String(data.get('status') || 'draft'),
+      // Schema defaults — rarely need changing at creation time, and all are
+      // editable later via the Edit page form.
+      visibility: 'internal',
+      reviewCycleMonths: 6,
+      order: 50,
+      related: [],
+    };
+    const body = String(data.get('body') || '');
+
     message.textContent = 'Creating your review pull request…';
     message.className = 'form-message';
+    message.scrollIntoView({ behavior: 'smooth', block: 'center' });
     try {
-      // An OIDC/SSO integration can provide a short-lived access token without
-      // putting an OAuth client secret in this static site.
-      const token = await window.BMTECH_PORTAL_AUTH?.getAccessToken?.();
-      const headers = { 'content-type': 'application/json' };
-      if (token) headers.authorization = `Bearer ${token}`;
-      const response = await fetch(apiUrl, { method: 'POST', credentials: 'include', headers, body: JSON.stringify(payload) });
-      const result = await response.json().catch(() => ({}));
-      if (response.status === 401 && loginUrl) {
-        message.replaceChildren('Please ', Object.assign(document.createElement('a'), { href: loginUrl, textContent: 'sign in' }), ' before submitting a page.');
-        return;
-      }
-      if (!response.ok) throw new Error(result.error || 'The page could not be submitted.');
+      const result = await createPage({ section, frontmatter, body });
       message.className = 'form-message success';
-      const link = Object.assign(document.createElement('a'), { href: result.pullRequestUrl, target: '_blank', rel: 'noreferrer', textContent: `open pull request #${result.pullRequestNumber}` });
+      const link = Object.assign(document.createElement('a'), { href: result.url, target: '_blank', rel: 'noreferrer', textContent: `open pull request #${result.number}` });
       message.replaceChildren('Review pull request created: ', link, '.');
-      form.reset(); updatePreview();
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      form.reset();
+      updatePreview();
     } catch (error) {
       message.className = 'form-message error';
       message.textContent = error instanceof Error ? error.message : 'The page could not be submitted.';
+      message.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   });
 </script>

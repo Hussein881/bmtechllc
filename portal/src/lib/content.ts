@@ -11,22 +11,22 @@ export const SECTION_LABELS: Record<SectionName, string> = {
   playbooks: 'Playbooks',
   runbooks: 'Runbooks',
   reference: 'Reference',
-  templates: 'Templates',
-  decisions: 'Decisions',
-  engagements: 'Engagements',
 };
 
-/** One-line purpose per section, shown on the home grid and section indexes. */
+/**
+ * One-line purpose per section, shown on the home grid and section indexes.
+ *
+ * These are the main signal for "does my content belong here", so each names
+ * the *kind* of writing rather than the topic: reference explains, playbooks
+ * advise, runbooks instruct, guide covers this site itself.
+ */
 export const SECTION_BLURBS: Record<SectionName, string> = {
-  guide: 'How to use and maintain this knowledge base.',
-  onboarding: 'The path a new team member walks, in order.',
-  methodology: 'How we work and why. Stable, slow-changing.',
-  playbooks: 'How to execute a phase of an engagement.',
-  runbooks: 'Operational procedures and incident response.',
-  reference: 'Lookups: glossary, standards, checklists.',
-  templates: 'Artifacts you copy from at the start of work.',
-  decisions: 'Why we settled a question, so we stop relitigating it.',
-  engagements: 'Per-client working notes, retros, what actually happened.',
+  guide: 'How this knowledge base works — using it, adding to it, keeping it useful.',
+  onboarding: 'What to read first, and in what order, when you are new here.',
+  methodology: 'How we work and why we work that way.',
+  playbooks: 'Advice for work that takes judgment — if the answer is "it depends", it belongs here.',
+  runbooks: 'Exact steps for something that should go the same way every time.',
+  reference: 'Things you look up — notes, definitions, and what we learned about a topic.',
 };
 
 /**
@@ -235,4 +235,29 @@ export function findBacklinks(pages: PageRecord[], target: PageRecord): PageReco
       p.path !== target.path &&
       p.related.some((slug) => resolveRelated(pages, slug)?.path === target.path)
   );
+}
+
+/**
+ * Every page that would be left with a dangling reference if `target` were
+ * deleted — both `related:` edges and inline body links.
+ *
+ * This is broader than findBacklinks on purpose: the build gate fails on any
+ * broken internal link, including ones written inline in prose, which the
+ * `related`-only view misses. Used to warn before proposing a deletion, since
+ * otherwise the problem only surfaces as a red CI run on the resulting PR.
+ */
+export function findInboundReferences(pages: PageRecord[], target: PageRecord): PageRecord[] {
+  const withoutBase = target.path;
+  const withBasePath = `${base}${target.path}`;
+  // Trailing slash is optional in authored links, so match the path stem and
+  // accept either form.
+  const stems = [withoutBase, withBasePath].map((p) => p.replace(/\/$/, ''));
+
+  return pages.filter((page) => {
+    if (page.path === target.path) return false;
+    if (page.related.some((slug) => resolveRelated(pages, slug)?.path === target.path)) return true;
+
+    const body = page.entry.body ?? '';
+    return stems.some((stem) => body.includes(`](${stem})`) || body.includes(`](${stem}/)`));
+  });
 }

@@ -1,6 +1,6 @@
 ---
 title: Guide
-description: What this knowledge base is for, what belongs in it, and how to find your way around. Start here if you have not used it before.
+description: What this knowledge base is for, how it is organized, and how to find your way around. Start here if you have not used it before.
 tags: [onboarding, process, reference]
 status: published
 visibility: internal
@@ -10,56 +10,39 @@ reviewCycleMonths: 12
 order: 1
 ---
 
-# Guide
-
 This knowledge base is where BenchmarkTech writes down how it works — so that
 knowledge survives past the person who happens to be holding it.
 
 It is internal. Nothing here is written for prospects or clients.
 
-## What belongs here
-
-Anything a teammate would need to do the work, and would otherwise have to ask
-someone for:
-
-- How we run an engagement, phase by phase
-- Procedures we repeat and should not reinvent each time
-- Definitions we want used consistently in client-facing documents
-- Decisions we already settled, and the reasoning behind them
-- What actually happened on past engagements, including what went wrong
-
-## What does not belong here
-
-**Marketing copy.** Prospect-facing content lives in `website/`. If a page here
-is genuinely good enough to publish, mark it `visibility: shareable` and copy it
-across deliberately — do not blur the two surfaces.
-
-**Secrets.** No credentials, API keys, or tokens. Use the password manager.
-
-**Anything that belongs in a ticket.** This is for durable knowledge, not task
-tracking. If it stops being true once the work is done, it is not a KB page.
+> [!IMPORTANT]
+> No credentials, API keys, or tokens. Use the password manager.
 
 ## How it is organized
 
-Nine sections, each answering a different question:
+Six sections, each answering a different question:
 
-| Section | Answers |
-|---|---|
-| **Guide** | How do I use and maintain this thing? |
-| **Onboarding** | I am new — what do I read, in what order? |
-| **Methodology** | How do we work, and why do we work that way? |
-| **Playbooks** | How do I execute this phase of an engagement? |
-| **Runbooks** | What are the exact steps for this recurring operation? |
-| **Reference** | What does this term mean? What is the standard? |
-| **Templates** | What do I copy from to start this artifact? |
-| **Decisions** | Why did we settle this question the way we did? |
-| **Engagements** | What happened on that project? |
+Each section holds a different *kind* of writing, not a different topic:
+
+| Section | It… | Ask yourself |
+|---|---|---|
+| **Guide** | covers this site itself | "Is this about the knowledge base?" |
+| **Onboarding** | orients | "Would a new person read this in week one?" |
+| **Methodology** | justifies | "Is this how we work, and why?" |
+| **Playbooks** | advises | "Does this need judgment to apply?" |
+| **Runbooks** | instructs | "Would two people do this identically?" |
+| **Reference** | explains | "Would someone look this up?" |
 
 The distinction that trips people up most is **playbook vs. runbook**. A playbook
-teaches judgment for a phase of work that varies by situation — how to run
-stakeholder interviews. A runbook is a checklist for an operation that should go
-the same way every time — the kickoff sequence. If you find yourself writing
+teaches judgment for work that varies by situation — how to approach a project
+with an unfamiliar tool. A runbook is a checklist for something that should go
+the same way every time — how to add a page here. If you find yourself writing
 "it depends," you are writing a playbook.
+
+The second most common mix-up is **reference vs. playbook**. Reference explains
+how something works; a playbook tells you what to do about it. Notes on how to
+evaluate retrieval quality are reference. "How we run an evaluation for a
+client" would be a playbook, and would link to those notes.
 
 ## Finding things
 

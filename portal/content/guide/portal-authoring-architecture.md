@@ -8,12 +8,12 @@ owner: team
 updated: 2026-08-09
 reviewCycleMonths: 12
 order: 40
-related: [adding-a-page-from-the-portal, adding-a-page]
+related: [adding-a-page-from-the-portal]
 ---
 
 This explains what happens when you use **Add a page**, **Edit page**, or
 **Delete page**. For the steps themselves, see
-[Adding a Page From the Portal](/bmtechllc/portal/runbooks/adding-a-page-from-the-portal/).
+[Adding a Page From the Portal](/bmtechllc/portal/guide/adding-a-page-from-the-portal/).
 
 ## The constraint everything follows from
 

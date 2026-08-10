@@ -8,15 +8,15 @@ owner: team
 updated: 2026-08-09
 reviewCycleMonths: 6
 order: 15
-related: [portal-authoring-architecture, adding-a-page]
+related: [portal-authoring-architecture]
 ---
 
 You can add, edit, and delete pages without cloning the repo or touching a
 terminal. Everything happens in the browser, and nothing you do publishes
 immediately — every change opens a pull request that a person reviews first.
 
-If you would rather work from a local checkout, see
-[Adding a Page](/bmtechllc/portal/guide/adding-a-page/) instead.
+If you would rather work from a local checkout, add a Markdown file under
+`portal/content/<section>/` and open a pull request the usual way.
 
 ## One-time setup: generate a GitHub token
 
@@ -57,8 +57,8 @@ immediately.
 ## Creating a page
 
 1. Open the section the page belongs in, e.g.
-   [Runbooks](/bmtechllc/portal/runbooks/). Not sure which section? See
-   [Adding a Page](/bmtechllc/portal/guide/adding-a-page/).
+   [Runbooks](/bmtechllc/portal/runbooks/). Each section page states what
+   belongs in it if you are unsure.
 2. Click **Add a page**.
 3. Fill in the form:
 
@@ -132,4 +132,4 @@ edit or deletion is pending, linking to the pull request.
 ## How this works underneath
 
 See
-[Portal Authoring Architecture](/bmtechllc/portal/reference/portal-authoring-architecture/).
+[Portal Authoring Architecture](/bmtechllc/portal/guide/portal-authoring-architecture/).

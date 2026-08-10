@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SECTIONS } from '../lib/page-contract';
+import { SECTIONS, TAGS } from '../lib/page-contract';
 ---
 
 <BaseLayout title="Create page" description="Create a proposed knowledge-base page for review.">
@@ -18,7 +18,9 @@ import { SECTIONS } from '../lib/page-contract';
         <label>Title <input name="title" required maxlength="160" autocomplete="off" /></label>
         <label class="wide">Description <textarea name="description" required minlength="20" maxlength="500" rows="3" aria-describedby="description-help"></textarea><small id="description-help">A 20–500 character retrieval summary.</small></label>
         <label>Owner <input name="owner" required maxlength="80" placeholder="Initials or team name" /></label>
-        <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true" placeholder="# A useful title&#10;&#10;Explain the decision, procedure, or lesson."></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
+        <label>Status <select name="status"><option value="draft">Draft — still being worked out</option><option value="published">Published — ready to rely on</option></select></label>
+        <fieldset class="wide"><legend>Tags</legend><div class="tag-options">{TAGS.map((tag) => <label><input type="checkbox" name="tags" value={tag} /> {tag}</label>)}</div><small>Shown on the page and used by search. Untagged pages are harder to find.</small></fieldset>
+        <label class="wide">Markdown <textarea name="body" required rows="16" spellcheck="true" placeholder="Explain the decision, procedure, or lesson. Start with a heading like ## Overview — the page title comes from the Title field above."></textarea><small>Raw HTML is not accepted. Use Markdown instead.</small></label>
       </div>
       <div class="authoring-preview"><p class="eyebrow">Safe preview</p><p id="slug-preview">Proposed path: choose a title</p><article id="markdown-preview" class="prose preview-body">Your Markdown preview will appear here.</article></div>
       <div class="form-submit-row">
@@ -93,10 +95,10 @@ import { SECTIONS } from '../lib/page-contract';
       description: String(data.get('description') || ''),
       owner: String(data.get('owner') || ''),
       updated: new Date().toISOString().slice(0, 10),
-      // Schema defaults — kept out of the form to keep it to what a page
-      // actually needs on day one. Editable later via the Edit page form.
-      tags: [],
-      status: 'draft',
+      tags: data.getAll('tags').map(String),
+      status: String(data.get('status') || 'draft'),
+      // Schema defaults — rarely need changing at creation time, and all are
+      // editable later via the Edit page form.
       visibility: 'internal',
       reviewCycleMonths: 6,
       order: 50,

@@ -13,14 +13,20 @@ export const SECTION_LABELS: Record<SectionName, string> = {
   reference: 'Reference',
 };
 
-/** One-line purpose per section, shown on the home grid and section indexes. */
+/**
+ * One-line purpose per section, shown on the home grid and section indexes.
+ *
+ * These are the main signal for "does my content belong here", so each names
+ * the *kind* of writing rather than the topic: reference explains, playbooks
+ * advise, runbooks instruct, guide covers this site itself.
+ */
 export const SECTION_BLURBS: Record<SectionName, string> = {
-  guide: 'How to use and maintain this knowledge base.',
-  onboarding: 'The path a new team member walks, in order.',
-  methodology: 'How we work and why. Stable, slow-changing.',
-  playbooks: 'How to execute a phase of an engagement.',
-  runbooks: 'Operational procedures and incident response.',
-  reference: 'Lookups: glossary, standards, checklists.',
+  guide: 'How this knowledge base works — using it, adding to it, keeping it useful.',
+  onboarding: 'What to read first, and in what order, when you are new here.',
+  methodology: 'How we work and why we work that way.',
+  playbooks: 'Advice for work that takes judgment — if the answer is "it depends", it belongs here.',
+  runbooks: 'Exact steps for something that should go the same way every time.',
+  reference: 'Things you look up — notes, definitions, and what we learned about a topic.',
 };
 
 /**

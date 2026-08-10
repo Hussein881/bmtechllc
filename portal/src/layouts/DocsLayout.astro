@@ -112,6 +112,14 @@ const inboundRefs = findInboundReferences(allPages, page).map((p) => p.title);
         </div>
       )}
 
+      {/*
+        Title and one-line purpose come from frontmatter, not the body, so every
+        page states what it is for in the same place. Page bodies therefore do
+        not repeat their own H1 — see guide/writing-well.
+      */}
+      <h1 class="page-title">{page.title}</h1>
+      <p class="lede">{page.description}</p>
+
       <div class="page-meta">
         <span>Updated <time datetime={updatedISO}>{updatedISO}</time></span>
         <span>Owner: {page.owner}</span>

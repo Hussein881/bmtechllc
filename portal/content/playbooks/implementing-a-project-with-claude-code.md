@@ -1,6 +1,6 @@
 ---
 title: Implementing a Project with Claude Code
-description: Implementing a Project with Claude Code
+description: A practical guide to setting up and running a project so that Claude Code produces verifiable, reviewable work instead of plausible-looking output.
 owner: ah
 updated: '2026-08-09'
 tags: []
@@ -10,11 +10,6 @@ reviewCycleMonths: 6
 order: 50
 related: []
 ---
-
-# Implementing a Project with Claude Code — A Working Playbook
-
-A practical guide to setting up and running a project so that Claude Code produces
-verifiable, reviewable work instead of plausible-looking output.
 
 ---
 

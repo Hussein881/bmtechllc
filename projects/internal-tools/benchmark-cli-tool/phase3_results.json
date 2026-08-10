@@ -1,0 +1,90 @@
+{
+  "tiers": {
+    "cheap": {
+      "trace": [
+        {
+          "tool": "list_docs",
+          "arguments": {}
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "core working hours"
+          }
+        },
+        {
+          "tool": "read_doc",
+          "arguments": {
+            "filename": "sample_policy.txt",
+            "section": "Core Working Hours"
+          }
+        }
+      ],
+      "tool_chain_ok": true,
+      "tool_arguments_ok": true,
+      "degradation": [
+        "none observed"
+      ]
+    },
+    "flagship": {
+      "trace": [
+        {
+          "tool": "list_docs",
+          "arguments": {}
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "core working hours workday availability time zone"
+          }
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "core hours"
+          }
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "working hours"
+          }
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "business hours"
+          }
+        },
+        {
+          "tool": "search_docs",
+          "arguments": {
+            "query": "availability overlap"
+          }
+        },
+        {
+          "tool": "read_doc",
+          "arguments": {
+            "filename": "sample_policy.txt",
+            "section": "Core Working Hours"
+          }
+        }
+      ],
+      "tool_chain_ok": true,
+      "tool_arguments_ok": true,
+      "degradation": [
+        "none observed"
+      ]
+    }
+  },
+  "telemetry": {
+    "new_call_count": 9,
+    "tiers_seen": [
+      "cheap",
+      "flagship"
+    ]
+  },
+  "cheap_tier_degradation": [
+    "none observed"
+  ]
+}

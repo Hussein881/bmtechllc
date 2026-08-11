@@ -11,6 +11,7 @@ from config import ModelConfig
 USAGE_LOG_PATH = Path(__file__).with_name("usage_log.csv")
 CSV_FIELDS = (
     "timestamp",
+    "component",
     "question",
     "tier",
     "model",
@@ -37,6 +38,7 @@ def log_usage(
     model_config: ModelConfig,
     prompt_tokens: int,
     completion_tokens: int,
+    component: str = "agent",
     log_path: Path = USAGE_LOG_PATH,
 ) -> None:
     """Append one model call's usage and calculated USD cost to a CSV file."""
@@ -46,6 +48,7 @@ def log_usage(
     should_write_header = not log_path.exists() or log_path.stat().st_size == 0
     row = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
+        "component": component,
         "question": question,
         "tier": tier,
         "model": model_config.model,

@@ -30,6 +30,7 @@ def classify_query(question: str) -> str:
             {"role": "system", "content": CLASSIFIER_PROMPT},
             {"role": "user", "content": normalized_question},
         ],
+        component="classifier",
     )
     content = completion.choices[0].message.content or ""
     label_match = re.search(r"\b(EASY|HARD)\b", content.upper())

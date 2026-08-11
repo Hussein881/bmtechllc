@@ -5,11 +5,16 @@ from __future__ import annotations
 import contextlib
 import csv
 import io
+import json
+import os
+import time
+import argparse
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+import agent
 from agent import run_agent
 from config import MODEL_TIERS, ModelConfig
 from logger import USAGE_LOG_PATH
@@ -26,6 +31,8 @@ class EvalCase:
     expected_tier: str
     expected_confidence: float | None = None
     requires_full_read: bool = False
+    expected_sources: tuple[str, ...] = ()
+    min_sources: int = 1
 
 
 EVAL_CASES: tuple[EvalCase, ...] = (
@@ -122,6 +129,8 @@ def run_case(case: EvalCase, forced_tier: str | None = None) -> dict[str, Any]:
         "category": case.category,
         "expected_tier": case.expected_tier,
         "chain_required": case.requires_full_read,
+        "expected_sources": list(case.expected_sources),
+        "min_sources": case.min_sources,
         "prompt_version": AGENT_PROMPT_VERSION,
     }
     try:
@@ -129,15 +138,35 @@ def run_case(case: EvalCase, forced_tier: str | None = None) -> dict[str, Any]:
         record["selected_tier"] = selected_tier
         record["selection_mode"] = "forced" if forced_tier else "routed"
         trace_output = io.StringIO()
+        retrieved_sources: list[str] = []
         agent_metadata: dict[str, Any] = {}
-        with contextlib.redirect_stdout(trace_output):
-            response = run_agent(
-                case.question,
-                tier=selected_tier,
-                max_iterations=5,
-                metadata=agent_metadata,
-            )
+        original_execute_tool = agent.execute_tool
+
+        def traced_execute_tool(name: str, arguments: dict[str, Any]) -> Any:
+            result = original_execute_tool(name, arguments)
+            if name == "search_docs" and isinstance(result, list):
+                retrieved_sources.extend(
+                    str(item["filename"])
+                    for item in result
+                    if isinstance(item, dict) and isinstance(item.get("filename"), str)
+                )
+            return result
+
+        started = time.perf_counter()
+        agent.execute_tool = traced_execute_tool
+        try:
+            with contextlib.redirect_stdout(trace_output):
+                response = run_agent(
+                    case.question,
+                    tier=selected_tier,
+                    max_iterations=5,
+                    metadata=agent_metadata,
+                )
+        finally:
+            agent.execute_tool = original_execute_tool
+        record["latency_seconds"] = round(time.perf_counter() - started, 4)
         record["tool_trace"] = trace_output.getvalue().splitlines()
+        record["retrieved_sources"] = sorted(set(retrieved_sources))
         record["response"] = response.model_dump()
         record["schema_valid"] = agent_metadata.get("schema_valid", False)
         record["schema_error"] = agent_metadata.get("schema_error")
@@ -159,6 +188,8 @@ def run_case(case: EvalCase, forced_tier: str | None = None) -> dict[str, Any]:
         except (StopIteration, ValueError):
             full_chain_completed = False
         record["chain_ok"] = not case.requires_full_read or full_chain_completed
+        record["retrieval_hit"] = set(case.expected_sources).issubset(record["retrieved_sources"])
+        record["distinct_sources_ok"] = len(record["retrieved_sources"]) >= case.min_sources
         record["status"] = "passed"
     except Exception as exc:  # Keep the ten-case report complete after one failure.
         record.update(
@@ -168,6 +199,8 @@ def run_case(case: EvalCase, forced_tier: str | None = None) -> dict[str, Any]:
                 "routing_correct": False,
                 "refusal_safe": False,
                 "chain_ok": False,
+                "retrieval_hit": False,
+                "distinct_sources_ok": False,
                 "tool_trace": [],
             }
         )
@@ -193,8 +226,97 @@ def format_table(rows: list[tuple[str, str]]) -> str:
     return "\n".join(f"{label:<{width}} | {value}" for label, value in rows)
 
 
+def component_costs(rows: list[dict[str, str]]) -> dict[str, Decimal]:
+    """Return separately attributable costs for classifier, agent, and embeddings."""
+    values: dict[str, Decimal] = {}
+    for row in rows:
+        component = row.get("component", "agent")
+        values[component] = values.get(component, Decimal(0)) + cost(row, MODEL_TIERS[row["tier"]])
+    return values
+
+
+def run_week2(cases: tuple[EvalCase, ...], modes: tuple[str, ...], search: str, output_dir: Path) -> str:
+    """Run reproducible Week 2 arms and persist raw, per-question artifacts."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    previous_mode = os.environ.get("SEARCH_MODE")
+    os.environ["SEARCH_MODE"] = search
+    try:
+        arms: list[dict[str, Any]] = []
+        for mode in modes:
+            if mode == "routed":
+                result = run_mode("Routed", cases)
+            elif mode == "flagship":
+                result = run_mode("Flagship-only", cases, forced_tier="flagship")
+            elif mode == "cheap":
+                result = run_mode("Cheap-only", cases, forced_tier="cheap")
+            else:
+                raise ValueError(f"Unsupported Week 2 mode: {mode}")
+            artifact = output_dir / f"{mode}.json"
+            artifact.write_text(json.dumps(result, indent=2, default=str) + "\n", encoding="utf-8")
+            arms.append(result)
+    finally:
+        if previous_mode is None:
+            os.environ.pop("SEARCH_MODE", None)
+        else:
+            os.environ["SEARCH_MODE"] = previous_mode
+
+    routed = next((arm for arm in arms if arm["label"] == "Routed"), None)
+    lines = ["WEEK 2 EVALUATION RESULTS", "=" * 25, f"Search mode: {search}", ""]
+    for arm in arms:
+        records = arm["records"]
+        components = component_costs(arm["rows"])
+        retrieval_cases = [record for record in records if record["expected_sources"]]
+        hit_count = sum(record.get("retrieval_hit", False) for record in retrieval_cases)
+        source_cases = [record for record in records if record["min_sources"] > 1]
+        source_count = sum(record.get("distinct_sources_ok", False) for record in source_cases)
+        lines.extend(
+            [
+                arm["label"],
+                format_table(
+                    [
+                        ("API calls", str(len(arm["rows"]))),
+                        ("Runtime cost", f"${total_cost(arm['rows']):.8f}"),
+                        ("Classifier cost", f"${components.get('classifier', Decimal(0)):.8f}"),
+                        ("Query embedding cost", f"${components.get('query_embed', Decimal(0)):.8f}"),
+                        ("Agent cost", f"${components.get('agent', Decimal(0)):.8f}"),
+                        ("Retrieval hit-rate", f"{hit_count}/{len(retrieval_cases)}"),
+                        ("Cross-source retrieval", f"{source_count}/{len(source_cases)}"),
+                    ]
+                ),
+                "",
+            ]
+        )
+    if routed:
+        routing_cases = [record for record in routed["records"] if record["category"] != "out-of-corpus"]
+        lines.append(
+            f"Routed tier accuracy: {sum(record.get('routing_correct', False) for record in routing_cases)}/{len(routing_cases)}"
+        )
+    report = "\n".join(lines) + "\n"
+    (output_dir / "summary.txt").write_text(report, encoding="utf-8")
+    return report
+
+
 def main() -> None:
     """Run routed, flagship-only, and forced-cheap benchmarks."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--suite", choices=("week1", "week2"), default="week1")
+    parser.add_argument("--modes", default="routed,flagship", help="Week 2 arms: routed,flagship[,cheap].")
+    parser.add_argument("--search", choices=("vector", "keyword"), default="vector")
+    parser.add_argument("--out", type=Path, default=Path(__file__).with_name("week2_results"))
+    args = parser.parse_args()
+    if args.suite == "week2":
+        from eval_cases_week2 import load_week2_cases
+
+        modes = tuple(mode.strip() for mode in args.modes.split(",") if mode.strip())
+        if not modes:
+            raise SystemExit("At least one Week 2 evaluation mode is required.")
+        try:
+            cases = load_week2_cases()
+        except RuntimeError as exc:
+            raise SystemExit(str(exc)) from exc
+        print(run_week2(cases, modes, args.search, args.out), end="")
+        return
+
     routed = run_mode("Routed", EVAL_CASES)
     flagship_only = run_mode("Flagship-only", EVAL_CASES, forced_tier="flagship")
     complex_cases = tuple(case for case in EVAL_CASES if case.category == "complex")

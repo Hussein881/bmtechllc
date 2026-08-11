@@ -8,7 +8,7 @@ from openai import OpenAI
 from openai.types.chat import ChatCompletion
 from pydantic import BaseModel
 
-from config import OPENAI_API_KEY, get_model_config
+from config import EMBEDDING_DIMENSIONS, EMBEDDING_TIER, OPENAI_API_KEY, get_model_config
 from logger import log_usage
 
 _client: OpenAI | None = None
@@ -43,7 +43,7 @@ def _question_from_messages(messages: Sequence[dict[str, Any]]) -> str:
 
 
 def _log_completion_usage(
-    completion: Any, *, tier: str, messages: Sequence[dict[str, Any]]
+    completion: Any, *, tier: str, messages: Sequence[dict[str, Any]], component: str = "agent"
 ) -> None:
     """Persist telemetry for either a regular or parsed chat completion."""
     usage = completion.usage
@@ -53,6 +53,7 @@ def _log_completion_usage(
         model_config=get_model_config(tier),
         prompt_tokens=usage.prompt_tokens if usage is not None else 0,
         completion_tokens=usage.completion_tokens if usage is not None else 0,
+        component=component,
     )
 
 
@@ -61,6 +62,7 @@ def call_llm(
     messages: list[dict[str, Any]],
     tools: list[dict[str, Any]] | None = None,
     response_format: Any | None = None,
+    component: str = "agent",
 ) -> ChatCompletion:
     """Call the configured tier, log token telemetry, and return its completion.
 
@@ -77,14 +79,15 @@ def call_llm(
     }
     if tools is not None:
         request["tools"] = tools
-        # GPT-5.6 model tiers require an explicit non-reasoning setting when
-        # function tools are used with the Chat Completions endpoint.
-        request["reasoning_effort"] = "none"
+        # GPT-5.6 tiers require an explicit non-reasoning setting when tools
+        # are used with Chat Completions; GPT-4o does not accept this setting.
+        if model_config.model.startswith("gpt-5"):
+            request["reasoning_effort"] = "none"
     if response_format is not None:
         request["response_format"] = response_format
 
     completion = _get_client().chat.completions.create(**request)
-    _log_completion_usage(completion, tier=tier, messages=messages)
+    _log_completion_usage(completion, tier=tier, messages=messages, component=component)
     return completion
 
 
@@ -124,3 +127,34 @@ def call_llm_structured(
     if not isinstance(parsed, response_schema):
         raise RuntimeError("The model returned an unexpected structured response type.")
     return parsed
+
+
+def embed_texts(
+    texts: Sequence[str], *, component: str = "ingest", telemetry_question: str | None = None
+) -> list[list[float]]:
+    """Embed text through the shared gateway and persist input-token telemetry."""
+    if not texts:
+        return []
+    if any(not text.strip() for text in texts):
+        raise ValueError("texts must not contain empty values.")
+
+    model_config = get_model_config(EMBEDDING_TIER)
+    response = _get_client().embeddings.create(model=model_config.model, input=list(texts))
+    vectors = [item.embedding for item in response.data]
+    if len(vectors) != len(texts):
+        raise RuntimeError("Embedding response length did not match the number of inputs.")
+    if vectors and len(vectors[0]) != EMBEDDING_DIMENSIONS:
+        raise RuntimeError(
+            f"Embedding dimension mismatch: expected {EMBEDDING_DIMENSIONS}, got {len(vectors[0])}."
+        )
+
+    usage = response.usage
+    log_usage(
+        question=telemetry_question or f"{component}:{len(texts)} texts",
+        tier=EMBEDDING_TIER,
+        model_config=model_config,
+        prompt_tokens=usage.prompt_tokens if usage is not None else 0,
+        completion_tokens=0,
+        component=component,
+    )
+    return vectors

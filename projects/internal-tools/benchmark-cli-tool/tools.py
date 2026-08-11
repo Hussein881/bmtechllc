@@ -2,10 +2,20 @@
 
 from __future__ import annotations
 
+import os
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from config import (
+    DATABASE_URL,
+    SEARCH_FALLBACK_KEYWORD,
+    SEARCH_MIN_SIMILARITY,
+    SEARCH_MODE,
+    SEARCH_OVERFETCH_FACTOR,
+)
 
 DOCUMENTS_DIR = Path(__file__).with_name("documents")
 _SECTION_PATTERN = re.compile(r"^\s*(?:\d+[.)]\s*)?([^:]{2,100}):(?:\s|$)")
@@ -78,7 +88,7 @@ def list_docs() -> list[dict[str, str]]:
     return documents
 
 
-def search_docs(query: str) -> list[dict[str, str]]:
+def _keyword_search(query: str, limit: int = 5) -> list[dict[str, str]]:
     """Find lines containing every keyword in *query* and return concise snippets."""
     terms = set(re.findall(r"[\w'-]+", query.casefold()))
     if not terms:
@@ -107,7 +117,81 @@ def search_docs(query: str) -> list[dict[str, str]]:
                     "snippet": line.strip(),
                 }
             )
+            if len(matches) >= limit:
+                return matches
     return matches
+
+
+def _location_from_metadata(metadata: dict[str, Any], fallback: str) -> str:
+    source_type = metadata.get("source_type")
+    if source_type == "policy_doc":
+        return str(metadata.get("section") or fallback)
+    if source_type == "discord":
+        return f"{metadata.get('channel', fallback)} ({metadata.get('date_start', '')} to {metadata.get('date_end', '')})"
+    if source_type == "transcript":
+        section = metadata.get("section")
+        return f"{metadata.get('meeting', fallback)}{f' — {section}' if section else ''}"
+    return fallback
+
+
+def _snippet(text: str, maximum: int = 500) -> str:
+    compact = " ".join(text.split())
+    if len(compact) <= maximum:
+        return compact
+    cut = compact.rfind(" ", 0, maximum)
+    return f"{compact[:cut if cut > 0 else maximum].rstrip()}…"
+
+
+def _vector_search(query: str, limit: int) -> list[dict[str, str]]:
+    """Search pgvector while preserving the historical tool result contract."""
+    from db import similarity_search
+    from llm import embed_texts
+
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL is not configured")
+    vector = embed_texts([query], component="query_embed")[0]
+    rows = similarity_search(vector, limit=limit * SEARCH_OVERFETCH_FACTOR)
+    matches: list[dict[str, str]] = []
+    for row in rows:
+        if row.similarity < SEARCH_MIN_SIMILARITY:
+            continue
+        matches.append(
+            {
+                "filename": Path(row.source_file).name,
+                "location": _location_from_metadata(row.metadata, f"chunk {row.chunk_index}"),
+                "snippet": _snippet(row.chunk_text),
+            }
+        )
+        if len(matches) >= limit:
+            break
+    return matches
+
+
+def search_docs(query: str, limit: int = 5) -> list[dict[str, str]]:
+    """Search local documents, preferring vectors and safely falling back to keyword search.
+
+    The public return shape is always a list of ``filename``, ``location``, and
+    ``snippet`` dictionaries. A blank query or failed backend returns ``[]``.
+    """
+    if not query or not query.strip() or limit < 1:
+        return []
+    limit = min(limit, 20)
+    mode = os.getenv("SEARCH_MODE", SEARCH_MODE).strip().casefold()
+    if mode not in {"vector", "keyword"}:
+        print(f"[RETRIEVAL] Unknown SEARCH_MODE={mode!r}; using vector.", file=sys.stderr)
+        mode = "vector"
+    if mode == "keyword":
+        return _keyword_search(query, limit)
+    try:
+        return _vector_search(query, limit)
+    except Exception as exc:
+        print(
+            f"[RETRIEVAL] Vector search unavailable: {type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
+        if SEARCH_FALLBACK_KEYWORD:
+            return _keyword_search(query, limit)
+        return []
 
 
 def read_doc(filename: str, section: str | None = None) -> str:
@@ -158,7 +242,10 @@ TOOLS: list[dict[str, Any]] = [
             "description": "Search document text for all keywords in a query.",
             "parameters": {
                 "type": "object",
-                "properties": {"query": {"type": "string", "description": "Search keywords."}},
+                "properties": {
+                    "query": {"type": "string", "description": "Search keywords."},
+                    "limit": {"type": "integer", "minimum": 1, "maximum": 20, "description": "Maximum snippets."},
+                },
                 "required": ["query"],
                 "additionalProperties": False,
             },

@@ -23,6 +23,7 @@ def read_usage_rows(path: Path) -> list[dict[str, str]]:
     assert rows, "Usage log was created but contains no usage records."
     required_fields = {
         "timestamp",
+        "component",
         "question",
         "tier",
         "model",

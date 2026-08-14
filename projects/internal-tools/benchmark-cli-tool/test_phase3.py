@@ -14,6 +14,7 @@ from typing import Any
 import agent
 from agent import run_agent
 from logger import USAGE_LOG_PATH
+from schema import QAResponse
 from tools import _section_blocks, list_docs, read_doc, search_docs
 
 PHASE3_RESULTS_PATH = Path(__file__).with_name("phase3_results.json")
@@ -114,6 +115,7 @@ def test_agent_tiers() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]
 def test_agent_missing_context() -> None:
     """Ensure missing document and section requests become safe zero-confidence answers."""
     original_call_llm = agent.call_llm
+    original_structured_call = agent.call_llm_messages_structured
     available_documents = list_docs()
     assert available_documents, "The missing-context test requires one document."
     existing_filename = available_documents[0]["filename"]
@@ -160,18 +162,30 @@ def test_agent_missing_context() -> None:
         )
 
     agent.call_llm = fake_call_llm
-    for tier in ("cheap", "flagship"):
-        missing_document = run_agent(
-            "Read nonexistent_policy.txt and summarize it.", tier=tier
-        )
-        assert missing_document.confidence == 0.0
 
-        missing_section = run_agent(
-            f"Read the ZZZUnfindableSection999 section of {existing_filename} and summarize it.",
-            tier=tier,
+    def fake_structured_call(**_: Any) -> QAResponse:
+        return QAResponse(
+            answer="The requested information was not found.",
+            confidence=0.0,
+            source_quote="N/A",
         )
-        assert missing_section.confidence == 0.0
-    agent.call_llm = original_call_llm
+
+    agent.call_llm_messages_structured = fake_structured_call
+    try:
+        for tier in ("cheap", "flagship"):
+            missing_document = run_agent(
+                "Read nonexistent_policy.txt and summarize it.", tier=tier
+            )
+            assert missing_document.confidence == 0.0
+
+            missing_section = run_agent(
+                f"Read the ZZZUnfindableSection999 section of {existing_filename} and summarize it.",
+                tier=tier,
+            )
+            assert missing_section.confidence == 0.0
+    finally:
+        agent.call_llm = original_call_llm
+        agent.call_llm_messages_structured = original_structured_call
 
 
 def main() -> None:
@@ -184,7 +198,12 @@ def main() -> None:
     assert {row["tier"] for row in new_rows} >= {"cheap", "flagship"}
     for row in new_rows:
         assert int(row["prompt_tokens"]) > 0
-        assert int(row["completion_tokens"]) > 0
+        # Query embeddings consume input tokens only; model completions must
+        # include both prompt and completion token counts.
+        if row["component"] == "query_embed":
+            assert int(row["completion_tokens"]) == 0
+        else:
+            assert int(row["completion_tokens"]) > 0
         assert Decimal(row["total_cost_usd"]) > 0
     results = {
         "tiers": tier_results,

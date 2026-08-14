@@ -21,6 +21,7 @@ DOCUMENTS_DIR = Path(__file__).with_name("documents")
 _SECTION_PATTERN = re.compile(r"^\s*(?:\d+[.)]\s*)?([^:]{2,100}):(?:\s|$)")
 _NUMBERED_HEADING_PATTERN = re.compile(r"^\s*\d+(?:\.\d+)*\.?\s+(.{2,100})\s*$")
 _YEAR_PATTERN = re.compile(r"\b(20\d{2})\b")
+_LOCATION_LINE_SUFFIX = re.compile(r"\s*\(line\s+\d+\)\s*$", re.IGNORECASE)
 
 
 def _document_path(filename: str) -> Path | None:
@@ -70,6 +71,12 @@ def _normalise_section_name(value: str) -> str:
     return " ".join(re.findall(r"[a-z0-9]+", value.casefold()))
 
 
+def _is_conversational_document(filename: str) -> bool:
+    """Identify source exports that should be read as a complete document."""
+    lowered = filename.casefold()
+    return "discord" in lowered or "transcript" in lowered
+
+
 def list_docs() -> list[dict[str, str]]:
     """Return metadata for every text document in the local document library."""
     documents: list[dict[str, str]] = []
@@ -106,10 +113,13 @@ def _keyword_search(query: str, limit: int = 5) -> list[dict[str, str]]:
             words = set(re.findall(r"[\w'-]+", line.casefold()))
             if not terms.issubset(words):
                 continue
-            section = next(
-                (title for title, start, end in blocks if start <= line_number <= end),
-                f"line {line_number}",
-            )
+            if _is_conversational_document(metadata["filename"]):
+                section = "full document"
+            else:
+                section = next(
+                    (title for title, start, end in blocks if start <= line_number <= end),
+                    f"line {line_number}",
+                )
             matches.append(
                 {
                     "filename": metadata["filename"],
@@ -130,7 +140,10 @@ def _location_from_metadata(metadata: dict[str, Any], fallback: str) -> str:
         return f"{metadata.get('channel', fallback)} ({metadata.get('date_start', '')} to {metadata.get('date_end', '')})"
     if source_type == "transcript":
         section = metadata.get("section")
-        return f"{metadata.get('meeting', fallback)}{f' — {section}' if section else ''}"
+        # Plain-text transcripts may have no explicit section headings. In
+        # that case, tell the agent to call read_doc with only the filename
+        # instead of treating the meeting name as a section title.
+        return str(section) if section else "full document"
     return fallback
 
 
@@ -206,7 +219,14 @@ def read_doc(filename: str, section: str | None = None) -> str:
     if section is None:
         return text
 
-    requested = _normalise_section_name(section)
+    requested = _normalise_section_name(_LOCATION_LINE_SUFFIX.sub("", section))
+    if requested == "full document":
+        return text
+    # Older vector rows used an unsectioned transcript's source stem as its
+    # location. Keep that stable address readable while new results say
+    # "full document" explicitly.
+    if requested == _normalise_section_name(path.stem):
+        return text
     blocks = _section_blocks(text)
     exact_matches = [block for block in blocks if _normalise_section_name(block[0]) == requested]
     near_matches = []

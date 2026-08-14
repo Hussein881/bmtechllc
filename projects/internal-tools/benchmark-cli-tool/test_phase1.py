@@ -30,6 +30,8 @@ def read_usage_rows(path: Path) -> list[dict[str, str]]:
         "prompt_tokens",
         "completion_tokens",
         "total_cost_usd",
+        "flagship_equivalent_cost_usd",
+        "routing_savings_usd",
     }
     assert set(rows[0]) == required_fields, "Usage log has an unexpected schema."
     return rows
@@ -53,9 +55,16 @@ def assert_valid_usage_row(row: dict[str, str], tier: str) -> None:
     assert completion_tokens > 0, f"{tier} completion token count must be positive."
     try:
         cost = Decimal(row["total_cost_usd"])
+        flagship_equivalent = Decimal(row["flagship_equivalent_cost_usd"])
+        savings = Decimal(row["routing_savings_usd"])
     except InvalidOperation as exc:
         raise AssertionError(f"{tier} row has an invalid USD cost.") from exc
     assert cost >= 0, f"{tier} row has a negative USD cost."
+    assert flagship_equivalent >= cost
+    if tier == "cheap":
+        assert savings > 0, "A routed cheap-tier agent call must record savings."
+    else:
+        assert savings == 0, "A flagship-tier agent call has no routing savings."
 
 
 def main() -> None:

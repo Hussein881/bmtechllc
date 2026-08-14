@@ -28,14 +28,14 @@ class ModelConfig:
 
 MODEL_TIERS: Final[Mapping[str, ModelConfig]] = {
     "cheap": ModelConfig(
-        model="gpt-4o-mini",
-        input_cost_per_million=0.15,
-        output_cost_per_million=0.60,
+        model="gpt-5.6-luna",
+        input_cost_per_million=0.20,
+        output_cost_per_million=1.20,
     ),
     "flagship": ModelConfig(
-        model="gpt-4o",
-        input_cost_per_million=2.50,
-        output_cost_per_million=10.00,
+        model="gpt-5.6-terra",
+        input_cost_per_million=2.00,
+        output_cost_per_million=12.00,
     ),
     "embedding": ModelConfig(
         model="text-embedding-3-small",

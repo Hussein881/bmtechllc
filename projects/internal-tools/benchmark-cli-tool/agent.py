@@ -7,7 +7,8 @@ import argparse
 import sys
 from typing import Any
 
-from llm import call_llm
+from config import get_model_config
+from llm import call_llm, call_llm_messages_structured
 from prompts import AGENT_SYSTEM_PROMPT
 from router import classify_query
 from schema import QAResponse
@@ -48,16 +49,36 @@ def _response_from_content(
 
 
 def _finalise_response(
-    content: str | None,
+    messages: list[dict[str, Any]],
+    tier: str,
     *,
     no_usable_evidence: bool,
     metadata: dict[str, Any] | None,
 ) -> QAResponse:
-    """Parse a final response and apply retrieval-based refusal safeguards."""
-    return _enforce_retrieval_refusal(
-        _response_from_content(content, metadata),
-        no_usable_evidence=no_usable_evidence,
-    )
+    """Produce a schema-validated final answer from the tool conversation."""
+    try:
+        response = call_llm_messages_structured(
+            messages=messages,
+            response_schema=QAResponse,
+            tier=tier,
+        )
+    except (RuntimeError, ValueError, IndexError) as exc:
+        if metadata is not None:
+            metadata["schema_valid"] = False
+            metadata["schema_error"] = str(exc)
+        print(
+            "[SCHEMA VALIDATION FAILED] The final structured response could not be parsed.",
+            file=sys.stderr,
+        )
+        response = QAResponse(
+            answer="The model could not produce a validated structured answer.",
+            confidence=0.0,
+            source_quote="N/A",
+        )
+    else:
+        if metadata is not None:
+            metadata["schema_valid"] = True
+    return _enforce_retrieval_refusal(response, no_usable_evidence=no_usable_evidence)
 
 
 def _enforce_retrieval_refusal(response: QAResponse, no_usable_evidence: bool) -> QAResponse:
@@ -91,7 +112,8 @@ def run_agent(
         message = completion.choices[0].message
         if not message.tool_calls:
             return _finalise_response(
-                message.content,
+                messages,
+                tier,
                 no_usable_evidence=(zero_hit_seen or tool_error_seen) and not evidence_seen,
                 metadata=metadata,
             )
@@ -137,9 +159,9 @@ def run_agent(
             # Preserve the error as a role=tool message, then give the model
             # one final turn without tools so it can produce a zero-confidence
             # explanation instead of repeatedly retrying the failed lookup.
-            final_completion = call_llm(tier=tier, messages=messages)
             return _finalise_response(
-                final_completion.choices[0].message.content,
+                messages,
+                tier,
                 no_usable_evidence=(zero_hit_seen or tool_error_seen) and not evidence_seen,
                 metadata=metadata,
             )
@@ -147,9 +169,9 @@ def run_agent(
     # The tool-call budget is exhausted, but the accumulated tool messages may
     # still contain enough evidence for a final answer. Give the model one
     # synthesis turn without tools; the five-call retrieval limit remains intact.
-    final_completion = call_llm(tier=tier, messages=messages)
     return _finalise_response(
-        final_completion.choices[0].message.content,
+        messages,
+        tier,
         no_usable_evidence=(zero_hit_seen or tool_error_seen) and not evidence_seen,
         metadata=metadata,
     )
@@ -186,7 +208,8 @@ def main() -> None:
     args = parser.parse_args()
     tier = args.tier or classify_query(args.question)
     routing_mode = "override" if args.tier else "routed"
-    print(f"[ROUTING] Selected tier: {tier} ({routing_mode})")
+    model = get_model_config(tier).model
+    print(f"[ROUTING] Selected tier: {tier} ({model}; {routing_mode})")
     response = run_agent(args.question, tier=tier)
     print(response.model_dump_json(indent=2))
 

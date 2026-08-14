@@ -111,13 +111,36 @@ def call_llm_structured(
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": prompt},
     ]
+    return call_llm_messages_structured(
+        messages=messages,
+        response_schema=response_schema,
+        tier=tier,
+    )
+
+
+def call_llm_messages_structured(
+    messages: list[dict[str, Any]],
+    response_schema: type[StructuredResponse],
+    tier: str = "cheap",
+    component: str = "agent",
+) -> StructuredResponse:
+    """Return an SDK-parsed model for an existing conversation history.
+
+    Tool-calling agents need to retain their prior assistant and tool messages
+    when producing a final answer. This companion to ``call_llm_structured``
+    applies the same OpenAI structured-output parsing and telemetry logging to
+    that accumulated message history.
+    """
+    if not messages:
+        raise ValueError("messages must contain at least one chat message.")
+
     model_config = get_model_config(tier)
     completion = _get_client().beta.chat.completions.parse(
         model=model_config.model,
         messages=messages,
         response_format=response_schema,
     )
-    _log_completion_usage(completion, tier=tier, messages=messages)
+    _log_completion_usage(completion, tier=tier, messages=messages, component=component)
 
     parsed = completion.choices[0].message.parsed
     if parsed is None:

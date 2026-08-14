@@ -11,6 +11,7 @@ import sys
 from pathlib import Path
 from typing import Sequence
 
+from config import get_model_config
 from llm import call_llm_structured
 from router import classify_query
 from schema import QAResponse
@@ -72,7 +73,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     """Run the single-document Q&A command."""
     args = parse_args(argv)
     tier = classify_query(args.question)
-    print(f"Selected tier: {tier}", file=sys.stderr)
+    print(f"Selected tier: {tier} ({get_model_config(tier).model})", file=sys.stderr)
     response = answer_question(document_text(args.document), args.question, tier)
     print(response.model_dump_json(indent=2))
 

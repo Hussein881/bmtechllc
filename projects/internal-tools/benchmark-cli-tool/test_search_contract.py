@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import re
 import unittest
+from pathlib import Path
 
 import tools
 
@@ -54,6 +55,22 @@ class SearchContractTests(unittest.TestCase):
 
         tools._vector_search = unavailable
         self._assert_shape(tools.search_docs(self._known_query()))
+
+    def test_transcript_source_stem_is_a_readable_full_document_alias(self) -> None:
+        transcript = next(
+            (doc for doc in tools.list_docs() if "transcript" in doc["filename"]),
+            None,
+        )
+        self.assertIsNotNone(transcript, "The source library requires a transcript fixture.")
+        assert transcript is not None
+        self.assertEqual(
+            tools.read_doc(transcript["filename"], Path(transcript["filename"]).stem),
+            tools.read_doc(transcript["filename"]),
+        )
+        self.assertEqual(
+            tools.read_doc(transcript["filename"], "full document (line 1)"),
+            tools.read_doc(transcript["filename"]),
+        )
 
 
 if __name__ == "__main__":

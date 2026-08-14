@@ -124,9 +124,12 @@ def materialize_for_read_doc(
     transcript exports become an ignored, normalized `.txt` view so an agent can
     follow a vector ``search_docs`` hit with the existing ``read_doc`` tool.
     """
-    if source_type == "policy_doc":
+    documents_dir = PROJECT_ROOT / "documents"
+    # Files already in the library are directly readable. Materializing them
+    # would overwrite the user's original Discord or transcript export.
+    if source_type == "policy_doc" or source_path.parent.resolve() == documents_dir.resolve():
         return source_path.name
-    destination = PROJECT_ROOT / "documents" / f"{source_path.stem}.txt"
+    destination = documents_dir / f"{source_path.stem}.txt"
     sections: list[tuple[str, list[str]]] = []
     for index, (chunk, metadata) in enumerate(prepared, start=1):
         if source_type == "discord":

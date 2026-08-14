@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import csv
 import json
+import os
+import re
 from decimal import Decimal
 from pathlib import Path
 from types import SimpleNamespace
@@ -12,7 +14,7 @@ from typing import Any
 import agent
 from agent import run_agent
 from logger import USAGE_LOG_PATH
-from tools import list_docs, read_doc, search_docs
+from tools import _section_blocks, list_docs, read_doc, search_docs
 
 PHASE3_RESULTS_PATH = Path(__file__).with_name("phase3_results.json")
 
@@ -27,22 +29,36 @@ def read_usage_rows(path: Path) -> list[dict[str, str]]:
 
 def test_local_tools() -> None:
     """Verify the complete deterministic list/search/read path and safe failures."""
-    documents = list_docs()
-    assert documents and all(
-        set(document) == {"filename", "title", "type", "date"} for document in documents
-    )
+    previous_mode = os.environ.get("SEARCH_MODE")
+    os.environ["SEARCH_MODE"] = "keyword"
+    try:
+        documents = list_docs()
+        assert documents and all(
+            set(document) == {"filename", "title", "type", "date"} for document in documents
+        )
 
-    hits = search_docs("core hours")
-    assert hits and {"filename", "location", "snippet"} <= set(hits[0])
-    sample_hit = next(hit for hit in hits if hit["filename"] == "sample_policy.txt")
-    content = read_doc(sample_hit["filename"], section="Hours")
-    assert "10:00" in content
+        filename = documents[0]["filename"]
+        full_document = read_doc(filename)
+        assert not full_document.startswith("Error:")
+        terms = re.findall(r"[A-Za-z]{4,}", full_document)
+        assert terms, "The selected document did not contain a searchable word."
+        hits = search_docs(terms[0])
+        assert hits and {"filename", "location", "snippet"} <= set(hits[0])
+        assert any(hit["filename"] == filename for hit in hits)
+        sections = _section_blocks(full_document)
+        content = read_doc(filename, section=sections[0][0]) if sections else full_document
+        assert content and not content.startswith("Error:")
 
-    assert search_docs("term-that-is-not-in-the-library") == []
-    assert read_doc("missing_policy.txt") == "Error: Document or section not found."
-    assert read_doc(hits[0]["filename"], section="Missing Section") == (
-        "Error: Document or section not found."
-    )
+        assert search_docs("term-that-is-not-in-the-library") == []
+        assert read_doc("missing_policy.txt") == "Error: Document or section not found."
+        assert read_doc(filename, section="ZZZUnfindableSection999") == (
+            "Error: Document or section not found."
+        )
+    finally:
+        if previous_mode is None:
+            os.environ.pop("SEARCH_MODE", None)
+        else:
+            os.environ["SEARCH_MODE"] = previous_mode
 
 
 def test_agent_tiers() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
@@ -60,7 +76,7 @@ def test_agent_tiers() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]
 
         agent.execute_tool = traced_execute_tool
         response = run_agent(
-            "Find the company's core working hours in the document library and explain them.",
+            "Find a relevant fact in the document library and explain it.",
             tier=tier,
         )
         assert response.answer
@@ -98,6 +114,9 @@ def test_agent_tiers() -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]
 def test_agent_missing_context() -> None:
     """Ensure missing document and section requests become safe zero-confidence answers."""
     original_call_llm = agent.call_llm
+    available_documents = list_docs()
+    assert available_documents, "The missing-context test requires one document."
+    existing_filename = available_documents[0]["filename"]
 
     def fake_call_llm(
         *, tier: str, messages: list[dict[str, Any]], tools: Any = None
@@ -105,8 +124,8 @@ def test_agent_missing_context() -> None:
         """Return one missing-file tool call followed by a safe refusal response."""
         if messages[-1]["role"] == "user":
             question = messages[-1]["content"]
-            filename = "nonexistent_policy.txt" if "nonexistent" in question else "sample_policy.txt"
-            section = None if "nonexistent" in question else "Missing Section"
+            filename = "nonexistent_policy.txt" if "nonexistent" in question else existing_filename
+            section = None if "nonexistent" in question else "ZZZUnfindableSection999"
             arguments = {"filename": filename}
             if section is not None:
                 arguments["section"] = section
@@ -143,12 +162,12 @@ def test_agent_missing_context() -> None:
     agent.call_llm = fake_call_llm
     for tier in ("cheap", "flagship"):
         missing_document = run_agent(
-            "Read nonexistent_policy.txt and tell me its vacation policy.", tier=tier
+            "Read nonexistent_policy.txt and summarize it.", tier=tier
         )
         assert missing_document.confidence == 0.0
 
         missing_section = run_agent(
-            "Read the Missing Section section of sample_policy.txt and summarize it.",
+            f"Read the ZZZUnfindableSection999 section of {existing_filename} and summarize it.",
             tier=tier,
         )
         assert missing_section.confidence == 0.0

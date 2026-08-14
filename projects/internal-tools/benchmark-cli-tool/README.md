@@ -30,7 +30,7 @@ exports.
 Place UTF-8 `.txt` documents in `documents/`, then run:
 
 ```bash
-python main.py --doc sample_policy.txt --question "What are the core working hours?"
+python main.py --doc document.txt --question "What does this document say about the decision?"
 ```
 
 The CLI prints a validated JSON `QAResponse`; the selected tier is written to
@@ -40,8 +40,8 @@ cost for each model call.
 ## Run retrieval agent
 
 ```bash
-python agent.py --question "What is the travel meal policy?"
-python agent.py --tier flagship --question "Compare travel and reimbursement requirements."
+python agent.py --question "What decision was made in the available documents?"
+python agent.py --tier flagship --question "Compare the decisions described across the available documents."
 ```
 
 The first command routes automatically and prints `[ROUTING] Selected tier: …`
@@ -73,12 +73,7 @@ python test_phase1.py
 python test_phase2.py
 python test_phase3.py
 .venv/bin/python -m unittest -v test_embeddings test_chunking test_search_contract
-python eval_suite.py --suite week1
 ```
-
-`eval_suite.py` performs measured routed and flagship-only runs, plus a
-forced-cheap complex-task stress run. It writes detailed results to
-`eval_results.txt`.
 
 After genuine Discord and transcript sources are ingested, freeze a reviewed
 `week2_cases.json` (ground truth and source expectations included), then run:

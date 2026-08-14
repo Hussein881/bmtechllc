@@ -35,75 +35,7 @@ class EvalCase:
     min_sources: int = 1
 
 
-EVAL_CASES: tuple[EvalCase, ...] = (
-    # --- Easy Questions (Target: cheap tier) ---
-    EvalCase(
-        "What are the core working hours for remote team members?",
-        "easy",
-        "cheap",
-    ),
-    EvalCase(
-        "How many days per week may employees work remotely?",
-        "easy",
-        "cheap",
-    ),
-    EvalCase(
-        "What is the annual equipment stipend?",
-        "easy",
-        "cheap",
-    ),
-    # --- Complex Questions (Target: flagship tier) ---
-    EvalCase(
-        "List all equipment eligible for reimbursement and detail the travel meal policy requirements.",
-        "complex",
-        "flagship",
-        requires_full_read=True,
-    ),
-    EvalCase(
-        "Analyze how the remote-work approval rule and core-hours requirement interact, including practical risks for managers.",
-        "complex",
-        "flagship",
-        requires_full_read=True,
-    ),
-    EvalCase(
-        "Synthesize the reimbursement limits, receipt requirements, and submission deadline into an employee compliance checklist.",
-        "complex",
-        "flagship",
-        requires_full_read=True,
-    ),
-    # --- Edge Cases (Zero-hit search, missing section, and missing document) ---
-    EvalCase(
-        "Search the documents for a quantum relocation allowance and report whether any matching passage exists.",
-        "edge-zero-hit",
-        "cheap",
-        0.0,
-    ),
-    EvalCase(
-        "Read the Nonexistent Section section of sample_policy.txt and summarize it.",
-        "edge-missing-section",
-        "cheap",
-        0.0,
-    ),
-    EvalCase(
-        "What does missing_policy.txt say about vacation policy?",
-        "edge-missing-file",
-        "cheap",
-        0.0,
-    ),
-    # --- Out-of-bounds Questions (Grounded Refusal) ---
-    EvalCase(
-        "Does the supplied policy document describe parental leave benefits?",
-        "out-of-bounds",
-        "cheap",
-        0.0,
-    ),
-    EvalCase(
-        "What is Acme Corp's stock ticker and current share price according to the policy?",
-        "out-of-bounds",
-        "cheap",
-        0.0,
-    ),
-)
+EVAL_CASES: tuple[EvalCase, ...] = ()
 
 
 def usage_rows() -> list[dict[str, str]]:
@@ -316,6 +248,12 @@ def main() -> None:
             raise SystemExit(str(exc)) from exc
         print(run_week2(cases, modes, args.search, args.out), end="")
         return
+
+    if not EVAL_CASES:
+        raise SystemExit(
+            "The retired sample-document benchmark is unavailable. "
+            "Create reviewed week2_cases.json and run --suite week2 instead."
+        )
 
     routed = run_mode("Routed", EVAL_CASES)
     flagship_only = run_mode("Flagship-only", EVAL_CASES, forced_tier="flagship")

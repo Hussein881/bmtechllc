@@ -13,3 +13,6 @@ week2_results/
 
 # Real exports are materialized here only for the local read_doc bridge.
 documents/*.txt
+
+# Local archive of retired sample documents.
+/old documents/

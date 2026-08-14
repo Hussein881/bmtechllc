@@ -19,7 +19,7 @@
 3. Run the single-document CLI:
 
    ```bash
-   python main.py --doc sample_policy.txt --question "What are the core working hours?"
+   python main.py --doc document.txt --question "What does this document say about the decision?"
    ```
 
    Point out the selected tier, validated JSON fields, grounded source quote,
@@ -28,7 +28,7 @@
 4. Run a retrieval task:
 
    ```bash
-   python agent.py --question "What is the travel meal policy?"
+   python agent.py --question "What decision was made in the available documents?"
    ```
 
    Show the `list_docs`, `search_docs`, and `read_doc` trace before the final
@@ -37,7 +37,7 @@
 5. Toggle the retrieval control arm and repeat the same question:
 
    ```bash
-   SEARCH_MODE=keyword python agent.py --question "What is the travel meal policy?"
+   SEARCH_MODE=keyword python agent.py --question "What decision was made in the available documents?"
    ```
 
    Both modes return the same tool result shape. Vector mode logs a
@@ -46,7 +46,7 @@
 6. Run a safe failure case:
 
    ```bash
-   python agent.py --question "What is the quantum relocation allowance?"
+   python agent.py --question "What does the library say about the fictional Orion allowance?"
    ```
 
    Confirm `confidence` is `0.0` and `source_quote` is `"N/A"`.
@@ -62,6 +62,5 @@
    versus separate ingestion cost, classifier/query-embedding overhead, routing
    accuracy, retrieval hit-rate, cross-source retrieval, and latency.
 
-8. The Week 1 regression suite remains available with
-   `python eval_suite.py --suite week1`; inspect `eval_results.txt` for its
-   routed versus flagship-only comparison and forced-cheap stress evidence.
+8. The retired sample-document benchmark is intentionally unavailable. Use the
+   Week 2 evaluation after its reviewed real-document cases have been added.

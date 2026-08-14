@@ -209,11 +209,11 @@ def read_doc(filename: str, section: str | None = None) -> str:
     requested = _normalise_section_name(section)
     blocks = _section_blocks(text)
     exact_matches = [block for block in blocks if _normalise_section_name(block[0]) == requested]
-    near_matches = [
-        block
-        for block in blocks
-        if requested and (requested in _normalise_section_name(block[0]) or _normalise_section_name(block[0]) in requested)
-    ]
+    near_matches = []
+    for block in blocks:
+        candidate = _normalise_section_name(block[0])
+        if candidate and requested and (requested in candidate or candidate in requested):
+            near_matches.append(block)
     matches = exact_matches or near_matches
     if len(matches) == 1:
         _, start, end = matches[0]

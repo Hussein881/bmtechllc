@@ -1,7 +1,7 @@
 """Ask a question about one supplied company document.
 
 Usage:
-    python main.py --doc sample_policy.txt --question "What is the PTO policy?"
+    python main.py --doc document.txt --question "What does this document say?"
 """
 
 from __future__ import annotations

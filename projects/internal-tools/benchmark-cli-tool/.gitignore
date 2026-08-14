@@ -5,7 +5,6 @@ __pycache__/
 *.pyc
 
 # Week 2: local telemetry and regenerated benchmark artifacts
-usage_log.csv
 usage_log.*.csv
 eval_results.txt
 phase3_results.json

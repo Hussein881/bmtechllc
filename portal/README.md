@@ -25,10 +25,7 @@ content/
 ├── methodology/   how we work and why
 ├── playbooks/     how to execute a phase of an engagement
 ├── runbooks/      operational procedures and incident response
-├── reference/     lookups: glossary, standards, checklists
-├── templates/     artifacts you copy from at the start of work
-├── decisions/     ADRs, so we stop relitigating settled questions
-└── engagements/   per-client notes, retros, what actually happened
+└── reference/     lookups: glossary, standards, checklists
 ```
 
 Required frontmatter:
@@ -52,7 +49,13 @@ Full authoring guide: [Contributing to the Knowledge Base](content/onboarding/co
 
 ### Authenticated authoring UI
 
-The portal also exposes `/new/`, which submits a proposed Markdown page to a separately deployed authenticated service. It creates a branch and pull request; it never writes to `main`, and it never exposes GitHub credentials in the static site. Configure `PUBLIC_PAGE_AUTHORING_API_URL` at build time and deploy [`../service`](../service) with an OIDC issuer plus a least-privilege GitHub App. Without that public URL, the UI is deliberately disabled.
+The portal also exposes `/new/` (linked as "Add a page" from every section) and,
+on each page, "Edit page" / "Delete page". These write directly to this repo
+from the browser using a Personal Access Token you paste in once per session —
+no backend service, no separately hosted relay, nothing beyond GitHub itself.
+Every action opens a branch and pull request; none of them ever write to
+`main` directly. See [`docs/authoring-access.md`](docs/authoring-access.md)
+for how to create that token.
 
 ## How this differs from a public docs site
 

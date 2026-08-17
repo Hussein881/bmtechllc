@@ -8,6 +8,7 @@ import {
   buildSectionTree,
   resolveRelated,
   findBacklinks,
+  findInboundReferences,
   withBase,
   SECTION_LABELS,
   type PageRecord,
@@ -20,6 +21,26 @@ interface Props {
 }
 
 const { page, allPages, headings } = Astro.props;
+
+const repoPath = `portal/content/${page.section}/${page.id}.md`;
+// Handed to /edit/ via sessionStorage so it can prefill instantly without an
+// auth round trip; escaped so a `</script>` in a page body can't break out.
+const editPayload = JSON.stringify({
+  path: repoPath,
+  frontmatter: {
+    title: page.title,
+    description: page.description,
+    tags: page.tags,
+    status: page.status,
+    visibility: page.visibility,
+    owner: page.owner,
+    updated: page.updated.toISOString().slice(0, 10),
+    reviewCycleMonths: page.reviewCycleMonths,
+    order: page.order,
+    related: page.related,
+  },
+  body: page.entry.body ?? '',
+}).replace(/</g, '\\u003c');
 
 const crumbs = buildBreadcrumbs(page);
 const tree = buildSectionTree(allPages, page.section);
@@ -35,6 +56,10 @@ const backlinks = findBacklinks(allPages, page).filter(
 );
 
 const updatedISO = page.updated.toISOString().split('T')[0];
+
+// Deleting a page that others still link to fails the build gate on broken
+// links — surface that before a PR is opened, not after CI goes red.
+const inboundRefs = findInboundReferences(allPages, page).map((p) => p.title);
 ---
 
 <BaseLayout title={page.title} description={page.description}>
@@ -60,6 +85,9 @@ const updatedISO = page.updated.toISOString().split('T')[0];
         ))}
       </nav>
 
+      {/* Filled in client-side — the static build has no view of open PRs. */}
+      <div id="pending-changes" hidden></div>
+
       {page.status === 'draft' && (
         <div class="status-banner banner-draft" role="status">
           <strong>Draft</strong>
@@ -83,6 +111,14 @@ const updatedISO = page.updated.toISOString().split('T')[0];
           {page.owner} owns it.
         </div>
       )}
+
+      {/*
+        Title and one-line purpose come from frontmatter, not the body, so every
+        page states what it is for in the same place. Page bodies therefore do
+        not repeat their own H1 — see guide/writing-well.
+      */}
+      <h1 class="page-title">{page.title}</h1>
+      <p class="lede">{page.description}</p>
 
       <div class="page-meta">
         <span>Updated <time datetime={updatedISO}>{updatedISO}</time></span>
@@ -138,8 +174,23 @@ const updatedISO = page.updated.toISOString().split('T')[0];
         >
           Copy as Markdown
         </button>
+        <a class="btn-secondary" id="edit-page-link" href={`${withBase('/edit/')}?path=${encodeURIComponent(repoPath)}`}>
+          Edit page
+        </a>
+        <button
+          class="btn-secondary"
+          id="delete-page-btn"
+          type="button"
+          data-path={repoPath}
+          data-title={page.title}
+          data-inbound={JSON.stringify(inboundRefs)}
+        >
+          Delete page
+        </button>
       </div>
     </main>
+
+    <script is:inline type="application/json" id="edit-payload" set:html={editPayload} />
 
     <aside class="toc-rail">
       <TableOfContents headings={headings} />
@@ -159,6 +210,93 @@ const updatedISO = page.updated.toISOString().split('T')[0];
         btn.textContent = 'Copy failed';
       }
       setTimeout(() => (btn.textContent = label), 1600);
+    });
+  </script>
+
+  <script>
+    import { fetchPage, deletePage } from '../lib/github-content-client';
+    import { getPendingChanges, invalidatePendingChanges } from '../lib/pending-changes';
+
+    const LABELS = {
+      delete: ['Deletion pending review', 'A pull request to remove this page is open. It is still live until that PR is merged.'],
+      edit: ['Edit pending review', 'A pull request changing this page is open. What you see below is the current published version.'],
+      add: ['Addition pending review', 'A pull request adding this page is open.'],
+    } as const;
+
+    async function showPendingChanges() {
+      const host = document.getElementById('pending-changes');
+      const path = (document.getElementById('delete-page-btn') as HTMLElement | null)?.dataset.path;
+      if (!host || !path) return;
+
+      const pending = await getPendingChanges(path);
+      if (!pending.length) {
+        host.hidden = true;
+        host.replaceChildren();
+        return;
+      }
+
+      host.replaceChildren(
+        ...pending.map((change) => {
+          const [heading, explanation] = LABELS[change.kind];
+          const banner = document.createElement('div');
+          banner.className = `status-banner banner-pending banner-pending-${change.kind}`;
+          banner.setAttribute('role', 'status');
+          const link = Object.assign(document.createElement('a'), {
+            href: change.url,
+            target: '_blank',
+            rel: 'noreferrer',
+            textContent: `PR #${change.number}`,
+          });
+          banner.append(
+            Object.assign(document.createElement('strong'), { textContent: heading }),
+            `${explanation} `,
+            link
+          );
+          return banner;
+        })
+      );
+      host.hidden = false;
+    }
+    showPendingChanges();
+
+    const editLink = document.getElementById('edit-page-link');
+    editLink?.addEventListener('click', () => {
+      const payloadEl = document.getElementById('edit-payload');
+      if (payloadEl?.textContent) sessionStorage.setItem('bmtech-edit-payload', payloadEl.textContent);
+    });
+
+    const deleteBtn = document.getElementById('delete-page-btn') as HTMLButtonElement | null;
+    deleteBtn?.addEventListener('click', async () => {
+      const path = deleteBtn.dataset.path!;
+      const title = deleteBtn.dataset.title!;
+      const inbound = JSON.parse(deleteBtn.dataset.inbound || '[]') as string[];
+
+      // Portal CI fails the PR on any broken internal link, so a page other
+      // pages still point at can't be removed on its own.
+      const warning = inbound.length
+        ? `Delete "${title}"?\n\nWARNING: ${inbound.length} page${inbound.length === 1 ? '' : 's'} still link to it:\n` +
+          inbound.map((t) => `  • ${t}`).join('\n') +
+          `\n\nThe pull request will FAIL CI until those references are removed too. Open it anyway?`
+        : `Delete "${title}"? This opens a pull request removing the page — nothing is deleted until it is reviewed and merged.`;
+
+      if (!confirm(warning)) return;
+
+      deleteBtn.disabled = true;
+      const originalText = deleteBtn.textContent;
+      deleteBtn.textContent = 'Preparing pull request…';
+      try {
+        const { sha } = await fetchPage(path);
+        const result = await deletePage({ path, sha, title });
+        const link = Object.assign(document.createElement('a'), { href: result.url, target: '_blank', rel: 'noreferrer', textContent: `removal PR #${result.number}` });
+        deleteBtn.replaceWith('Opened ', link, '.');
+        // Surface the banner right away rather than after the cache expires.
+        invalidatePendingChanges();
+        showPendingChanges();
+      } catch (error) {
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = originalText;
+        alert(error instanceof Error ? error.message : 'Could not delete that page.');
+      }
     });
   </script>
 </BaseLayout>

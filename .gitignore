@@ -2,7 +2,8 @@
 portal/dist/
 portal/node_modules/
 portal/.astro/
-service/node_modules/
+portal/.env
+portal/.env.*
 
 # Website build output
 website/dist/

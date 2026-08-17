@@ -11,8 +11,6 @@ order: 10
 related: [glossary, ai-readiness-assessment]
 ---
 
-# Evaluating RAG Quality — What Actually Matters
-
 Most teams building RAG systems measure the wrong things first. They check whether the system produces correct answers on their test set, ship it, and discover the real failure modes in production. This article is a framework for evaluating what actually matters — written from the perspective of someone who has debugged production RAG failures.
 
 ## The three layers of RAG quality

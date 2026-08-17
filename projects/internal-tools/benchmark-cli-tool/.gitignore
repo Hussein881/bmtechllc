@@ -1,0 +1,17 @@
+.venv/
+.env
+.env.local
+__pycache__/
+*.pyc
+
+# Week 2: local telemetry and regenerated benchmark artifacts
+usage_log.*.csv
+eval_results.txt
+phase3_results.json
+week2_results/
+
+# Real exports are materialized here only for the local read_doc bridge.
+documents/*.txt
+
+# Local archive of retired sample documents.
+/old documents/

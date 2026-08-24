@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: benchmark-cli-postgres
+    environment:
+      POSTGRES_USER: benchmark
+      POSTGRES_PASSWORD: benchmark
+      POSTGRES_DB: benchmark_cli
+    ports:
+      - "5432:5432"
+    volumes:
+      - benchmark_cli_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U benchmark -d benchmark_cli"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  benchmark_cli_pgdata:

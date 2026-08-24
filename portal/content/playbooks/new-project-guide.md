@@ -1,3 +1,16 @@
+---
+title: New Project Guide (Engineering)
+description: Phase-by-phase engineering checklist for a new client project, from intake after contract signature through kickoff, build, and handoff, with a gate to meet before moving to the next phase.
+tags: [playbook, delivery, checklist, process]
+status: draft
+visibility: internal
+owner: ah
+updated: 2026-08-17
+reviewCycleMonths: 6
+order: 50
+related: [implementing-a-project-with-claude-code]
+---
+
 # New project guide (engineering)
 
 Starts after the contract is signed, ends at handoff. Work the phases in order. Don't pass a gate until it's met. "Technical lead" throughout means Dante.

@@ -1,4 +1,17 @@
-﻿Building a great RAG system is about more than plugging a vector database into an LLM. The most effective production deployments combine clean data pipelines, strong retrieval strategies, thoughtful context assembly, and continuous evaluation to deliver accurate, grounded answers at scale.
+---
+title: RAG Architecture & Production Best Practices
+description: A reference guide for production RAG systems covering document chunking strategies, hybrid retrieval, re-ranking, prompt grounding, and evaluation metrics.
+tags: [rag, llm, ai-strategy, reference]
+status: draft
+visibility: internal
+owner: ah
+updated: 2026-08-17
+reviewCycleMonths: 6
+order: 50
+related: [evaluating-rag-quality]
+---
+
+Building a great RAG system is about more than plugging a vector database into an LLM. The most effective production deployments combine clean data pipelines, strong retrieval strategies, thoughtful context assembly, and continuous evaluation to deliver accurate, grounded answers at scale.
 
 ---
 

@@ -1,0 +1,11 @@
+# Deployment policy
+
+Production deployments require a reviewed pull request, passing regression
+tests, and an approved change record. The release owner must prepare a rollback
+plan before deployment begins. If error rates exceed the service threshold, the
+on-call engineer rolls back the deployment and opens an incident ticket.
+
+Staging validation occurs before production approval. The quality team records
+test evidence in the change record, and the release owner communicates the
+deployment window to affected teams. This policy does not define employee
+expense reimbursements or remote-work allowances.

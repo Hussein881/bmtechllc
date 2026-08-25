@@ -1,2 +1,2 @@
-"""Benchmark case loading and evaluation execution."""
+"""Retrieval-only golden-dataset loading and metric calculation."""
 

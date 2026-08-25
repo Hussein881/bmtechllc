@@ -1,8 +1,14 @@
-# Documentation
+# Retrieval pipeline notes
 
-- [Demo runbook](guides/DEMO_RUNBOOK.md)
-- [Tool flow](architecture/TOOL_FLOW.md)
-- [Assessments](assessments/)
-- [Archived implementation plans and reports](archive/)
+This repository is deliberately limited to indexing and evaluating retrieval.
+Answer synthesis, chat orchestration, routing, and telemetry are out of scope.
 
-The README contains current setup, command, test, data, and artifact guidance.
+See the [runbook](RUNBOOK.md) for setup, ingestion, live integration testing,
+and retrieval evaluation.
+
+See [system flow](SYSTEM_FLOW.md) for the detailed component architecture,
+ingestion and retrieval flow, evaluation model, and current limitations.
+
+Hybrid retrieval retrieves vector and PostgreSQL full-text candidates separately
+and combines their ranks with Reciprocal Rank Fusion (RRF), using `k = 60`.
+The golden dataset evaluates only chunk retrieval with Recall@5 and MRR.

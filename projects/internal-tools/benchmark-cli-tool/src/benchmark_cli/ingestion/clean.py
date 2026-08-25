@@ -11,8 +11,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from ..retrieval import _section_blocks
-
 _BOT_NAME = re.compile(r"(?:bot|webhook|github|ci|jenkins|dependabot)$", re.IGNORECASE)
 _URL_ONLY = re.compile(r"^https?://\S+$", re.IGNORECASE)
 _TIMESTAMP_GUTTER = re.compile(
@@ -31,6 +29,8 @@ _SECRET_PATTERNS = (
     re.compile(r"-----BEGIN(?: [A-Z]+)? PRIVATE KEY-----.*?-----END(?: [A-Z]+)? PRIVATE KEY-----", re.DOTALL),
     re.compile(r"\bpassword\s*=\s*[^\s;]+", re.IGNORECASE),
 )
+_SECTION_PATTERN = re.compile(r"^\s*(?:\d+[.)]\s*)?([^:]{2,100}):(?:\s|$)")
+_NUMBERED_HEADING_PATTERN = re.compile(r"^\s*\d+(?:\.\d+)*\.?\s+(.{2,100})\s*$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -42,6 +42,29 @@ class RawUnit:
     timestamp: datetime | None
     ordinal: int
     extra: dict[str, Any]
+
+
+def _section_blocks(text: str) -> list[tuple[str, int, int]]:
+    """Return heading-delimited line ranges for a policy document."""
+    starts: list[tuple[str, int]] = []
+    lines = text.splitlines()
+    for number, line in enumerate(lines, start=1):
+        stripped = line.strip()
+        title: str | None = None
+        if stripped.startswith("#"):
+            title = stripped.lstrip("#").strip()
+        elif match := _SECTION_PATTERN.match(stripped):
+            title = match.group(1).strip()
+        elif match := _NUMBERED_HEADING_PATTERN.match(stripped):
+            title = match.group(1).strip()
+        elif number == 1 and stripped:
+            title = stripped.rstrip(":")
+        if title:
+            starts.append((title, number))
+    return [
+        (title, start, starts[index + 1][1] - 1 if index + 1 < len(starts) else len(lines))
+        for index, (title, start) in enumerate(starts)
+    ]
 
 
 def _parse_datetime(value: Any) -> datetime | None:

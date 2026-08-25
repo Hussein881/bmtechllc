@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS document_chunks (
     content_sha256  CHAR(64)      NOT NULL,
     token_count     INTEGER       NOT NULL,
     embedding       vector(1536)  NOT NULL,
+    search_vector   tsvector      GENERATED ALWAYS AS (to_tsvector('english', chunk_text)) STORED,
     metadata        JSONB         NOT NULL DEFAULT '{}'::jsonb,
     created_at      TIMESTAMPTZ   NOT NULL DEFAULT now(),
     updated_at      TIMESTAMPTZ   NOT NULL DEFAULT now(),

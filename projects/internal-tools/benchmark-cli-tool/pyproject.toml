@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "benchmark-cli-tool"
 version = "0.1.0"
-description = "Document-grounded Q&A CLI with routing and vector retrieval"
+description = "Document ingestion, hybrid retrieval, and retrieval evaluation"
 requires-python = ">=3.11"
 dependencies = [
   "openai>=1.0.0",
@@ -20,20 +20,19 @@ dependencies = [
 dev = ["pytest>=8.0", "ruff>=0.6"]
 
 [project.scripts]
-benchmark-qa = "benchmark_cli.cli:main"
-benchmark-agent = "benchmark_cli.agent:main"
 benchmark-ingest = "benchmark_cli.ingestion.pipeline:main"
-benchmark-eval = "benchmark_cli.evaluation.runner:main"
+benchmark-evaluate = "benchmark_cli.evaluation.cli:main"
+benchmark-search = "benchmark_cli.search_cli:main"
 
 [tool.pytest.ini_options]
-addopts = "-m 'not live'"
+addopts = "-m 'not integration_live'"
 testpaths = ["tests"]
 pythonpath = ["src"]
 markers = [
   "unit: deterministic isolated tests",
-  "integration: tests using local fixtures or local services",
-  "live: tests that call external, billable services",
-  "eval: benchmark execution tests",
+  "integration: tests requiring a local PostgreSQL service",
+  "integration_live: real pgvector and OpenAI-embedding integration tests",
+  "eval: retrieval evaluation tests",
 ]
 
 [tool.ruff]

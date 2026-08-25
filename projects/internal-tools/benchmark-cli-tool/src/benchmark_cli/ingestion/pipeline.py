@@ -12,7 +12,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from ..config import EMBEDDING_TIER, MODEL_TIERS
 from ..models import ChunkMetadata
 from ..paths import DOCUMENTS_DIR
 from ..providers.openai import embed_texts
@@ -122,36 +121,6 @@ def discover_sources(source_dir: Path) -> list[Path]:
     )
 
 
-def materialize_for_read_doc(
-    source_path: Path, source_type: str, prepared: list[tuple[Chunk, ChunkMetadata]]
-) -> str:
-    """Write cleaned conversational sources as local documents for ``read_doc``.
-
-    Policy documents already live in the document library. Discord and
-    transcript exports become an ignored, normalized `.txt` view so an agent can
-    follow a vector ``search_docs`` hit with the existing ``read_doc`` tool.
-    """
-    documents_dir = DOCUMENTS_DIR
-    # Files already in the library are directly readable. Materializing them
-    # would overwrite the user's original Discord or transcript export.
-    if source_type == "policy_doc" or source_path.parent.resolve() == documents_dir.resolve():
-        return source_path.name
-    destination = documents_dir / f"{source_path.stem}.txt"
-    sections: list[tuple[str, list[str]]] = []
-    for index, (chunk, metadata) in enumerate(prepared, start=1):
-        if source_type == "discord":
-            title = f"{metadata.channel} ({metadata.date_start} to {metadata.date_end})"
-        else:
-            title = metadata.section or f"{metadata.meeting} — chunk {index}"
-        if sections and sections[-1][0] == title:
-            sections[-1][1].append(chunk.text)
-        else:
-            sections.append((title, [chunk.text]))
-    body = "\n\n".join(f"{title}:\n" + "\n".join(texts) for title, texts in sections)
-    destination.write_text(body + "\n", encoding="utf-8")
-    return destination.name
-
-
 def ingest_source(path: Path, *, dry_run: bool, force: bool, batch_size: int = 128) -> dict[str, Any]:
     source_type = source_type_for(path)
     chunks = chunk_units(parse_by_type(path))
@@ -175,12 +144,10 @@ def ingest_source(path: Path, *, dry_run: bool, force: bool, batch_size: int = 1
         "dry_run": dry_run,
     }
     if dry_run:
-        rate = MODEL_TIERS[EMBEDDING_TIER].input_cost_per_million
-        result["estimated_embedding_cost"] = result["tokens"] * rate / 1_000_000
         return result
 
     initialize_database()
-    source_filename = materialize_for_read_doc(path, source_type, prepared)
+    source_filename = path.name
     if force:
         delete_source(source_filename)
         known_hashes: set[str] = set()
@@ -198,11 +165,7 @@ def ingest_source(path: Path, *, dry_run: bool, force: bool, batch_size: int = 1
         for attempt in range(3):
             try:
                 vectors.extend(
-                    embed_texts(
-                        batch,
-                        component="ingest",
-                        telemetry_question=f"ingest:{source_filename}",
-                    )
+                    embed_texts(batch)
                 )
                 break
             except Exception:

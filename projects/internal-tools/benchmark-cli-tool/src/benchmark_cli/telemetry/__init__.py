@@ -1,2 +1,0 @@
-"""Usage and operational telemetry."""
-

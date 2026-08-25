@@ -45,7 +45,7 @@ This plan prioritizes reliability and enterprise safety over autonomy:
 Use this as the target project structure under this folder.
 
 ```text
-work_knowledge_agent/
+work-knowledge-agent/
   README.md
   IMPLEMENTATION_PLAN.md
   pyproject.toml

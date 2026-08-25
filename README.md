@@ -6,12 +6,17 @@ This repository holds the public BMTech site, internal tools, and the consulting
 
 ```text
 .
-├── website/                 Public BMTech website
-├── work_knowledge_agent/    Existing internal knowledge-agent project
 ├── projects/
 │   ├── client-delivery/     Client-specific engagements
-│   ├── internal-tools/      Products and utilities used by BMTech
+│   ├── company-platforms/
+│   │   └── website/         Public BMTech website
+│   ├── internal-tools/
+│   │   └── work-knowledge-agent/
 │   └── experiments/         Time-boxed prototypes and technical spikes
+├── docs/
+│   ├── setup/               Firm-wide environment and onboarding guides
+│   ├── operations/          Company operating documentation
+│   └── standards/           Engineering and delivery standards
 ├── shared/
 │   ├── brand/               Approved brand assets and guidance
 │   ├── templates/           Reusable project and delivery templates
@@ -19,7 +24,7 @@ This repository holds the public BMTech site, internal tools, and the consulting
 └── archive/                 Completed or retired work
 ```
 
-The existing `website/` and `work_knowledge_agent/` directories remain at the repository root to avoid breaking their current build paths and documentation. New work should follow the structure under `projects/`.
+Project-specific documentation stays with its project. Firm-wide documentation belongs in `docs/`. The website deployment workflow follows its location under `projects/company-platforms/website/`.
 
 ## Naming conventions
 

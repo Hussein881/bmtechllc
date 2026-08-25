@@ -1,0 +1,124 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SidebarTree from '../../components/SidebarTree.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import {
+  getAllPages,
+  buildSectionTree,
+  SECTIONS,
+  SECTION_LABELS,
+  SECTION_BLURBS,
+  withBase,
+  type PageRecord,
+  type SectionName,
+} from '../../lib/content';
+
+/**
+ * Section landing pages.
+ *
+ * The listing is always generated from the folder tree, so it can never drift
+ * out of sync. A section may optionally add an `index.md` whose prose renders
+ * above the listing — useful where the section needs a reading order or an
+ * explanation, as the Guide does.
+ */
+export async function getStaticPaths() {
+  const pages = await getAllPages();
+
+  return SECTIONS.map((section) => ({
+    params: { section },
+    props: {
+      section,
+      indexPage: pages.find((p) => p.section === section && p.isIndex) ?? null,
+      pages: pages.filter((p) => p.section === section && !p.isIndex),
+      allPages: pages,
+    },
+  }));
+}
+
+interface Props {
+  section: SectionName;
+  indexPage: PageRecord | null;
+  pages: PageRecord[];
+  allPages: PageRecord[];
+}
+
+const { section, indexPage, pages, allPages } = Astro.props;
+const tree = buildSectionTree(allPages, section);
+const label = SECTION_LABELS[section];
+
+const rendered = indexPage ? await render(indexPage.entry) : null;
+const Intro = rendered?.Content;
+---
+
+<BaseLayout
+  title={label}
+  description={indexPage?.description ?? SECTION_BLURBS[section]}
+>
+  <div class="page-shell">
+    {tree.length > 0 && (
+      <aside class="sidebar" aria-label={`${label} navigation`}>
+        <p class="sidebar-heading">{label}</p>
+        <SidebarTree nodes={tree} currentPath={`/${section}/`} />
+      </aside>
+    )}
+
+    <main id="main-content" class="content-column">
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href={withBase('/')}>Home</a>
+        <span class="sep" aria-hidden="true">/</span>
+        <span>{label}</span>
+      </nav>
+
+      {/*
+        Title and one-line purpose render for every section, so the answer to
+        "what belongs here" is always in the same place. A section's optional
+        index.md adds detail below rather than replacing them.
+      */}
+      <div class="section-heading-row">
+        <div>
+          <h1 class="section-title">{label}</h1>
+          <p class="lede">{SECTION_BLURBS[section]}</p>
+        </div>
+        <a class="btn-secondary" href={withBase(`/new/?section=${section}`)}>Add a page</a>
+      </div>
+
+      {Intro && (
+        <article class="prose section-intro">
+          <Intro />
+        </article>
+      )}
+
+      {pages.length === 0 ? (
+        <p class="empty-state">
+          Nothing here yet. Add a Markdown file to
+          {' '}<code>content/{section}/</code> and it appears automatically.
+        </p>
+      ) : (
+        <>
+          {Intro && <h2 class="listing-heading">In this section</h2>}
+          <ul class="page-list">
+            {pages.map((p) => (
+              <li>
+                <a href={withBase(p.path)}>{p.title}</a>
+                {p.status === 'draft' && <span class="pill pill-draft">Draft</span>}
+                {p.isStale && <span class="pill pill-stale">Review overdue</span>}
+                <p>{p.description}</p>
+                <span class="page-list-meta">
+                  {p.owner} · updated {p.updated.toISOString().split('T')[0]}
+                  {p.tags.length > 0 && <> · {p.tags.join(', ')}</>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </main>
+
+    {rendered && (
+      <aside class="toc-rail">
+        <TableOfContents headings={rendered.headings} />
+      </aside>
+    )}
+  </div>
+</BaseLayout>

@@ -1,0 +1,40 @@
+name: Portal CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'portal/**'
+      - '.github/workflows/portal-ci.yml'
+  # No path filter here: this is a required status check on main, and a
+  # required check that never runs (e.g. on a website-only PR) blocks merge
+  # forever rather than being skipped. The build itself is fast regardless.
+  pull_request:
+
+jobs:
+  build:
+    name: Build & validate content contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: portal/package-lock.json
+
+      - name: Install dependencies
+        working-directory: portal
+        run: npm ci
+
+      # `npm run build` chains astro check -> astro build -> content gates.
+      # Keeping them in one script means a green local build cannot diverge
+      # from CI, which is exactly how a type error reached main previously.
+      #
+      # Fails on: type errors, invalid frontmatter, tags outside the controlled
+      # vocabulary, unknown owners, broken internal links, unresolved redirects,
+      # or an incomplete index.json.
+      - name: Type check, build, and run content gates
+        working-directory: portal
+        run: npm run build

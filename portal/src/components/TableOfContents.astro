@@ -1,0 +1,52 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+  headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+// Only h2/h3 — deeper levels make the rail unreadable
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{items.length > 1 && (
+  <nav class="toc" aria-labelledby="toc-heading">
+    <h2 id="toc-heading" class="toc-title">On this page</h2>
+    <ul>
+      {items.map((h) => (
+        <li class={`toc-depth-${h.depth}`}>
+          <a href={`#${h.slug}`} data-toc-link={h.slug}>{h.text}</a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+)}
+
+<script>
+  // Scroll-tracking: highlight the ToC entry for the heading currently in view.
+  const links = document.querySelectorAll<HTMLAnchorElement>('[data-toc-link]');
+  if (links.length) {
+    const bySlug = new Map<string, HTMLAnchorElement>();
+    links.forEach((link) => bySlug.set(link.dataset.tocLink!, link));
+
+    const headingEls = Array.from(bySlug.keys())
+      .map((slug) => document.getElementById(slug))
+      .filter((el): el is HTMLElement => el !== null);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            links.forEach((l) => l.classList.remove('active'));
+            bySlug.get(entry.target.id)?.classList.add('active');
+            break;
+          }
+        }
+      },
+      { rootMargin: '0px 0px -70% 0px', threshold: 0 }
+    );
+
+    headingEls.forEach((el) => observer.observe(el));
+  }
+</script>

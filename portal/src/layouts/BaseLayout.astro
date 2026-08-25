@@ -1,0 +1,75 @@
+---
+import '../styles/global.css';
+import Search from '../components/Search.astro';
+import { SECTIONS, SECTION_LABELS, withBase } from '../lib/content';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <title>{title} — BenchmarkTech KB</title>
+
+    {/* Internal tool: no crawlers, no SEO scaffolding, no social cards. */}
+    <meta name="robots" content="noindex, nofollow" />
+
+    <script is:inline>
+      // Set theme before first paint to avoid a flash.
+      const stored = localStorage.getItem('theme');
+      const preferred = stored ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.dataset.theme = preferred;
+    </script>
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+
+    <header class="site-header">
+      <a href={withBase('/')} class="site-name">
+        BenchmarkTech <span class="site-tag">KB</span>
+      </a>
+      <nav class="site-nav" aria-label="Main navigation">
+        {SECTIONS.map((section) => (
+          <a
+            href={withBase(`/${section}/`)}
+            aria-current={Astro.url.pathname.includes(`/${section}/`) ? 'page' : undefined}
+          >
+            {SECTION_LABELS[section]}
+          </a>
+        ))}
+      </nav>
+      <div class="header-actions">
+        <a class="new-page-link" href={withBase('/new/')}>Create page</a>
+        <Search />
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+          <span aria-hidden="true">◐</span>
+        </button>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer class="site-footer">
+      <p>BenchmarkTech internal knowledge base · not for external distribution</p>
+      <p class="footer-machine">
+        Machine-readable index for internal tooling:
+        <a href={withBase('/index.json')}>index.json</a>
+      </p>
+    </footer>
+
+    <script is:inline>
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem('theme', next);
+      });
+    </script>
+  </body>
+</html>

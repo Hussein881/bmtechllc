@@ -1,0 +1,96 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  getAllPages,
+  SECTIONS,
+  SECTION_LABELS,
+  SECTION_BLURBS,
+  withBase,
+} from '../lib/content';
+
+const pages = await getAllPages();
+
+const sections = SECTIONS.map((section) => {
+  const sectionPages = pages.filter((p) => p.section === section);
+  return {
+    name: section,
+    label: SECTION_LABELS[section],
+    blurb: SECTION_BLURBS[section],
+    count: sectionPages.length,
+    stale: sectionPages.filter((p) => p.isStale).length,
+  };
+});
+
+const recent = [...pages]
+  .sort((a, b) => b.updated.getTime() - a.updated.getTime())
+  .slice(0, 6);
+
+const needsReview = pages.filter((p) => p.isStale).slice(0, 6);
+const drafts = pages.filter((p) => p.status === 'draft').slice(0, 6);
+---
+
+<BaseLayout
+  title="Knowledge Base"
+  description="BenchmarkTech internal knowledge base — methodology, playbooks, runbooks, and reference material."
+>
+  <main id="main-content" class="home">
+    <section class="hero">
+      <h1>Knowledge Base</h1>
+      <p class="lede">
+        How we work, how we deliver, and what we learned doing it.
+        Everything here is internal.
+      </p>
+      <p class="hero-meta">
+        {pages.length} pages
+        {needsReview.length > 0 && <> · <strong>{needsReview.length} need review</strong></>}
+        {drafts.length > 0 && <> · {drafts.length} in draft</>}
+        <> · press <kbd>/</kbd> to search</>
+      </p>
+    </section>
+
+    <section class="section-grid" aria-label="Knowledge base sections">
+      {sections.map((s) => (
+        <a href={withBase(`/${s.name}/`)} class="section-card">
+          <h2>{s.label}</h2>
+          <p>{s.blurb}</p>
+          <span class="card-count">
+            {s.count} {s.count === 1 ? 'page' : 'pages'}
+            {s.stale > 0 && <span class="card-stale"> · {s.stale} stale</span>}
+          </span>
+        </a>
+      ))}
+    </section>
+
+    <div class="home-columns">
+      <section class="recent" aria-labelledby="recent-heading">
+        <h2 id="recent-heading">Recently updated</h2>
+        <ul>
+          {recent.map((p) => (
+            <li>
+              <a href={withBase(p.path)}>{p.title}</a>
+              <span class="recent-section">{SECTION_LABELS[p.section]}</span>
+              <time datetime={p.updated.toISOString().split('T')[0]}>
+                {p.updated.toISOString().split('T')[0]}
+              </time>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      {needsReview.length > 0 && (
+        <section class="recent" aria-labelledby="review-heading">
+          <h2 id="review-heading">Needs review</h2>
+          <ul>
+            {needsReview.map((p) => (
+              <li>
+                <a href={withBase(p.path)}>{p.title}</a>
+                <span class="recent-section">{p.owner}</span>
+                <span class="stale-age">{p.monthsSinceUpdate}mo</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+  </main>
+</BaseLayout>

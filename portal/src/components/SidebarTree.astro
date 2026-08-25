@@ -1,0 +1,35 @@
+---
+import { withBase, type NavNode } from '../lib/content';
+
+interface Props {
+  nodes: NavNode[];
+  currentPath: string;
+  level?: number;
+}
+
+const { nodes, currentPath, level = 0 } = Astro.props;
+---
+
+<ul class={level === 0 ? 'sidebar-tree' : 'sidebar-subtree'}>
+  {nodes.map((node) => (
+    <li>
+      {node.path ? (
+        <a
+          href={withBase(node.path)}
+          class:list={[
+            'sidebar-link',
+            { active: node.path === currentPath, 'is-draft': node.status === 'draft' },
+          ]}
+          aria-current={node.path === currentPath ? 'page' : undefined}
+        >
+          {node.label}
+        </a>
+      ) : (
+        <span class="sidebar-group">{node.label}</span>
+      )}
+      {node.children.length > 0 && (
+        <Astro.self nodes={node.children} currentPath={currentPath} level={level + 1} />
+      )}
+    </li>
+  ))}
+</ul>

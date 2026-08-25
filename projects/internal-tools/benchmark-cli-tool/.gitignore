@@ -2,16 +2,14 @@
 .env
 .env.local
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
 
-# Week 2: local telemetry and regenerated benchmark artifacts
-usage_log.*.csv
-eval_results.txt
-phase3_results.json
-week2_results/
+# Runtime telemetry and regenerated reports.
+artifacts/
+usage_log.csv
 
-# Real exports are materialized here only for the local read_doc bridge.
-documents/*.txt
-
-# Local archive of retired sample documents.
-/old documents/
+# Local company exports and retired source material. Sanitized test fixtures live in tests/fixtures/.
+data/documents/
+data/archive/

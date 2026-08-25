@@ -1,87 +1,62 @@
 # Benchmark CLI Tool
 
-Document-grounded Q&A CLI with dynamic model routing, structured responses,
-local retrieval tools, and per-call cost telemetry.
+Document-grounded Q&A CLI with model routing, structured responses, local retrieval,
+vector ingestion, and cost telemetry.
 
-## Setup
+## Quick start
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e '.[dev]'
+pytest
 ```
 
-Create a `.env` file containing `OPENAI_API_KEY=<your key>`.
+The default test suite is deterministic: it uses sanitized documents in
+`tests/fixtures/` and makes no API calls. Configure `OPENAI_API_KEY` in `.env`
+only when you want to use a live command or test.
 
-For Week 2 vector retrieval, configure a PostgreSQL database with the
-`pgvector` extension in `.env` or the ignored local override `.env.local`:
+## Commands
 
-```dotenv
-DATABASE_URL=postgresql://user:password@localhost:5432/benchmark_cli
-SEARCH_MODE=vector
-```
-
-`SEARCH_MODE=keyword` preserves the original lexical retrieval path for
-comparison or a safe local fallback. Never commit `.env` or real company
-exports.
-
-## Run document Q&A
-
-Place UTF-8 `.txt` documents in `documents/`, then run:
+Put local source exports in `data/documents/` (ignored by Git), then use:
 
 ```bash
-python main.py --doc document.txt --question "What does this document say about the decision?"
+benchmark-qa --doc policy.txt --question "What is the reimbursement limit?"
+benchmark-agent --question "What decision was made in the available documents?"
+benchmark-ingest --source-dir data/documents --dry-run
+benchmark-ingest --source-dir data/documents --create-indexes
 ```
 
-The CLI prints a validated JSON `QAResponse`; the selected tier is written to
-stderr. `usage_log.csv` records a bounded question, tokens, model, tier, and
-cost for each model call.
-
-## Run retrieval agent
-
-```bash
-python agent.py --question "What decision was made in the available documents?"
-python agent.py --tier flagship --question "Compare the decisions described across the available documents."
-```
-
-The first command routes automatically and prints `[ROUTING] Selected tier: …`
-before its tool trace; `--tier` is an explicit override. The agent returns a
-validated `QAResponse` and uses at most five tool-calling turns followed by one
-final synthesis turn.
-
-## Ingest a vector corpus
-
-The pipeline accepts UTF-8 policy text, Discord JSON/TXT exports, and
-transcript JSON/TXT exports. It redacts common credentials before API calls,
-chunks at source boundaries, and records embedding usage separately.
-
-```bash
-# Parse/chunk and estimate cost; no API or database writes.
-.venv/bin/python -m ingest.ingest --source-dir documents --dry-run
-
-# Create the pgvector schema, embed new chunks, and create indexes.
-.venv/bin/python -m ingest.ingest --source-dir documents --create-indexes
-```
-
-Vector search preserves the original `search_docs` result shape and falls back
-to keyword search if the embedding service or database is unavailable.
+Set `DATABASE_URL` and `SEARCH_MODE=vector` in `.env` or `.env.local` for
+pgvector retrieval. `SEARCH_MODE=keyword` is a deterministic local fallback.
 
 ## Tests and evaluation
 
 ```bash
-python test_phase1.py
-python test_phase2.py
-python test_phase3.py
-.venv/bin/python -m unittest -v test_embeddings test_chunking test_search_contract
+pytest                         # unit + fixture-backed integration tests
+pytest -m unit
+pytest -m integration
+pytest -m live                 # opt-in: calls OpenAI and writes artifacts/telemetry/
+benchmark-eval --suite week2 --modes routed,flagship --search vector
 ```
 
-After genuine Discord and transcript sources are ingested, freeze a reviewed
-`week2_cases.json` (ground truth and source expectations included), then run:
+Evaluation outputs and telemetry are written to `artifacts/` by default.
+Reviewed evaluation cases belong at `data/eval_cases_week2.json`; real source
+documents are intentionally ignored.
 
-```bash
-.venv/bin/python eval_suite.py --suite week2 --modes routed,flagship --search vector --out week2_results/
+## Repository map
+
+```text
+src/benchmark_cli/   Application package and console entry points
+  providers/         OpenAI integration
+  storage/           PostgreSQL/pgvector adapter and SQL migrations
+  telemetry/         Usage logging
+  ingestion/         Source cleaning, chunking, and ingestion pipeline
+  evaluation/        Benchmark case loading and execution
+tests/               Unit, integration, live E2E tests, and tracked fixtures
+data/                Local corpus and reviewed evaluation inputs
+artifacts/           Ignored telemetry and generated evaluation outputs
+docs/                Guides, architecture notes, assessments, and archived plans
 ```
 
-The harness writes raw per-arm JSON plus component-level cost, latency,
-routing, and retrieval metrics. It refuses to fabricate a Week 2 benchmark
-when the reviewed corpus cases are absent.
+See [documentation index](docs/README.md) for detailed guides and historical context.

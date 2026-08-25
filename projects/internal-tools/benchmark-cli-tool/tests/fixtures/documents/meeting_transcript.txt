@@ -1,0 +1,4 @@
+# Product meeting
+
+[00:00:01] Alex: The HNSW retrieval p99 was 11ms.
+[00:00:05] Priya: The staged hybrid-search release is ready for review.

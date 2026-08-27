@@ -2,3 +2,8 @@
 data/raw/
 data/processed/
 data/indexes/
+
+# Python-generated local artifacts.
+__pycache__/
+*.py[cod]
+.pytest_cache/

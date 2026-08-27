@@ -110,7 +110,7 @@ if (!existsSync(indexPath)) {
 
 // ── 4. Ownership + staleness ─────────────────────────────────────────────────
 // Internal docs rot silently. Missing ownership fails; overdue review warns.
-const KNOWN_OWNERS = new Set(['ah', 'kv', 'team']);
+const KNOWN_OWNERS = new Set(['ah', 'kv', 'fa', 'team']);
 const stale = [];
 
 for (const file of walk(CONTENT).filter((f) => f.endsWith('.md'))) {

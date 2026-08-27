@@ -3,7 +3,7 @@
 Purpose: provide a quick map of the repository and a one-line description of what each key tool or module is for.
 
 ```text
-work_knowledge_agent/                              # Root project folder
+projects/internal-tools/work-knowledge-agent/      # Project folder within the BMTech workspace
 |-- AGENTS.md                                      # Repository-wide agent operating rules
 |-- agent.md                                       # Compatibility pointer enforcing AGENTS.md governance
 |-- IMPLEMENTATION_PLAN.md                         # Phase plan, gates, and execution strategy

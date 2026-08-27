@@ -1,8 +1,0 @@
-timestamp,component,question,tier,model,prompt_tokens,completion_tokens,total_cost_usd,flagship_equivalent_cost_usd,routing_savings_usd
-2026-08-14T11:57:03.272505+00:00,classifier,who were the participants of the video meeting?,cheap,gpt-5.6-luna,67,5,0.0000194000,0.0000194000,0.0000000000
-2026-08-14T11:57:04.221394+00:00,agent,who were the participants of the video meeting?,cheap,gpt-5.6-luna,412,13,0.0000980000,0.0009800000,0.0008820000
-2026-08-14T11:57:05.239004+00:00,agent,who were the participants of the video meeting?,cheap,gpt-5.6-luna,497,25,0.0001294000,0.0012940000,0.0011646000
-2026-08-14T11:57:05.936004+00:00,query_embed,query_embed:1 texts,embedding,text-embedding-3-small,5,0,0.0000001000,0.0000001000,0.0000000000
-2026-08-14T11:57:07.086524+00:00,agent,who were the participants of the video meeting?,cheap,gpt-5.6-luna,941,22,0.0002146000,0.0021460000,0.0019314000
-2026-08-14T11:57:08.716509+00:00,agent,who were the participants of the video meeting?,cheap,gpt-5.6-luna,2039,132,0.0005662000,0.0056620000,0.0050958000
-2026-08-14T11:57:10.181196+00:00,agent,who were the participants of the video meeting?,cheap,gpt-5.6-luna,1902,109,0.0005112000,0.0051120000,0.0046008000

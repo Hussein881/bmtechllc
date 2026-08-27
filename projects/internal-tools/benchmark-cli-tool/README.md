@@ -1,87 +1,81 @@
-# Benchmark CLI Tool
+# Benchmark Retrieval Pipeline
 
-Document-grounded Q&A CLI with dynamic model routing, structured responses,
-local retrieval tools, and per-call cost telemetry.
+A retrieval-only RAG foundation: document ingestion, OpenAI embeddings,
+PostgreSQL full-text search, vector search, Reciprocal Rank Fusion, and
+retrieval-level evaluation. It intentionally does not generate answers or run
+agent workflows.
 
 ## Setup
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install -e '.[dev]'
+docker compose up -d
 ```
 
-Create a `.env` file containing `OPENAI_API_KEY=<your key>`.
+The application loads the existing `.env` first, then the optional `.env.local`
+without overriding values already set in `.env`. Ensure they provide
+`OPENAI_API_KEY` and `DATABASE_URL`. Place source exports in `data/documents/`;
+that directory is ignored by Git.
 
-For Week 2 vector retrieval, configure a PostgreSQL database with the
-`pgvector` extension in `.env` or the ignored local override `.env.local`:
-
-```dotenv
-DATABASE_URL=postgresql://user:password@localhost:5432/benchmark_cli
-SEARCH_MODE=vector
-```
-
-`SEARCH_MODE=keyword` preserves the original lexical retrieval path for
-comparison or a safe local fallback. Never commit `.env` or real company
-exports.
-
-## Run document Q&A
-
-Place UTF-8 `.txt` documents in `documents/`, then run:
+## Ingest and retrieve
 
 ```bash
-python main.py --doc document.txt --question "What does this document say about the decision?"
+benchmark-ingest --source-dir data/documents --dry-run
+benchmark-ingest --source-dir data/documents --create-indexes
 ```
 
-The CLI prints a validated JSON `QAResponse`; the selected tier is written to
-stderr. `usage_log.csv` records a bounded question, tokens, model, tier, and
-cost for each model call.
+`hybrid_search(query, top_k=5)` embeds the query once, concurrently retrieves
+20 pgvector candidates and 20 PostgreSQL FTS candidates, then merges them with
+RRF (`k = 60`). It returns chunks and fused search scores only.
 
-## Run retrieval agent
+Inspect retrieval manually with:
 
 ```bash
-python agent.py --question "What decision was made in the available documents?"
-python agent.py --tier flagship --question "Compare the decisions described across the available documents."
+benchmark-search --query "home office equipment reimbursement"
+benchmark-search --mode fts --query "equipment reimbursement"
+benchmark-search --mode vector --query "remote work policy"
 ```
 
-The first command routes automatically and prints `[ROUTING] Selected tier: …`
-before its tool trace; `--tier` is an explicit override. The agent returns a
-validated `QAResponse` and uses at most five tool-calling turns followed by one
-final synthesis turn.
+## Retrieval evaluation
 
-## Ingest a vector corpus
-
-The pipeline accepts UTF-8 policy text, Discord JSON/TXT exports, and
-transcript JSON/TXT exports. It redacts common credentials before API calls,
-chunks at source boundaries, and records embedding usage separately.
+The 30-item template at `data/evaluation/golden_queries.example.json` has 10
+lookup, 10 multi-chunk, and 10 unanswerable queries. Replace the placeholder
+chunk IDs with IDs from your reviewed corpus, copy it to a private dataset path,
+then run:
 
 ```bash
-# Parse/chunk and estimate cost; no API or database writes.
-.venv/bin/python -m ingest.ingest --source-dir documents --dry-run
-
-# Create the pgvector schema, embed new chunks, and create indexes.
-.venv/bin/python -m ingest.ingest --source-dir documents --create-indexes
+benchmark-evaluate --dataset /path/to/golden_queries.json
+pytest
 ```
 
-Vector search preserves the original `search_docs` result shape and falls back
-to keyword search if the embedding service or database is unavailable.
+The evaluation reports macro Recall@5 and MRR for lookup and multi-chunk cases.
+Unanswerable queries remain in the per-query output but are excluded from those
+metrics because they have no relevant chunk IDs.
 
-## Tests and evaluation
+## Real integration check
+
+The default suite is offline. To verify the complete pgvector and embedding
+path with the supplied Docker database, run this opt-in test after `docker
+compose up -d` and configuring `OPENAI_API_KEY`:
 
 ```bash
-python test_phase1.py
-python test_phase2.py
-python test_phase3.py
-.venv/bin/python -m unittest -v test_embeddings test_chunking test_search_contract
+pytest -m integration_live tests/integration/test_hybrid_pgvector.py
 ```
 
-After genuine Discord and transcript sources are ingested, freeze a reviewed
-`week2_cases.json` (ground truth and source expectations included), then run:
+It indexes two small fixtures with real OpenAI embeddings, verifies FTS, vector,
+and fused retrieval, then clears only the local Compose database's chunk table.
 
-```bash
-.venv/bin/python eval_suite.py --suite week2 --modes routed,flagship --search vector --out week2_results/
+## Layout
+
+```text
+src/benchmark_cli/
+  ingestion/       Parse, normalize, chunk, embed, index
+  providers/       Embedding provider boundary
+  storage/         PostgreSQL/pgvector + FTS schema and queries
+  retrieval.py     Concurrent hybrid retrieval and pure RRF fusion
+  evaluation/      Golden dataset loading, metrics, CLI
+tests/unit/        Chunking, embeddings, RRF, and metric tests
+data/evaluation/   30-query golden-dataset template
 ```
-
-The harness writes raw per-arm JSON plus component-level cost, latency,
-routing, and retrieval metrics. It refuses to fabricate a Week 2 benchmark
-when the reviewed corpus cases are absent.

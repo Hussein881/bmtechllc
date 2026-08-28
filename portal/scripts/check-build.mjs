@@ -108,7 +108,29 @@ if (!existsSync(indexPath)) {
   }
 }
 
-// ── 4. Ownership + staleness ─────────────────────────────────────────────────
+// ── 4. Markdown math renders rather than passing through as GFM text ─────────
+// The reference page deliberately includes inline and display TeX, making it a
+// compact regression fixture for the Remark/KaTeX pipeline.
+const mathPage = join(
+  DIST,
+  'reference/hybrid-search-rrf-bm25-rag-evaluation-conceptual-cheatsheet/index.html'
+);
+if (!existsSync(mathPage)) {
+  fail('Missing math regression page in the built site.');
+} else {
+  const mathHtml = readFileSync(mathPage, 'utf8');
+  if (!mathHtml.includes('class="katex"')) {
+    fail('Markdown math was not rendered with KaTeX.');
+  }
+  if (!mathHtml.includes('class="katex-display"')) {
+    fail('Display Markdown math was not rendered with KaTeX.');
+  }
+  if (/\$\$\\text\{Score\}/.test(mathHtml)) {
+    fail('Display TeX delimiters were emitted as literal Markdown.');
+  }
+}
+
+// ── 5. Ownership + staleness ─────────────────────────────────────────────────
 // Internal docs rot silently. Missing ownership fails; overdue review warns.
 const KNOWN_OWNERS = new Set(['ah', 'kv', 'fa', 'team']);
 const stale = [];

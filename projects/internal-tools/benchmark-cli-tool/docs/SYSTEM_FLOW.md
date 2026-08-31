@@ -198,11 +198,49 @@ source and rebuild that source from its current contents.
 Normal ingestion compares SHA-256 hashes of chunk text against existing rows.
 Known chunks are skipped, so unchanged text is not embedded again. This is an
 incremental content-deduplication strategy, not full source synchronization:
-chunks removed from a source can remain in the database.
+chunks removed from an edited source or rows for deleted source files can remain
+in the database.
 
-Use `--force` when a source has been edited or deleted and the database should
-contain only its current chunks. For each supplied source file, this deletes its
-existing chunks and re-embeds the current content.
+Use `--force` when a supplied source has been edited. For each supplied source
+file, it deletes that file's existing chunks and re-embeds the current content.
+It therefore removes chunks that were deleted from an edited file. It cannot
+delete rows for a source file that has been deleted or renamed, because that
+file is not present in the supplied source list.
+
+### Corpus synchronization and full rebuild
+
+The current ingestion CLI does not yet maintain a source manifest and has no
+`--sync` or `--prune` command. To make the local database exactly match the
+current source directory after files have been deleted or renamed, truncate the
+chunk table, then ingest the directory again:
+
+```bash
+docker compose exec postgres \
+  psql -U benchmark -d benchmark_cli \
+  -c 'TRUNCATE TABLE document_chunks RESTART IDENTITY;'
+
+.venv/bin/benchmark-ingest --source-dir data/documents --create-indexes
+```
+
+This is an explicit destructive maintenance operation. pgvector is an extension
+inside PostgreSQL, not a separate database: `document_chunks` stores both the
+vector embeddings and the chunk text, while `search_vector` is a generated
+PostgreSQL full-text field derived from that text. Truncating the table thus
+clears embeddings, full-text data, and source chunks together, but retains the
+table schema, pgvector extension, and indexes.
+
+For a complete local database rebuild, including schema and indexes, use:
+
+```bash
+docker compose down -v
+docker compose up -d
+.venv/bin/benchmark-ingest --source-dir data/documents --create-indexes
+```
+
+This deletes the entire local Compose PostgreSQL volume. When source-manifest
+tracking is added, the preferred steady-state operation is a `--sync`/`--prune`
+mode that deletes only rows belonging to source files no longer on disk, without
+re-embedding unchanged content.
 
 ## Storage and indexes
 
@@ -297,6 +335,26 @@ ordered by ascending chunk ID to make results deterministic. If FTS has no
 matching terms, hybrid search still returns vector candidates; if a semantic
 embedding request fails, the complete hybrid search fails because vector search
 cannot begin.
+
+This is not an abstaining retrieval system. For every non-empty query, vector
+search returns its nearest stored embeddings, even when none is meaningfully
+relevant to the query. Hybrid search has no relevance threshold, FTS-required
+rule, confidence model, or `no_relevant_information` response. It therefore can
+return apparently unrelated chunks when FTS finds no lexical matches and vector
+search supplies the only candidates.
+
+The shape of an RRF response can reveal this case. For example, scores of
+`1 / 61`, `1 / 62`, `1 / 63`, and so on are contributions from only one ranked
+list, so a top result with `0.016393...` (`1 / 61`) and no higher combined score
+indicates that it was vector rank 1 while FTS supplied no matching candidate.
+By contrast, a chunk ranked first by both vector search and FTS would have
+`1 / 61 + 1 / 61`, approximately `0.03279`.
+
+An application that needs a clear "no relevant information found" outcome must
+apply a separate decision policy. Common choices are requiring at least one FTS
+match plus a minimum vector-similarity threshold, or tuning a threshold from a
+reviewed evaluation set and returning an explicit no-result status when it is
+not met. Those policies are not implemented by the current retrieval API.
 
 For manual inspection:
 

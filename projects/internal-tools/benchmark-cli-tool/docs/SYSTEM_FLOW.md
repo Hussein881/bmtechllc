@@ -392,6 +392,7 @@ Every result has this structure:
   "chunk_id": 10,
   "source_file": "sample_policy.txt",
   "chunk_index": 8,
+  "content_sha256": "a 64-character SHA-256 hash",
   "rrf_score": 0.03278688524590164,
   "text": "Retrieved chunk text.",
   "metadata": {}
@@ -399,9 +400,9 @@ Every result has this structure:
 ```
 
 - `rank` is the final result position.
-- `chunk_id` is the stable PostgreSQL chunk ID used by the golden dataset's
-  `expected_chunk_ids` field.
+- `chunk_id` is the PostgreSQL surrogate ID for this particular ingestion.
 - `source_file` and `chunk_index` identify the source location.
+- `content_sha256` is the stable hash used to anchor a golden expected chunk.
 - `text` is the complete retrieved chunk.
 - `metadata` contains provenance such as section, source type, source date,
   channel, speakers, or meeting data when available.
@@ -461,7 +462,12 @@ Evaluation uses a reviewed golden JSON dataset. Every record has:
 {
   "question_id": "lookup-01",
   "question": "What is the reimbursement limit?",
-  "expected_chunk_ids": [101],
+  "expected_chunks": [
+    {
+      "source_file": "sample_policy.txt",
+      "content_sha256": "a reviewed 64-character SHA-256 hash"
+    }
+  ],
   "query_category": "lookup"
 }
 ```
@@ -472,8 +478,9 @@ Supported categories are:
 - `multi_chunk`: two or more target chunks.
 - `unanswerable`: no target chunks.
 
-The included template has 30 records: 10 of each category. Its chunk IDs are
-placeholders and must be replaced with reviewed IDs from the ingested corpus.
+The included template has 30 records: 10 of each category. Each expected chunk
+is anchored by its source file and SHA-256 content hash rather than by a
+database ID.
 
 Run it with:
 
@@ -491,20 +498,37 @@ For lookup and multi-chunk queries, the evaluator reports:
 Unanswerable records remain in per-query output but are excluded from aggregate
 Recall@5 and MRR because they have no relevant chunk IDs.
 
+### Evaluation speed and quality log
+
+Each `benchmark-evaluate` run appends one CSV row per evaluated query to
+`artifacts/retrieval_evaluation.csv` by default. Rows share a run ID and include
+the query category, measured `retrieval_time_ms`, top returned chunk IDs, RRF
+scores, vector similarity scores, per-query `recall_at_5`, and run-level
+Recall@5/MRR. This gives a lightweight historical record of retrieval speed and
+quality without introducing a monitoring service.
+
+`retrieval_time_ms` measures the complete call to hybrid retrieval, including
+query embedding and both database retrieval modes. `generation_time_ms` is left
+blank rather than reported as zero because the project deliberately has no
+answer-generation phase. RRF is a rank-fusion score, not a similarity measure;
+the separate vector-similarity column is the cosine-similarity score returned by
+pgvector when a result appeared in vector retrieval.
+
 ### Golden-dataset creation, maintenance, and interpretation
 
 Create golden records only after the intended corpus has been ingested and
-manually reviewed. Use `benchmark-search` output to identify candidate
-`chunk_id` values, then confirm the complete `text`, `source_file`, and
-`chunk_index` actually contain the evidence the question is intended to test.
-Do not label a result relevant merely because it contains a similar keyword.
+manually reviewed. Use `benchmark-search` output to identify candidate chunks,
+then confirm the complete `text`, `source_file`, and `chunk_index` actually
+contain the evidence the question is intended to test. Copy the selected
+chunk's `source_file` and `content_sha256` into an `expected_chunks` reference;
+do not label a result relevant merely because it contains a similar keyword.
 
-For a `lookup` question, provide exactly one target chunk. For a `multi_chunk`
-question, provide at least two distinct chunks that are all required to support
-the intended synthesis. For an `unanswerable` question, provide no target IDs;
-it represents an out-of-bounds request rather than an answer-generation test.
-The loader rejects duplicate question IDs and category/target combinations that
-break these rules.
+For a `lookup` question, provide exactly one target reference. For a
+`multi_chunk` question, provide at least two distinct references that are all
+required to support the intended synthesis. For an `unanswerable` question,
+provide no target references; it represents an out-of-bounds request rather
+than an answer-generation test. The loader rejects duplicate question IDs and
+category/target combinations that break these rules.
 
 For example, if a two-target query expects `[10, 12]` and the top five IDs are
 `[3, 12, 8, 10, 7]`, Recall at 5 is `2 / 2 = 1.0`, while MRR is `1 / 2 = 0.5`
@@ -515,13 +539,15 @@ Unanswerable cases remain visible in per-query results with null metric values,
 but are excluded because Recall and MRR are undefined when there are no relevant
 chunks.
 
-`expected_chunk_ids` are PostgreSQL surrogate IDs, not durable source anchors.
-In particular, `--force` deletes a source's rows and reinserts them; newly
-inserted rows can receive different IDs even when their text is unchanged. Any
-golden dataset that references affected chunks must therefore be reviewed and
-updated after forced re-ingestion, schema rebuilds, or corpus replacement. Keep
-the golden dataset private and versioned alongside a record of the corpus
-revision it was reviewed against.
+Expected chunks are durable source-content anchors: `source_file` plus the
+chunk text's SHA-256 hash. At evaluation time, the evaluator resolves them to
+the PostgreSQL IDs created by the current ingestion. Therefore `--force`, a
+table truncate, or a full re-ingestion does not require updating the golden
+dataset when the reviewed source text is unchanged. If a referenced source or
+chunk is absent, evaluation fails with the missing reference, making a corpus
+change explicit instead of silently measuring the wrong content. Keep the
+golden dataset private and versioned alongside a record of the corpus revision
+it was reviewed against.
 
 ## Verification levels
 
@@ -533,7 +559,7 @@ revision it was reviewed against.
 ## Current limitations
 
 - There is no answer-generation or relevance/abstention layer.
-- Golden chunk IDs require manual review after corpus ingestion.
+- Changed or renamed golden-source chunks require manual review before evaluation.
 - Incremental ingestion does not yet delete stale chunks without `--force`.
 - FTS uses PostgreSQL's English configuration; multilingual corpora need a
   language-aware search configuration.

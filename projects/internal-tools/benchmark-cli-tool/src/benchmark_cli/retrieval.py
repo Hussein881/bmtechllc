@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from .providers.openai import embed_texts
 from .storage.postgres import SearchChunk, fts_search, vector_search
@@ -19,6 +19,8 @@ class HybridSearchResult:
 
     chunk: SearchChunk
     rrf_score: float
+    vector_score: float | None = None
+    fts_score: float | None = None
 
 
 def rrf_fuse(
@@ -51,4 +53,13 @@ def hybrid_search(query: str, top_k: int = 5) -> list[HybridSearchResult]:
         fts_future = executor.submit(fts_search, query, CANDIDATE_LIMIT)
         vector_candidates = vector_future.result()
         fts_candidates = fts_future.result()
-    return rrf_fuse((vector_candidates, fts_candidates))[:top_k]
+    vector_scores = {chunk.id: chunk.score for chunk in vector_candidates}
+    fts_scores = {chunk.id: chunk.score for chunk in fts_candidates}
+    return [
+        replace(
+            result,
+            vector_score=vector_scores.get(result.chunk.id),
+            fts_score=fts_scores.get(result.chunk.id),
+        )
+        for result in rrf_fuse((vector_candidates, fts_candidates))[:top_k]
+    ]

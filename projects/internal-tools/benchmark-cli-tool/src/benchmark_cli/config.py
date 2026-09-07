@@ -30,3 +30,4 @@ PARENT_CONTEXT_MAX_TOKENS: Final[int] = 1200
 
 DATA_DIR: Final[Path] = PROJECT_ROOT / "data"
 GOLDEN_DATASET_PATH: Final[Path] = DATA_DIR / "evaluation" / "golden_queries.example.json"
+EVALUATION_LOG_PATH: Final[Path] = PROJECT_ROOT / "artifacts" / "retrieval_evaluation.csv"

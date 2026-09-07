@@ -19,6 +19,7 @@ def _chunk_payload(chunk: SearchChunk, rank: int, score: float, score_name: str)
         "chunk_id": chunk.id,
         "source_file": chunk.source_file,
         "chunk_index": chunk.chunk_index,
+        "content_sha256": chunk.content_sha256,
         score_name: score,
         "text": chunk.chunk_text,
         "metadata": chunk.metadata,

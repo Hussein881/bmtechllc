@@ -14,6 +14,7 @@ from ..config import (
     HNSW_EF_SEARCH,
     PARENT_CONTEXT_MAX_TOKENS,
 )
+from ..models import GoldenChunkReference
 
 SQL_DIR = Path(__file__).with_name("sql")
 
@@ -29,6 +30,7 @@ class SearchChunk:
     metadata: dict[str, Any]
     score: float
     token_count: int | None = None
+    content_sha256: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -105,6 +107,43 @@ def existing_hashes(hashes: Sequence[str]) -> set[str]:
         return {row[0].strip() for row in cursor.fetchall()}
 
 
+def resolve_chunk_references(
+    references: Sequence[GoldenChunkReference],
+) -> dict[tuple[str, str], int]:
+    """Resolve durable golden-dataset references to this database's surrogate IDs.
+
+    A reference deliberately includes both source filename and content hash. This
+    prevents a re-ingestion from silently measuring against an equally worded
+    chunk from a different source and produces a clear failure when reviewed
+    source text has changed.
+    """
+    keys = {(reference.source_file, reference.content_sha256) for reference in references}
+    if not keys:
+        return {}
+    hashes = [content_hash for _, content_hash in keys]
+    statement = """
+        SELECT id, source_file, content_sha256
+        FROM document_chunks
+        WHERE content_sha256 = ANY(%s)
+    """
+    with connection() as conn, conn.cursor() as cursor:
+        cursor.execute(statement, (hashes,))
+        rows = cursor.fetchall()
+
+    resolved = {(str(source_file), content_sha256.strip()): int(chunk_id) for chunk_id, source_file, content_sha256 in rows}
+    missing = keys.difference(resolved)
+    if missing:
+        descriptions = ", ".join(
+            f"{source_file} ({content_hash[:12]}…)"
+            for source_file, content_hash in sorted(missing)
+        )
+        raise ValueError(
+            "Golden dataset references are absent from the current corpus: "
+            f"{descriptions}. Re-review the changed source content."
+        )
+    return {key: resolved[key] for key in keys}
+
+
 def delete_source(source_file: str) -> None:
     with connection() as conn, conn.cursor() as cursor:
         cursor.execute("DELETE FROM document_chunks WHERE source_file = %s", (source_file,))
@@ -137,7 +176,8 @@ def vector_search(query_vector: Sequence[float], limit: int = 20) -> list[Search
         return []
     statement = """
         SELECT id, source_file, chunk_index, chunk_text, metadata,
-               1 - (embedding <=> %s::vector) AS score
+               1 - (embedding <=> %s::vector) AS score,
+               NULL::integer AS token_count, content_sha256
         FROM document_chunks
         ORDER BY embedding <=> %s::vector
         LIMIT %s
@@ -153,7 +193,8 @@ def fts_search(query: str, limit: int = 20) -> list[SearchChunk]:
         return []
     statement = """
         SELECT id, source_file, chunk_index, chunk_text, metadata,
-               ts_rank_cd(search_vector, websearch_to_tsquery('english', %s)) AS score
+               ts_rank_cd(search_vector, websearch_to_tsquery('english', %s)) AS score,
+               NULL::integer AS token_count, content_sha256
         FROM document_chunks
         WHERE search_vector @@ websearch_to_tsquery('english', %s)
         ORDER BY score DESC, id ASC

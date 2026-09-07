@@ -41,9 +41,10 @@ benchmark-search --mode vector --query "remote work policy"
 ## Retrieval evaluation
 
 The 30-item template at `data/evaluation/golden_queries.example.json` has 10
-lookup, 10 multi-chunk, and 10 unanswerable queries. Replace the placeholder
-chunk IDs with IDs from your reviewed corpus, copy it to a private dataset path,
-then run:
+lookup, 10 multi-chunk, and 10 unanswerable queries. Its expected chunks are
+anchored by source filename and content hash, then resolved to the current
+database IDs when evaluation runs. Copy it to a private dataset path and review
+any reference that becomes unavailable after source-content changes, then run:
 
 ```bash
 benchmark-evaluate --dataset /path/to/golden_queries.json

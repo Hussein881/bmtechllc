@@ -198,11 +198,49 @@ source and rebuild that source from its current contents.
 Normal ingestion compares SHA-256 hashes of chunk text against existing rows.
 Known chunks are skipped, so unchanged text is not embedded again. This is an
 incremental content-deduplication strategy, not full source synchronization:
-chunks removed from a source can remain in the database.
+chunks removed from an edited source or rows for deleted source files can remain
+in the database.
 
-Use `--force` when a source has been edited or deleted and the database should
-contain only its current chunks. For each supplied source file, this deletes its
-existing chunks and re-embeds the current content.
+Use `--force` when a supplied source has been edited. For each supplied source
+file, it deletes that file's existing chunks and re-embeds the current content.
+It therefore removes chunks that were deleted from an edited file. It cannot
+delete rows for a source file that has been deleted or renamed, because that
+file is not present in the supplied source list.
+
+### Corpus synchronization and full rebuild
+
+The current ingestion CLI does not yet maintain a source manifest and has no
+`--sync` or `--prune` command. To make the local database exactly match the
+current source directory after files have been deleted or renamed, truncate the
+chunk table, then ingest the directory again:
+
+```bash
+docker compose exec postgres \
+  psql -U benchmark -d benchmark_cli \
+  -c 'TRUNCATE TABLE document_chunks RESTART IDENTITY;'
+
+.venv/bin/benchmark-ingest --source-dir data/documents --create-indexes
+```
+
+This is an explicit destructive maintenance operation. pgvector is an extension
+inside PostgreSQL, not a separate database: `document_chunks` stores both the
+vector embeddings and the chunk text, while `search_vector` is a generated
+PostgreSQL full-text field derived from that text. Truncating the table thus
+clears embeddings, full-text data, and source chunks together, but retains the
+table schema, pgvector extension, and indexes.
+
+For a complete local database rebuild, including schema and indexes, use:
+
+```bash
+docker compose down -v
+docker compose up -d
+.venv/bin/benchmark-ingest --source-dir data/documents --create-indexes
+```
+
+This deletes the entire local Compose PostgreSQL volume. When source-manifest
+tracking is added, the preferred steady-state operation is a `--sync`/`--prune`
+mode that deletes only rows belonging to source files no longer on disk, without
+re-embedding unchanged content.
 
 ## Storage and indexes
 
@@ -298,6 +336,26 @@ matching terms, hybrid search still returns vector candidates; if a semantic
 embedding request fails, the complete hybrid search fails because vector search
 cannot begin.
 
+This is not an abstaining retrieval system. For every non-empty query, vector
+search returns its nearest stored embeddings, even when none is meaningfully
+relevant to the query. Hybrid search has no relevance threshold, FTS-required
+rule, confidence model, or `no_relevant_information` response. It therefore can
+return apparently unrelated chunks when FTS finds no lexical matches and vector
+search supplies the only candidates.
+
+The shape of an RRF response can reveal this case. For example, scores of
+`1 / 61`, `1 / 62`, `1 / 63`, and so on are contributions from only one ranked
+list, so a top result with `0.016393...` (`1 / 61`) and no higher combined score
+indicates that it was vector rank 1 while FTS supplied no matching candidate.
+By contrast, a chunk ranked first by both vector search and FTS would have
+`1 / 61 + 1 / 61`, approximately `0.03279`.
+
+An application that needs a clear "no relevant information found" outcome must
+apply a separate decision policy. Common choices are requiring at least one FTS
+match plus a minimum vector-similarity threshold, or tuning a threshold from a
+reviewed evaluation set and returning an explicit no-result status when it is
+not met. Those policies are not implemented by the current retrieval API.
+
 For manual inspection:
 
 ```bash
@@ -334,6 +392,7 @@ Every result has this structure:
   "chunk_id": 10,
   "source_file": "sample_policy.txt",
   "chunk_index": 8,
+  "content_sha256": "a 64-character SHA-256 hash",
   "rrf_score": 0.03278688524590164,
   "text": "Retrieved chunk text.",
   "metadata": {}
@@ -341,9 +400,9 @@ Every result has this structure:
 ```
 
 - `rank` is the final result position.
-- `chunk_id` is the stable PostgreSQL chunk ID used by the golden dataset's
-  `expected_chunk_ids` field.
+- `chunk_id` is the PostgreSQL surrogate ID for this particular ingestion.
 - `source_file` and `chunk_index` identify the source location.
+- `content_sha256` is the stable hash used to anchor a golden expected chunk.
 - `text` is the complete retrieved chunk.
 - `metadata` contains provenance such as section, source type, source date,
   channel, speakers, or meeting data when available.
@@ -351,6 +410,26 @@ Every result has this structure:
 
 FTS-only results use `fts_score`; vector-only results use `vector_score`.
 There is intentionally no `answer`, `confidence`, or generated summary.
+
+### Parent-section context
+
+Retrieval returns isolated chunks to keep the initial vector and FTS searches
+precise. A caller can then use `read_doc(chunk_id, max_tokens=1200)` to fetch
+the selected hit with adjacent chunks from the same source file and persisted
+section. The result is ordered by stable source-relative `chunk_index` and is
+bounded to a contiguous, centered context window; it reports whether the entire
+section fit in the requested budget.
+
+The CLI exposes the same operation through:
+
+```bash
+.venv/bin/benchmark-search --read-doc 42
+```
+
+This two-step pattern lets a future answer layer retrieve narrowly, then obtain
+enough surrounding setup and conclusion to answer from complete context. The
+parent reader uses the persisted section metadata rather than re-opening source
+files at query time.
 
 ### Manual search interpretation and troubleshooting
 
@@ -383,7 +462,12 @@ Evaluation uses a reviewed golden JSON dataset. Every record has:
 {
   "question_id": "lookup-01",
   "question": "What is the reimbursement limit?",
-  "expected_chunk_ids": [101],
+  "expected_chunks": [
+    {
+      "source_file": "sample_policy.txt",
+      "content_sha256": "a reviewed 64-character SHA-256 hash"
+    }
+  ],
   "query_category": "lookup"
 }
 ```
@@ -394,8 +478,9 @@ Supported categories are:
 - `multi_chunk`: two or more target chunks.
 - `unanswerable`: no target chunks.
 
-The included template has 30 records: 10 of each category. Its chunk IDs are
-placeholders and must be replaced with reviewed IDs from the ingested corpus.
+The included template has 30 records: 10 of each category. Each expected chunk
+is anchored by its source file and SHA-256 content hash rather than by a
+database ID.
 
 Run it with:
 
@@ -413,20 +498,37 @@ For lookup and multi-chunk queries, the evaluator reports:
 Unanswerable records remain in per-query output but are excluded from aggregate
 Recall@5 and MRR because they have no relevant chunk IDs.
 
+### Evaluation speed and quality log
+
+Each `benchmark-evaluate` run appends one CSV row per evaluated query to
+`artifacts/retrieval_evaluation.csv` by default. Rows share a run ID and include
+the query category, measured `retrieval_time_ms`, top returned chunk IDs, RRF
+scores, vector similarity scores, per-query `recall_at_5`, and run-level
+Recall@5/MRR. This gives a lightweight historical record of retrieval speed and
+quality without introducing a monitoring service.
+
+`retrieval_time_ms` measures the complete call to hybrid retrieval, including
+query embedding and both database retrieval modes. `generation_time_ms` is left
+blank rather than reported as zero because the project deliberately has no
+answer-generation phase. RRF is a rank-fusion score, not a similarity measure;
+the separate vector-similarity column is the cosine-similarity score returned by
+pgvector when a result appeared in vector retrieval.
+
 ### Golden-dataset creation, maintenance, and interpretation
 
 Create golden records only after the intended corpus has been ingested and
-manually reviewed. Use `benchmark-search` output to identify candidate
-`chunk_id` values, then confirm the complete `text`, `source_file`, and
-`chunk_index` actually contain the evidence the question is intended to test.
-Do not label a result relevant merely because it contains a similar keyword.
+manually reviewed. Use `benchmark-search` output to identify candidate chunks,
+then confirm the complete `text`, `source_file`, and `chunk_index` actually
+contain the evidence the question is intended to test. Copy the selected
+chunk's `source_file` and `content_sha256` into an `expected_chunks` reference;
+do not label a result relevant merely because it contains a similar keyword.
 
-For a `lookup` question, provide exactly one target chunk. For a `multi_chunk`
-question, provide at least two distinct chunks that are all required to support
-the intended synthesis. For an `unanswerable` question, provide no target IDs;
-it represents an out-of-bounds request rather than an answer-generation test.
-The loader rejects duplicate question IDs and category/target combinations that
-break these rules.
+For a `lookup` question, provide exactly one target reference. For a
+`multi_chunk` question, provide at least two distinct references that are all
+required to support the intended synthesis. For an `unanswerable` question,
+provide no target references; it represents an out-of-bounds request rather
+than an answer-generation test. The loader rejects duplicate question IDs and
+category/target combinations that break these rules.
 
 For example, if a two-target query expects `[10, 12]` and the top five IDs are
 `[3, 12, 8, 10, 7]`, Recall at 5 is `2 / 2 = 1.0`, while MRR is `1 / 2 = 0.5`
@@ -437,13 +539,15 @@ Unanswerable cases remain visible in per-query results with null metric values,
 but are excluded because Recall and MRR are undefined when there are no relevant
 chunks.
 
-`expected_chunk_ids` are PostgreSQL surrogate IDs, not durable source anchors.
-In particular, `--force` deletes a source's rows and reinserts them; newly
-inserted rows can receive different IDs even when their text is unchanged. Any
-golden dataset that references affected chunks must therefore be reviewed and
-updated after forced re-ingestion, schema rebuilds, or corpus replacement. Keep
-the golden dataset private and versioned alongside a record of the corpus
-revision it was reviewed against.
+Expected chunks are durable source-content anchors: `source_file` plus the
+chunk text's SHA-256 hash. At evaluation time, the evaluator resolves them to
+the PostgreSQL IDs created by the current ingestion. Therefore `--force`, a
+table truncate, or a full re-ingestion does not require updating the golden
+dataset when the reviewed source text is unchanged. If a referenced source or
+chunk is absent, evaluation fails with the missing reference, making a corpus
+change explicit instead of silently measuring the wrong content. Keep the
+golden dataset private and versioned alongside a record of the corpus revision
+it was reviewed against.
 
 ## Verification levels
 
@@ -455,7 +559,7 @@ revision it was reviewed against.
 ## Current limitations
 
 - There is no answer-generation or relevance/abstention layer.
-- Golden chunk IDs require manual review after corpus ingestion.
+- Changed or renamed golden-source chunks require manual review before evaluation.
 - Incremental ingestion does not yet delete stale chunks without `--force`.
 - FTS uses PostgreSQL's English configuration; multilingual corpora need a
   language-aware search configuration.

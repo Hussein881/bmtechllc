@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass
+from time import perf_counter
 from typing import Any
 
 from ..models import GoldenQuery
@@ -40,6 +41,10 @@ class QueryMetrics:
     question_id: str
     query_category: str
     retrieved_chunk_ids: tuple[int, ...]
+    retrieval_time_ms: float
+    generation_time_ms: float | None
+    top_chunk_rrf_scores: tuple[float, ...]
+    top_chunk_vector_similarity_scores: tuple[float | None, ...]
     recall_at_5: float | None
     reciprocal_rank: float | None
 
@@ -75,7 +80,10 @@ def evaluate_retrieval(cases: Sequence[GoldenQuery], search: SearchFunction) -> 
     recalls: list[float] = []
     reciprocal_ranks: list[float] = []
     for case in cases:
-        result_ids = tuple(result.chunk.id for result in search(case.question, 5))
+        started_at = perf_counter()
+        results = search(case.question, 5)
+        retrieval_time_ms = (perf_counter() - started_at) * 1_000
+        result_ids = tuple(result.chunk.id for result in results)
         if case.expected_chunk_ids:
             recall = recall_at_k(result_ids, case.expected_chunk_ids)
             rank = reciprocal_rank(result_ids, case.expected_chunk_ids)
@@ -89,6 +97,10 @@ def evaluate_retrieval(cases: Sequence[GoldenQuery], search: SearchFunction) -> 
                 question_id=case.question_id,
                 query_category=case.query_category,
                 retrieved_chunk_ids=result_ids,
+                retrieval_time_ms=retrieval_time_ms,
+                generation_time_ms=None,
+                top_chunk_rrf_scores=tuple(result.rrf_score for result in results),
+                top_chunk_vector_similarity_scores=tuple(result.vector_score for result in results),
                 recall_at_5=recall,
                 reciprocal_rank=rank,
             )

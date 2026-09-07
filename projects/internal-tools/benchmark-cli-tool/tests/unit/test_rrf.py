@@ -56,5 +56,7 @@ def test_hybrid_search_requests_twenty_candidates_from_each_mode(
     results = hybrid_search("retrieval query", top_k=1)
 
     assert [result.chunk.id for result in results] == [1]
+    assert results[0].vector_score == 1.0
+    assert results[0].fts_score is None
     assert {name for name, _, _ in calls} == {"vector", "fts"}
     assert {limit for _, _, limit in calls} == {20}

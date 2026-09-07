@@ -89,6 +89,13 @@ At search time, the system runs two complementary searches:
 The results are fused by rank. Neither search reads the original source files at
 query time.
 
+The first retrieval step returns a precise chunk. When an application needs its
+surrounding explanation, it can call `read_doc(chunk_id, max_tokens=1200)`. The
+reader returns a contiguous window of sibling chunks from the same source file
+and section, centered on the hit, and indicates when the complete section did
+not fit within the token budget. This preserves focused retrieval while making
+the surrounding setup and conclusion available to a future answer layer.
+
 ## Why the current design is recommended
 
 `text-embedding-3-small` is already the engine's configured embedding model,

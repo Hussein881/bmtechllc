@@ -410,6 +410,26 @@ Every result has this structure:
 FTS-only results use `fts_score`; vector-only results use `vector_score`.
 There is intentionally no `answer`, `confidence`, or generated summary.
 
+### Parent-section context
+
+Retrieval returns isolated chunks to keep the initial vector and FTS searches
+precise. A caller can then use `read_doc(chunk_id, max_tokens=1200)` to fetch
+the selected hit with adjacent chunks from the same source file and persisted
+section. The result is ordered by stable source-relative `chunk_index` and is
+bounded to a contiguous, centered context window; it reports whether the entire
+section fit in the requested budget.
+
+The CLI exposes the same operation through:
+
+```bash
+.venv/bin/benchmark-search --read-doc 42
+```
+
+This two-step pattern lets a future answer layer retrieve narrowly, then obtain
+enough surrounding setup and conclusion to answer from complete context. The
+parent reader uses the persisted section metadata rather than re-opening source
+files at query time.
+
 ### Manual search interpretation and troubleshooting
 
 Use all three modes when assessing a surprising result:

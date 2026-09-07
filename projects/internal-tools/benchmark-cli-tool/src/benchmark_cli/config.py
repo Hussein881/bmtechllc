@@ -26,6 +26,7 @@ CHUNK_TARGET_TOKENS: Final[int] = 400
 CHUNK_MAX_TOKENS: Final[int] = 500
 CHUNK_MIN_TOKENS: Final[int] = 80
 CHUNK_OVERLAP_TOKENS: Final[int] = 50
+PARENT_CONTEXT_MAX_TOKENS: Final[int] = 1200
 
 DATA_DIR: Final[Path] = PROJECT_ROOT / "data"
 GOLDEN_DATASET_PATH: Final[Path] = DATA_DIR / "evaluation" / "golden_queries.example.json"

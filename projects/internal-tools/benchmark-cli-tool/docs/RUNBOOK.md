@@ -132,6 +132,24 @@ unchanged files.
 The command prints chunk IDs, source files, metadata, text, and the relevant
 native or fused score as JSON.
 
+### Read parent-section context for a hit
+
+Search results remain precise, isolated chunks. After selecting a relevant
+`chunk_id`, retrieve its surrounding source-section context with:
+
+```bash
+.venv/bin/benchmark-search --read-doc 42
+```
+
+`--read-doc` returns the hit plus adjacent chunks from the same source file and
+section, ordered by source position. The default context budget is 1,200 tokens;
+when a section is larger, the response marks `section_complete` as `false` and
+returns a contiguous window centered on the hit. Adjust the budget when needed:
+
+```bash
+.venv/bin/benchmark-search --read-doc 42 --max-context-tokens 2000
+```
+
 ## 7. Run the real integration test
 
 ```bash

@@ -6,6 +6,7 @@ on:
     paths:
       - 'portal/**'
       - '.github/workflows/portal-ci.yml'
+      - '.github/scripts/**'
   # No path filter here: this is a required status check on main, and a
   # required check that never runs (e.g. on a website-only PR) blocks merge
   # forever rather than being skipped. The build itself is fast regardless.
@@ -23,6 +24,9 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: portal/package-lock.json
+
+      - name: Test KB notifications
+        run: node --test .github/scripts/notify-kb.test.mjs
 
       - name: Install dependencies
         working-directory: portal

@@ -8,6 +8,12 @@
     "/bmtechllc/portal/reference/evaluating-rag-quality/",
     "/bmtechllc/portal/reference/hybrid-search-rrf-bm25-rag-evaluation-conceptual-cheatsheet/",
     "/bmtechllc/portal/reference/local-vs-remote-embeddings-and-hybrid-system-design/",
-    "/bmtechllc/portal/reference/tokenization-and-cl100k-base/"
-  ]
+    "/bmtechllc/portal/reference/tokenization-and-cl100k-base/",
+    "/bmtechllc/portal/guide/security-guide-defending-against-indirect-prompt-injection-in-rag-architectures/"
+  ],
+  "lastDelivery": {
+    "url": "/bmtechllc/portal/guide/security-guide-defending-against-indirect-prompt-injection-in-rag-architectures/",
+    "messageId": "1547214156850266254",
+    "at": "2026-09-09T11:56:40.964Z"
+  }
 }

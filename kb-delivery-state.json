@@ -1,0 +1,13 @@
+{
+  "announced": [
+    "/bmtechllc/portal/guide/",
+    "/bmtechllc/portal/guide/adding-a-page-from-the-portal/",
+    "/bmtechllc/portal/guide/portal-authoring-architecture/",
+    "/bmtechllc/portal/methodology/software-project-development-plan/",
+    "/bmtechllc/portal/reference/embedding-types-vector-architectures/",
+    "/bmtechllc/portal/reference/evaluating-rag-quality/",
+    "/bmtechllc/portal/reference/hybrid-search-rrf-bm25-rag-evaluation-conceptual-cheatsheet/",
+    "/bmtechllc/portal/reference/local-vs-remote-embeddings-and-hybrid-system-design/",
+    "/bmtechllc/portal/reference/tokenization-and-cl100k-base/"
+  ]
+}

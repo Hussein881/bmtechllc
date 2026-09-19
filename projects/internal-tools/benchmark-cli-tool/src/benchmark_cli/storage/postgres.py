@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
+from datetime import date as Date
 from pathlib import Path
 from typing import Any
 
@@ -42,6 +43,25 @@ class ParentContext:
     chunks: tuple[SearchChunk, ...]
     token_count: int
     section_complete: bool
+
+
+@dataclass(frozen=True, slots=True)
+class SearchFilters:
+    """Optional provenance constraints shared by keyword and vector retrieval."""
+
+    speaker: str | None = None
+    source: str | None = None
+    date: str | None = None
+
+    def __post_init__(self) -> None:
+        for field_name, value in (("speaker", self.speaker), ("source", self.source)):
+            if value is not None and not value.strip():
+                raise ValueError(f"{field_name} must not be blank when supplied.")
+        if self.date is not None:
+            try:
+                Date.fromisoformat(self.date)
+            except ValueError as exc:
+                raise ValueError("date must use ISO-8601 YYYY-MM-DD format.") from exc
 
 
 def _dependencies() -> tuple[Any, Any, Any]:
@@ -170,38 +190,86 @@ def upsert_chunks(rows: Sequence[dict[str, Any]]) -> int:
     return inserted
 
 
-def vector_search(query_vector: Sequence[float], limit: int = 20) -> list[SearchChunk]:
+def _filters_where_clause(filters: SearchFilters) -> tuple[str, list[str]]:
+    """Return a parameterized SQL WHERE fragment for persisted provenance."""
+    clauses: list[str] = []
+    parameters: list[str] = []
+    if filters.speaker is not None:
+        clauses.append("metadata -> 'speakers' ? %s")
+        parameters.append(filters.speaker)
+    if filters.source is not None:
+        clauses.append("source_file = %s")
+        parameters.append(filters.source)
+    if filters.date is not None:
+        clauses.append(
+            """(
+                metadata ->> 'date' = %s
+                OR metadata ->> 'date' = LEFT(%s, 4)
+                OR (
+                    metadata ->> 'date_start' <= %s
+                    AND metadata ->> 'date_end' >= %s
+                )
+            )"""
+        )
+        parameters.extend((filters.date, filters.date, filters.date, filters.date))
+    return (f"\n          AND {' AND '.join(clauses)}" if clauses else "", parameters)
+
+
+def vector_search(
+    query_vector: Sequence[float],
+    limit: int = 20,
+    *,
+    speaker: str | None = None,
+    source: str | None = None,
+    date: str | None = None,
+) -> list[SearchChunk]:
     """Return vector-ranked candidates independently of keyword retrieval."""
     if limit < 1:
         return []
+    filter_clause, filter_parameters = _filters_where_clause(SearchFilters(speaker, source, date))
     statement = """
         SELECT id, source_file, chunk_index, chunk_text, metadata,
                1 - (embedding <=> %s::vector) AS score,
                NULL::integer AS token_count, content_sha256
         FROM document_chunks
+        WHERE TRUE
+        """ + filter_clause + """
         ORDER BY embedding <=> %s::vector
         LIMIT %s
     """
     with connection() as conn, conn.cursor() as cursor:
-        cursor.execute(statement, (list(query_vector), list(query_vector), limit))
+        cursor.execute(
+            statement,
+            (list(query_vector), *filter_parameters, list(query_vector), limit),
+        )
         return [SearchChunk(*row) for row in cursor.fetchall()]
 
 
-def fts_search(query: str, limit: int = 20) -> list[SearchChunk]:
+def fts_search(
+    query: str,
+    limit: int = 20,
+    *,
+    speaker: str | None = None,
+    source: str | None = None,
+    date: str | None = None,
+) -> list[SearchChunk]:
     """Return PostgreSQL full-text-ranked candidates independently of vectors."""
     if not query.strip() or limit < 1:
         return []
+    filter_clause, filter_parameters = _filters_where_clause(SearchFilters(speaker, source, date))
     statement = """
         SELECT id, source_file, chunk_index, chunk_text, metadata,
                ts_rank_cd(search_vector, websearch_to_tsquery('english', %s)) AS score,
                NULL::integer AS token_count, content_sha256
         FROM document_chunks
         WHERE search_vector @@ websearch_to_tsquery('english', %s)
+        """ + filter_clause + """
         ORDER BY score DESC, id ASC
         LIMIT %s
     """
+
     with connection() as conn, conn.cursor() as cursor:
-        cursor.execute(statement, (query, query, limit))
+        cursor.execute(statement, (query, query, *filter_parameters, limit))
         return [SearchChunk(*row) for row in cursor.fetchall()]
 
 

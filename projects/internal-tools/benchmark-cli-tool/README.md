@@ -26,9 +26,11 @@ benchmark-ingest --source-dir data/documents --dry-run
 benchmark-ingest --source-dir data/documents --create-indexes
 ```
 
-`hybrid_search(query, top_k=5)` embeds the query once, concurrently retrieves
-20 pgvector candidates and 20 PostgreSQL FTS candidates, then merges them with
-RRF (`k = 60`). It returns chunks and fused search scores only.
+`search_docs(query, top_k=5)` embeds the query once, concurrently retrieves 20
+pgvector candidates and 20 PostgreSQL FTS candidates, then merges them with
+RRF (`k = 60`). It returns chunks and fused search scores only. The optional
+`speaker`, `source` (source filename), and ISO-8601 `date` filters apply to
+both retrieval arms.
 
 Inspect retrieval manually with:
 
@@ -36,6 +38,7 @@ Inspect retrieval manually with:
 benchmark-search --query "home office equipment reimbursement"
 benchmark-search --mode fts --query "equipment reimbursement"
 benchmark-search --mode vector --query "remote work policy"
+benchmark-search --query "architecture decision" --speaker Ada --date 2026-08-14
 ```
 
 ## Retrieval evaluation
@@ -48,11 +51,15 @@ any reference that becomes unavailable after source-content changes, then run:
 
 ```bash
 benchmark-evaluate --dataset /path/to/golden_queries.json
+benchmark-evaluate --dataset /path/to/golden_queries.json --compare-vector \
+  --comparison-report /tmp/retrieval-comparison.md
 pytest
 ```
 
-The evaluation reports macro Recall@5 and MRR for lookup and multi-chunk cases.
-Unanswerable queries remain in the per-query output but are excluded from those
+The comparison report is a before/after table for vector-only and hybrid RRF
+Recall@5/MRR. It records the deltas and whether both measures improved. The
+evaluation log includes retrieval mode, latency, and quality columns.
+Unanswerable queries remain in the per-query output but are excluded from the
 metrics because they have no relevant chunk IDs.
 
 ## Real integration check

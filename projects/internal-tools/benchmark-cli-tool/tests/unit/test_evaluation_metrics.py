@@ -11,7 +11,13 @@ import pytest
 
 from benchmark_cli.config import GOLDEN_DATASET_PATH
 from benchmark_cli.evaluation.dataset import load_golden_dataset, resolve_golden_dataset
-from benchmark_cli.evaluation.metrics import evaluate_retrieval, recall_at_k, reciprocal_rank
+from benchmark_cli.evaluation.metrics import (
+    compare_retrieval_modes,
+    comparison_markdown,
+    evaluate_retrieval,
+    recall_at_k,
+    reciprocal_rank,
+)
 from benchmark_cli.evaluation.telemetry import CSV_COLUMNS, append_evaluation_log
 from benchmark_cli.models import GoldenChunkReference, GoldenQuery
 from benchmark_cli.retrieval import HybridSearchResult
@@ -91,6 +97,58 @@ def test_evaluation_log_appends_query_metrics_with_blank_generation_time() -> No
     assert json.loads(rows[0]["top_chunk_vector_similarity_scores"]) == [0.81]
     assert rows[0]["recall_at_5"] == "1.0"
     assert rows[0]["run_recall_at_5"] == "1.0"
+    assert float(rows[0]["latency_ms"]) >= 0
+    assert rows[0]["quality_recall_at_5"] == "1.0"
+    assert rows[0]["quality_mrr"] == "1.0"
+
+
+@pytest.mark.unit
+def test_evaluation_log_migrates_existing_rows_to_latency_and_quality_schema() -> None:
+    cases = [golden_query("q1", "one", [1], "lookup")]
+    summary = evaluate_retrieval(cases, lambda _, __: [result(1)])
+    legacy_columns = tuple(
+        column
+        for column in CSV_COLUMNS
+        if column
+        not in {
+            "retrieval_mode",
+            "latency_ms",
+            "quality_recall_at_5",
+            "quality_mrr",
+        }
+    )
+
+    with TemporaryDirectory() as directory:
+        path = Path(directory) / "evaluation.csv"
+        with path.open("w", encoding="utf-8", newline="") as stream:
+            writer = csv.DictWriter(stream, fieldnames=legacy_columns)
+            writer.writeheader()
+            writer.writerow({"question_id": "old-run", "retrieval_time_ms": "123.000"})
+        append_evaluation_log(path, Path("golden.json"), summary)
+        with path.open(newline="", encoding="utf-8") as stream:
+            rows = list(csv.DictReader(stream))
+
+    assert tuple(rows[0]) == CSV_COLUMNS
+    assert rows[0]["question_id"] == "old-run"
+    assert rows[0]["latency_ms"] == ""
+    assert rows[1]["quality_recall_at_5"] == "1.0"
+
+
+@pytest.mark.unit
+def test_comparison_reports_hybrid_improvements_in_before_after_table() -> None:
+    cases = [golden_query("q1", "one", [1], "lookup")]
+    comparison = compare_retrieval_modes(
+        cases,
+        vector_search=lambda _, __: [result(9)],
+        hybrid_search=lambda _, __: [result(1)],
+    )
+
+    assert comparison.both_metrics_improved
+    assert comparison.recall_at_5_delta == 1.0
+    assert comparison.mrr_delta == 1.0
+    table = comparison_markdown(comparison)
+    assert "| Vector-only (before) | 0.000 | 0.000 |" in table
+    assert "| Hybrid RRF (after) | 1.000 | 1.000 |" in table
 
 
 @pytest.mark.unit

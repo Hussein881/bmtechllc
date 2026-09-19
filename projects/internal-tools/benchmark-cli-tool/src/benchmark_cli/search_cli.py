@@ -9,7 +9,8 @@ from typing import Any
 
 from .config import PARENT_CONTEXT_MAX_TOKENS
 from .providers.openai import embed_texts
-from .retrieval import HybridSearchResult, hybrid_search
+from .retrieval import HybridSearchResult, search_docs
+from .safety import delimit_untrusted_chunk
 from .storage.postgres import ParentContext, SearchChunk, fts_search, read_doc, vector_search
 
 
@@ -21,7 +22,8 @@ def _chunk_payload(chunk: SearchChunk, rank: int, score: float, score_name: str)
         "chunk_index": chunk.chunk_index,
         "content_sha256": chunk.content_sha256,
         score_name: score,
-        "text": chunk.chunk_text,
+        "untrusted": True,
+        "text": delimit_untrusted_chunk(chunk.chunk_text),
         "metadata": chunk.metadata,
     }
 
@@ -52,7 +54,8 @@ def _parent_context_payload(context: ParentContext) -> dict[str, Any]:
             {
                 "chunk_id": chunk.id,
                 "chunk_index": chunk.chunk_index,
-                "text": chunk.chunk_text,
+                "untrusted": True,
+                "text": delimit_untrusted_chunk(chunk.chunk_text),
                 "metadata": chunk.metadata,
                 "token_count": chunk.token_count,
             }
@@ -79,6 +82,9 @@ def main() -> None:
         default="hybrid",
         help="Retrieval mode to inspect (default: hybrid).",
     )
+    parser.add_argument("--speaker", help="Only return chunks that include this speaker.")
+    parser.add_argument("--source", help="Only return chunks from this source filename.")
+    parser.add_argument("--date", help="Only return chunks covering this ISO-8601 date (YYYY-MM-DD).")
     args = parser.parse_args()
     if args.top_k < 1:
         parser.error("--top-k must be at least 1")
@@ -93,12 +99,36 @@ def main() -> None:
         return
 
     if args.mode == "hybrid":
-        payload = _hybrid_payload(hybrid_search(args.query, args.top_k))
+        payload = _hybrid_payload(
+            search_docs(
+                args.query,
+                args.top_k,
+                speaker=args.speaker,
+                source=args.source,
+                date=args.date,
+            )
+        )
     elif args.mode == "fts":
-        payload = _native_payload(fts_search(args.query, args.top_k), "fts_score")
+        payload = _native_payload(
+            fts_search(
+                args.query,
+                args.top_k,
+                speaker=args.speaker,
+                source=args.source,
+                date=args.date,
+            ),
+            "fts_score",
+        )
     else:
         payload = _native_payload(
-            vector_search(embed_texts([args.query])[0], args.top_k), "vector_score"
+            vector_search(
+                embed_texts([args.query])[0],
+                args.top_k,
+                speaker=args.speaker,
+                source=args.source,
+                date=args.date,
+            ),
+            "vector_score",
         )
     print(json.dumps({"mode": args.mode, "query": args.query, "results": payload}, indent=2))
 

@@ -28,6 +28,7 @@ Project-specific documentation stays with its project. Firm-wide documentation b
 
 ## Naming conventions
 
+- Name work branches `<type>/<ticket-id>-<short-description>` (or `<type>/<short-description>` when no ticket exists). See the [branch naming standard](docs/standards/branch-naming.md) for prefixes, formatting, examples, and tooling exceptions.
 - Use lowercase, hyphenated directory names: `inventory-automation`.
 - Use a short client code for client work when confidentiality permits: `client-code-project-name`.
 - Give every project its own `README.md` describing its owner, status, purpose, and setup.

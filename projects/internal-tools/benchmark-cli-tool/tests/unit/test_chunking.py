@@ -46,6 +46,21 @@ class ChunkingTests(unittest.TestCase):
         self.assertTrue(all(chunk.token_count <= 100 for chunk in chunks))
         self.assertGreater(token_count(chunks[0].text), 0)
 
+    def test_retains_whole_units_for_overlap_within_a_section(self) -> None:
+        units = [
+            unit("alpha " * 20, 0, section="Shared", boundary=True),
+            unit("beta " * 20, 1, section="Shared"),
+            unit("gamma " * 20, 2, section="Shared"),
+        ]
+        chunks = chunk_units(
+            units, target_tokens=40, max_tokens=50, min_tokens=10, overlap_tokens=25
+        )
+        self.assertGreaterEqual(len(chunks), 2)
+        for previous, current in zip(chunks, chunks[1:], strict=False):
+            previous_ordinals = {item.ordinal for item in previous.units}
+            current_ordinals = {item.ordinal for item in current.units}
+            self.assertTrue(previous_ordinals & current_ordinals)
+
     def test_discord_parser_filters_noise_and_rewrites_mentions(self) -> None:
         with TemporaryDirectory() as directory:
             path = Path(directory) / "discord_export.json"

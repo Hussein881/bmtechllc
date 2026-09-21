@@ -125,20 +125,24 @@ def ingest_source(path: Path, *, dry_run: bool, force: bool, batch_size: int = 1
     source_type = source_type_for(path)
     chunks = chunk_units(parse_by_type(path))
     prepared = [
-        (chunk, metadata_for(chunk, path, source_type))
-        for chunk in chunks
+        (chunk_index, chunk, metadata_for(chunk, path, source_type))
+        for chunk_index, chunk in enumerate(chunks)
         if chunk.text.strip()
     ]
     prepared = [
-        (chunk, metadata.model_copy(update={"embed_prefix": embedding_prefix(metadata, path.name)}))
-        for chunk, metadata in prepared
+        (
+            chunk_index,
+            chunk,
+            metadata.model_copy(update={"embed_prefix": embedding_prefix(metadata, path.name)}),
+        )
+        for chunk_index, chunk, metadata in prepared
     ]
-    hashes = {content_hash(chunk.text) for chunk, _ in prepared}
+    hashes = {content_hash(chunk.text) for _, chunk, _ in prepared}
     result: dict[str, Any] = {
         "source": str(path),
         "source_type": source_type,
         "chunks": len(prepared),
-        "tokens": sum(chunk.token_count for chunk, _ in prepared),
+        "tokens": sum(chunk.token_count for _, chunk, _ in prepared),
         "inserted": 0,
         "skipped": 0,
         "dry_run": dry_run,
@@ -153,12 +157,16 @@ def ingest_source(path: Path, *, dry_run: bool, force: bool, batch_size: int = 1
         known_hashes: set[str] = set()
     else:
         known_hashes = existing_hashes(hashes)
-    pending = [(chunk, metadata) for chunk, metadata in prepared if content_hash(chunk.text) not in known_hashes]
+    pending = [
+        (chunk_index, chunk, metadata)
+        for chunk_index, chunk, metadata in prepared
+        if content_hash(chunk.text) not in known_hashes
+    ]
     result["skipped"] = len(prepared) - len(pending)
     if not pending:
         return result
 
-    inputs = [embedding_input(chunk, metadata, path.name) for chunk, metadata in pending]
+    inputs = [embedding_input(chunk, metadata, path.name) for _, chunk, metadata in pending]
     vectors: list[list[float]] = []
     for start in range(0, len(inputs), batch_size):
         batch = inputs[start : start + batch_size]
@@ -175,14 +183,14 @@ def ingest_source(path: Path, *, dry_run: bool, force: bool, batch_size: int = 1
     rows = [
         {
             "source_file": source_filename,
-            "chunk_index": index,
+            "chunk_index": chunk_index,
             "chunk_text": chunk.text,
             "content_sha256": content_hash(chunk.text),
             "token_count": chunk.token_count,
             "metadata": metadata.model_dump(mode="json"),
             "embedding": vector,
         }
-        for index, ((chunk, metadata), vector) in enumerate(zip(pending, vectors, strict=True))
+        for (chunk_index, chunk, metadata), vector in zip(pending, vectors, strict=True)
     ]
     upsert_chunks(rows)
     result["inserted"] = len(rows)

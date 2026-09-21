@@ -37,20 +37,31 @@ class ChunkMetadata(BaseModel):
 QueryCategory = Literal["lookup", "multi_chunk", "unanswerable"]
 
 
+class GoldenChunkReference(BaseModel):
+    """A durable source-content reference resolved to a database ID at evaluation time."""
+
+    source_file: str = Field(min_length=1)
+    content_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class GoldenQuery(BaseModel):
-    """One retrieval-only evaluation query with stable database chunk identifiers."""
+    """One retrieval-only evaluation query with durable expected chunk references."""
 
     question_id: str = Field(min_length=1)
     question: str = Field(min_length=1)
-    expected_chunk_ids: list[int] = Field(default_factory=list)
+    expected_chunks: list[GoldenChunkReference] = Field(default_factory=list)
     query_category: QueryCategory
+    expected_chunk_ids: list[int] = Field(default_factory=list, exclude=True)
 
     @model_validator(mode="after")
     def validate_expected_chunks(self) -> GoldenQuery:
-        if self.query_category == "unanswerable" and self.expected_chunk_ids:
-            raise ValueError("unanswerable queries must not specify expected_chunk_ids.")
-        if self.query_category == "lookup" and len(self.expected_chunk_ids) != 1:
-            raise ValueError("lookup queries require exactly one expected chunk id.")
-        if self.query_category == "multi_chunk" and len(set(self.expected_chunk_ids)) < 2:
-            raise ValueError("multi_chunk queries require at least two distinct expected chunk ids.")
+        if self.query_category == "unanswerable" and self.expected_chunks:
+            raise ValueError("unanswerable queries must not specify expected_chunks.")
+        if self.query_category == "lookup" and len(self.expected_chunks) != 1:
+            raise ValueError("lookup queries require exactly one expected chunk reference.")
+        if self.query_category == "multi_chunk" and len(self.expected_chunks) < 2:
+            raise ValueError("multi_chunk queries require at least two expected chunk references.")
+        references = {(chunk.source_file, chunk.content_sha256) for chunk in self.expected_chunks}
+        if len(references) != len(self.expected_chunks):
+            raise ValueError("expected_chunks must not repeat a source-content reference.")
         return self

@@ -42,11 +42,11 @@ def test_hybrid_search_requests_twenty_candidates_from_each_mode(
     calls: list[tuple[str, object, int]] = []
     monkeypatch.setattr(retrieval, "embed_texts", lambda _: [[0.1, 0.2]])
 
-    def fake_vector(vector: object, limit: int) -> list[SearchChunk]:
+    def fake_vector(vector: object, limit: int, **_: object) -> list[SearchChunk]:
         calls.append(("vector", vector, limit))
         return [chunk(1)]
 
-    def fake_fts(query: str, limit: int) -> list[SearchChunk]:
+    def fake_fts(query: str, limit: int, **_: object) -> list[SearchChunk]:
         calls.append(("fts", query, limit))
         return [chunk(2)]
 
@@ -56,5 +56,7 @@ def test_hybrid_search_requests_twenty_candidates_from_each_mode(
     results = hybrid_search("retrieval query", top_k=1)
 
     assert [result.chunk.id for result in results] == [1]
+    assert results[0].vector_score == 1.0
+    assert results[0].fts_score is None
     assert {name for name, _, _ in calls} == {"vector", "fts"}
     assert {limit for _, _, limit in calls} == {20}

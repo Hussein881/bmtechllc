@@ -8,3 +8,6 @@ CREATE INDEX IF NOT EXISTS document_chunks_search_vector_gin
 
 CREATE INDEX IF NOT EXISTS document_chunks_source_idx
     ON document_chunks (source_file, chunk_index);
+
+CREATE INDEX IF NOT EXISTS document_chunks_source_section_idx
+    ON document_chunks (source_file, (metadata ->> 'section'), chunk_index);

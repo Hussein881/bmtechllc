@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass
+from time import perf_counter
 from typing import Any
 
 from ..models import GoldenQuery
@@ -40,6 +41,10 @@ class QueryMetrics:
     question_id: str
     query_category: str
     retrieved_chunk_ids: tuple[int, ...]
+    retrieval_time_ms: float
+    generation_time_ms: float | None
+    top_chunk_rrf_scores: tuple[float, ...]
+    top_chunk_vector_similarity_scores: tuple[float | None, ...]
     recall_at_5: float | None
     reciprocal_rank: float | None
 
@@ -61,6 +66,35 @@ class EvaluationSummary:
         return payload
 
 
+@dataclass(frozen=True, slots=True)
+class RetrievalComparison:
+    """A directly comparable vector-only baseline and hybrid measurement."""
+
+    vector_only: EvaluationSummary
+    hybrid: EvaluationSummary
+
+    @property
+    def recall_at_5_delta(self) -> float:
+        return self.hybrid.recall_at_5 - self.vector_only.recall_at_5
+
+    @property
+    def mrr_delta(self) -> float:
+        return self.hybrid.mrr - self.vector_only.mrr
+
+    @property
+    def both_metrics_improved(self) -> bool:
+        return self.recall_at_5_delta > 0 and self.mrr_delta > 0
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "vector_only": self.vector_only.as_dict(),
+            "hybrid": self.hybrid.as_dict(),
+            "recall_at_5_delta": self.recall_at_5_delta,
+            "mrr_delta": self.mrr_delta,
+            "both_metrics_improved": self.both_metrics_improved,
+        }
+
+
 SearchFunction = Callable[[str, int], Sequence[HybridSearchResult]]
 
 
@@ -75,7 +109,10 @@ def evaluate_retrieval(cases: Sequence[GoldenQuery], search: SearchFunction) -> 
     recalls: list[float] = []
     reciprocal_ranks: list[float] = []
     for case in cases:
-        result_ids = tuple(result.chunk.id for result in search(case.question, 5))
+        started_at = perf_counter()
+        results = search(case.question, 5)
+        retrieval_time_ms = (perf_counter() - started_at) * 1_000
+        result_ids = tuple(result.chunk.id for result in results)
         if case.expected_chunk_ids:
             recall = recall_at_k(result_ids, case.expected_chunk_ids)
             rank = reciprocal_rank(result_ids, case.expected_chunk_ids)
@@ -89,6 +126,10 @@ def evaluate_retrieval(cases: Sequence[GoldenQuery], search: SearchFunction) -> 
                 question_id=case.question_id,
                 query_category=case.query_category,
                 retrieved_chunk_ids=result_ids,
+                retrieval_time_ms=retrieval_time_ms,
+                generation_time_ms=None,
+                top_chunk_rrf_scores=tuple(result.rrf_score for result in results),
+                top_chunk_vector_similarity_scores=tuple(result.vector_score for result in results),
                 recall_at_5=recall,
                 reciprocal_rank=rank,
             )
@@ -102,4 +143,35 @@ def evaluate_retrieval(cases: Sequence[GoldenQuery], search: SearchFunction) -> 
         recall_at_5=sum(recalls) / relevant_queries if relevant_queries else 0.0,
         mrr=sum(reciprocal_ranks) / relevant_queries if relevant_queries else 0.0,
         per_query=tuple(records),
+    )
+
+
+def compare_retrieval_modes(
+    cases: Sequence[GoldenQuery],
+    *,
+    vector_search: SearchFunction,
+    hybrid_search: SearchFunction,
+) -> RetrievalComparison:
+    """Evaluate vector-only and hybrid retrieval against the identical golden set."""
+    return RetrievalComparison(
+        vector_only=evaluate_retrieval(cases, vector_search),
+        hybrid=evaluate_retrieval(cases, hybrid_search),
+    )
+
+
+def comparison_markdown(comparison: RetrievalComparison) -> str:
+    """Render a compact before/after table suitable for a checked-in run report."""
+    vector = comparison.vector_only
+    hybrid = comparison.hybrid
+    return "\n".join(
+        (
+            "| Retrieval mode | Recall@5 | MRR |",
+            "| --- | ---: | ---: |",
+            f"| Vector-only (before) | {vector.recall_at_5:.3f} | {vector.mrr:.3f} |",
+            f"| Hybrid RRF (after) | {hybrid.recall_at_5:.3f} | {hybrid.mrr:.3f} |",
+            (
+                "| Change | "
+                f"{comparison.recall_at_5_delta:+.3f} | {comparison.mrr_delta:+.3f} |"
+            ),
+        )
     )

@@ -18,18 +18,18 @@ flowchart TD
     Store --> VectorIndex[HNSW vector index]
     Store --> FTSIndex[Generated tsvector + GIN index]
 
-    Query[Query] --> QueryEmbed[OpenAI query embedding]
+    Query[Query plus optional provenance filters] --> QueryEmbed[OpenAI query embedding]
     QueryEmbed --> VectorSearch[Top 20 vector candidates]
     VectorIndex --> VectorSearch
     Query --> FTSSearch[Top 20 FTS candidates]
     FTSIndex --> FTSSearch
     VectorSearch --> RRF[RRF fusion, k = 60]
     FTSSearch --> RRF
-    RRF --> Chunks[Top ranked chunks]
+    RRF --> Chunks[Top five untrusted chunks]
 
     Golden[Golden dataset] --> Evaluate[Retrieval evaluator]
     Chunks --> Evaluate
-    Evaluate --> Metrics[Recall at 5 and MRR]
+    Evaluate --> Metrics[Vector-only versus hybrid Recall at 5 and MRR]
 ```
 
 ## Configuration
@@ -292,7 +292,8 @@ chunks, and rebuilding the vector index.
 
 ## Hybrid retrieval
 
-`hybrid_search(query, top_k=5)` is the primary retrieval API.
+`search_docs(query, top_k=5, *, speaker=None, source=None, date=None)` is the
+primary retrieval API. `hybrid_search` remains a backward-compatible alias.
 
 1. The query is embedded once with the configured embedding model.
 2. Vector search and PostgreSQL FTS each retrieve their top 20 candidates
@@ -308,6 +309,11 @@ chunks, and rebuilding the vector index.
    a contribution from both ranks.
 4. The highest fused results are returned with chunk content, provenance, and
    the RRF score.
+
+`speaker`, source filename, and ISO-8601 date filters are optional. A supplied
+filter is applied in the SQL query for both vector and FTS retrieval before each
+arm ranks its 20 candidates. A date matches either an exact source date or a
+stored conversation date range.
 
 ### How hybrid ranking behaves
 
@@ -362,6 +368,8 @@ For manual inspection:
 .venv/bin/benchmark-search --query "equipment reimbursement"
 .venv/bin/benchmark-search --mode fts --query "equipment reimbursement"
 .venv/bin/benchmark-search --mode vector --query "remote work policy"
+.venv/bin/benchmark-search --query "architecture decision" --speaker Ada
+.venv/bin/benchmark-search --query "release decision" --date 2026-08-14
 ```
 
 The hybrid command emits JSON. `hybrid` results contain `rrf_score`; `fts` and
@@ -394,7 +402,8 @@ Every result has this structure:
   "chunk_index": 8,
   "content_sha256": "a 64-character SHA-256 hash",
   "rrf_score": 0.03278688524590164,
-  "text": "Retrieved chunk text.",
+  "untrusted": true,
+  "text": "<untrusted-retrieved-chunk>\nRetrieved chunk text.\n</untrusted-retrieved-chunk>",
   "metadata": {}
 }
 ```
@@ -403,7 +412,10 @@ Every result has this structure:
 - `chunk_id` is the PostgreSQL surrogate ID for this particular ingestion.
 - `source_file` and `chunk_index` identify the source location.
 - `content_sha256` is the stable hash used to anchor a golden expected chunk.
-- `text` is the complete retrieved chunk.
+- `untrusted` is always `true` for retrieved document content.
+- `text` is the complete retrieved chunk inside an untrusted-content boundary.
+  A source-provided closing boundary is escaped before output, so a document
+  cannot terminate its own frame.
 - `metadata` contains provenance such as section, source type, source date,
   channel, speakers, or meeting data when available.
 - `rrf_score` is a rank-fusion score, not a probability or confidence value.
@@ -482,7 +494,7 @@ The included template has 30 records: 10 of each category. Each expected chunk
 is anchored by its source file and SHA-256 content hash rather than by a
 database ID.
 
-Run it with:
+Run hybrid-only evaluation with:
 
 ```bash
 .venv/bin/benchmark-evaluate --dataset /path/to/golden_queries.json
@@ -498,14 +510,32 @@ For lookup and multi-chunk queries, the evaluator reports:
 Unanswerable records remain in per-query output but are excluded from aggregate
 Recall@5 and MRR because they have no relevant chunk IDs.
 
+To compare the vector-only baseline with hybrid RRF under the identical golden
+labels, run:
+
+```bash
+.venv/bin/benchmark-evaluate \
+  --dataset /path/to/golden_queries.json \
+  --compare-vector \
+  --comparison-report /tmp/retrieval-comparison.md
+```
+
+The comparison output includes deltas and `both_metrics_improved`. The current
+live 30-question evaluation is a tie: vector-only and hybrid each measured
+Recall@5 0.950 and MRR 0.860. The system therefore does not yet claim a hybrid
+quality gain; a future rewrite, candidate-selection, or reranking change must
+be measured with this command before adoption.
+
 ### Evaluation speed and quality log
 
 Each `benchmark-evaluate` run appends one CSV row per evaluated query to
 `artifacts/retrieval_evaluation.csv` by default. Rows share a run ID and include
-the query category, measured `retrieval_time_ms`, top returned chunk IDs, RRF
-scores, vector similarity scores, per-query `recall_at_5`, and run-level
-Recall@5/MRR. This gives a lightweight historical record of retrieval speed and
-quality without introducing a monitoring service.
+the retrieval mode, `retrieval_time_ms`/`latency_ms`, top returned chunk IDs,
+RRF scores, vector similarity scores, per-query
+`recall_at_5`/`quality_recall_at_5`, and run-level Recall@5/MRR plus
+`quality_mrr`. This gives a lightweight historical record of retrieval speed
+and quality without introducing a monitoring service. A compatible existing log
+is migrated to the expanded schema before new rows are appended.
 
 `retrieval_time_ms` measures the complete call to hybrid retrieval, including
 query embedding and both database retrieval modes. `generation_time_ms` is left
@@ -559,6 +589,8 @@ it was reviewed against.
 ## Current limitations
 
 - There is no answer-generation or relevance/abstention layer.
+- There is no router, flagship model, or routed-versus-flagship cost evaluation
+  in this repository.
 - Changed or renamed golden-source chunks require manual review before evaluation.
 - Incremental ingestion does not yet delete stale chunks without `--force`.
 - FTS uses PostgreSQL's English configuration; multilingual corpora need a

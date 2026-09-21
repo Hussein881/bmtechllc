@@ -89,12 +89,26 @@ At search time, the system runs two complementary searches:
 The results are fused by rank. Neither search reads the original source files at
 query time.
 
+`search_docs(query, top_k=5, *, speaker=None, source=None, date=None)` is the
+primary retrieval API. It retrieves 20 vector and 20 full-text candidates, then
+uses RRF (`k = 60`) to return the top five by default. `speaker`, source
+filename, and ISO-8601 date are optional provenance filters. The same filters
+are applied inside both database searches before either list is ranked, which
+prevents one retrieval mode from sidestepping a caller's constraint.
+
 The first retrieval step returns a precise chunk. When an application needs its
 surrounding explanation, it can call `read_doc(chunk_id, max_tokens=1200)`. The
 reader returns a contiguous window of sibling chunks from the same source file
 and section, centered on the hit, and indicates when the complete section did
 not fit within the token budget. This preserves focused retrieval while making
 the surrounding setup and conclusion available to a future answer layer.
+
+Retrieved content is deliberately framed as untrusted data. The CLI output
+marks each chunk with `"untrusted": true` and encloses it in
+`<untrusted-retrieved-chunk>` delimiters. If stored content attempts to emit a
+reserved delimiter, that delimiter is escaped so it cannot end its own frame.
+This is a transport boundary, not a prompt-injection cure: an answer-generation
+system must still refuse to execute instructions found in retrieved text.
 
 ## Why the current design is recommended
 
@@ -180,9 +194,10 @@ measured search quality than by whether a framework is available.
 
 ### Current behavior
 
-The current retrieval API accepts any non-empty query string without selecting
-keywords, rewriting it, shortening it, or splitting it into smaller questions.
-It uses that same raw string in both retrieval modes:
+The current retrieval API accepts any non-empty query string plus optional
+speaker, source-filename, and ISO-8601 date filters. It does not select
+keywords, rewrite, shorten, or split the query. It uses the same raw query in
+both retrieval modes after applying any filters:
 
 - **Full-text search (FTS)** passes the query to PostgreSQL
   `websearch_to_tsquery('english', ...)`. PostgreSQL normalizes words, removes
@@ -252,6 +267,22 @@ Improve this project in the following order:
 The exact thresholds, candidate counts, and long-query trigger should be tuned
 against representative answerable and unanswerable queries rather than copied
 from another system.
+
+## Measurement status
+
+The evaluation command can run vector-only and hybrid RRF retrieval against the
+same durable 30-question golden set and render a before/after Recall@5/MRR
+table. The current live run measured 0.950 Recall@5 and 0.860 MRR for both
+vector-only and hybrid RRF. This is a tie, not evidence that hybrid retrieval
+improved quality. A query-rewrite, candidate-selection, or reranking change
+must demonstrate gains in both measures before it is treated as a quality
+improvement.
+
+The append-only evaluation log records retrieval mode, latency, per-query
+Recall@5, and run-level MRR. Compatible pre-existing logs are upgraded with the
+new latency/quality columns when a run appends to them. This retrieval-only
+project does not implement request routing, answer-generation, or a routed
+versus flagship cost comparison.
 
 ## Changing embedding models safely
 

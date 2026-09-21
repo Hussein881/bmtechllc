@@ -66,6 +66,35 @@ class EvaluationSummary:
         return payload
 
 
+@dataclass(frozen=True, slots=True)
+class RetrievalComparison:
+    """A directly comparable vector-only baseline and hybrid measurement."""
+
+    vector_only: EvaluationSummary
+    hybrid: EvaluationSummary
+
+    @property
+    def recall_at_5_delta(self) -> float:
+        return self.hybrid.recall_at_5 - self.vector_only.recall_at_5
+
+    @property
+    def mrr_delta(self) -> float:
+        return self.hybrid.mrr - self.vector_only.mrr
+
+    @property
+    def both_metrics_improved(self) -> bool:
+        return self.recall_at_5_delta > 0 and self.mrr_delta > 0
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "vector_only": self.vector_only.as_dict(),
+            "hybrid": self.hybrid.as_dict(),
+            "recall_at_5_delta": self.recall_at_5_delta,
+            "mrr_delta": self.mrr_delta,
+            "both_metrics_improved": self.both_metrics_improved,
+        }
+
+
 SearchFunction = Callable[[str, int], Sequence[HybridSearchResult]]
 
 
@@ -114,4 +143,35 @@ def evaluate_retrieval(cases: Sequence[GoldenQuery], search: SearchFunction) -> 
         recall_at_5=sum(recalls) / relevant_queries if relevant_queries else 0.0,
         mrr=sum(reciprocal_ranks) / relevant_queries if relevant_queries else 0.0,
         per_query=tuple(records),
+    )
+
+
+def compare_retrieval_modes(
+    cases: Sequence[GoldenQuery],
+    *,
+    vector_search: SearchFunction,
+    hybrid_search: SearchFunction,
+) -> RetrievalComparison:
+    """Evaluate vector-only and hybrid retrieval against the identical golden set."""
+    return RetrievalComparison(
+        vector_only=evaluate_retrieval(cases, vector_search),
+        hybrid=evaluate_retrieval(cases, hybrid_search),
+    )
+
+
+def comparison_markdown(comparison: RetrievalComparison) -> str:
+    """Render a compact before/after table suitable for a checked-in run report."""
+    vector = comparison.vector_only
+    hybrid = comparison.hybrid
+    return "\n".join(
+        (
+            "| Retrieval mode | Recall@5 | MRR |",
+            "| --- | ---: | ---: |",
+            f"| Vector-only (before) | {vector.recall_at_5:.3f} | {vector.mrr:.3f} |",
+            f"| Hybrid RRF (after) | {hybrid.recall_at_5:.3f} | {hybrid.mrr:.3f} |",
+            (
+                "| Change | "
+                f"{comparison.recall_at_5_delta:+.3f} | {comparison.mrr_delta:+.3f} |"
+            ),
+        )
     )

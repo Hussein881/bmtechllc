@@ -15,6 +15,9 @@ including the roles of LangChain, OpenAI embeddings, and a fully local option.
 See the [system overview](SYSTEM_OVERVIEW.md) for a concise rundown of the
 implemented capabilities, security boundaries, and current limits.
 
+See the [retrieval evaluation results](RETRIEVAL_EVALUATION_RESULTS.md) for the
+2026-09-08 live golden-dataset test and its findings.
+
 Hybrid retrieval retrieves vector and PostgreSQL full-text candidates separately
 and combines their ranks with Reciprocal Rank Fusion (RRF), using `k = 60`.
 The golden dataset evaluates only chunk retrieval with Recall@5 and MRR.

@@ -55,10 +55,13 @@ embedding column.
 Hybrid retrieval is the default. It embeds the query once, retrieves the top 20
 vector candidates and top 20 full-text candidates concurrently, deduplicates
 them, then ranks the combined set with Reciprocal Rank Fusion (RRF, `k = 60`).
-The default response returns the top five chunks.
+The default response returns the top five chunks. The public `search_docs` API
+and CLI accept optional `speaker`, source-filename, and ISO-8601 date filters;
+the same filter is applied before both vector and full-text ranking.
 
 Search responses include chunk ID, source file, source-relative chunk index,
-clean text, metadata, native or RRF score, and `content_sha256`. The hash lets
+metadata, native or RRF score, and `content_sha256`. Retrieved text is marked
+untrusted and framed separately from trusted tool metadata. The hash lets
 reviewers create stable evaluation labels without querying the database.
 
 RRF uses candidate positions rather than raw score values, so an RRF score is
@@ -85,16 +88,23 @@ better context grouping.
 
 ## Evaluation and telemetry
 
-`benchmark-evaluate` evaluates hybrid retrieval with Recall@5 and MRR for
-lookup and multi-chunk questions. Unanswerable questions are included in the
-per-query output but excluded from those aggregate metrics because no relevant
-chunk exists.
+`benchmark-evaluate --compare-vector` measures vector-only and hybrid RRF
+retrieval against the same golden set. An optional Markdown report produces a
+before/after table for Recall@5 and MRR and marks whether both metrics improved.
+Unanswerable questions are included in the per-query output but excluded from
+those aggregate metrics because no relevant chunk exists.
+
+The current live run against the reviewed 30-question dataset is a tie: both
+vector-only and hybrid RRF scored Recall@5 0.950 and MRR 0.860. The comparison
+therefore does not yet demonstrate a hybrid quality increase; the report should
+be rerun after a measured retrieval-quality change.
 
 Each evaluation appends one row per query to
-`artifacts/retrieval_evaluation.csv` by default. It records retrieval time,
-returned chunk IDs, RRF scores, vector-similarity scores, per-query Recall@5,
-and run-level Recall@5/MRR. `generation_time_ms` is intentionally blank because
-the system does not generate answers.
+`artifacts/retrieval_evaluation.csv` by default. It records retrieval mode,
+latency, returned chunk IDs, RRF scores, vector-similarity scores, per-query
+quality (Recall@5), and run-level quality (Recall@5/MRR).
+`generation_time_ms` is intentionally blank because the system does not
+generate answers.
 
 Golden datasets use durable expected-chunk references: a `source_file` plus the
 reviewed chunk's `content_sha256`. The evaluator resolves these to the current
@@ -106,11 +116,16 @@ missing reference for manual review.
 ## Security and current limits
 
 The credential redaction rules reduce the risk of sending common secrets to the
-embedding provider, but they are not a full DLP or PII solution. Ingested text
-is not currently marked or filtered as untrusted for prompt injection. That has
-limited impact while the project only returns retrieval results, but a future
-answer-generation layer must treat retrieved text as untrusted data and enforce
-instruction/data separation, tool permissions, and output safeguards.
+embedding provider, but they are not a full DLP or PII solution. Every retrieved
+chunk is framed by `<untrusted-retrieved-chunk>` delimiters and marked
+`untrusted: true`; an in-chunk attempt to close that boundary is escaped. This
+does not make malicious content safe to follow. Any future answer-generation
+layer must still treat retrieved text as data and enforce instruction/data
+separation, tool permissions, and output safeguards.
+
+This repository does not implement request routing, a flagship answer model, or
+routed-versus-flagship cost measurement. Ignored historical routing artifacts
+are not evidence for the current retrieval pipeline.
 
 ## Recommended direction
 

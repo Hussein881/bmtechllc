@@ -10,11 +10,12 @@
     "/bmtechllc/portal/reference/local-vs-remote-embeddings-and-hybrid-system-design/",
     "/bmtechllc/portal/reference/tokenization-and-cl100k-base/",
     "/bmtechllc/portal/guide/security-guide-defending-against-indirect-prompt-injection-in-rag-architectures/",
-    "/bmtechllc/portal/reference/comprehensive-guide-to-rag-chunking-strategies/"
+    "/bmtechllc/portal/reference/comprehensive-guide-to-rag-chunking-strategies/",
+    "/bmtechllc/portal/guide/forward-deployed-software-development-lifecycle/"
   ],
   "lastDelivery": {
-    "url": "/bmtechllc/portal/reference/comprehensive-guide-to-rag-chunking-strategies/",
-    "messageId": "1556954914717040682",
-    "at": "2026-10-06T09:02:58.651Z"
+    "url": "/bmtechllc/portal/guide/forward-deployed-software-development-lifecycle/",
+    "messageId": "1556955212550381599",
+    "at": "2026-10-06T09:04:09.733Z"
   }
 }

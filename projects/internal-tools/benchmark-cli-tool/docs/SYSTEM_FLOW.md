@@ -2,10 +2,10 @@
 
 ## Purpose and scope
 
-This repository is a retrieval-only pipeline. It ingests documents, creates
-vector and full-text indexes, retrieves relevant chunks with hybrid search, and
-evaluates retrieval accuracy. It deliberately does not generate answers, call
-chat-completion models, or orchestrate agents.
+This repository ingests documents, creates vector and full-text indexes,
+retrieves relevant chunks with hybrid search, and evaluates retrieval and
+grounded-answer accuracy. Its bounded answer agent calls chat completions only
+after the cosine and keyword evidence gate accepts retrieved evidence.
 
 ## Components
 
@@ -25,9 +25,12 @@ flowchart TD
     FTSIndex --> FTSSearch
     VectorSearch --> RRF[RRF fusion, k = 60]
     FTSSearch --> RRF
-    RRF --> Chunks[Top five untrusted chunks]
+    RRF --> Gate[Cosine and keyword evidence gate]
+    Gate --> Chunks[Top five untrusted chunks]
+    Chunks --> Agent[Bounded routed answer agent]
+    Agent --> Answer[Verified citations or no relevant information]
 
-    Golden[Golden dataset] --> Evaluate[Retrieval evaluator]
+    Golden[Golden dataset] --> Evaluate[Retrieval and answer evaluator]
     Chunks --> Evaluate
     Evaluate --> Metrics[Vector-only versus hybrid Recall at 5 and MRR]
 ```
@@ -37,7 +40,7 @@ flowchart TD
 Configuration loads `.env` first and fills any missing values from `.env.local`.
 The required runtime values are:
 
-- `OPENAI_API_KEY`: used only for `text-embedding-3-small` embedding requests.
+- `OPENAI_API_KEY`: used for embeddings and answer/router chat completions.
 - `DATABASE_URL`: points to PostgreSQL with the pgvector extension available.
 
 The default embedding model is `text-embedding-3-small` with 1,536 dimensions.
@@ -67,10 +70,10 @@ in sync with each inserted or updated chunk.
 
 ### Ingestion engine walkthrough
 
-The ingestion engine is deliberately a one-way preparation pipeline: it turns
-local source files into clean, provenance-rich, independently retrievable
-chunks. It does not generate an answer or send whole source files to a chat
-model.
+The ingestion engine is a one-way preparation pipeline: it turns local source
+files into clean, provenance-rich, independently retrievable chunks. The answer
+agent later sends only bounded, delimiter-wrapped retrieved evidence to a chat
+model, never whole source files.
 
 #### 1. Source detection and normalized units
 

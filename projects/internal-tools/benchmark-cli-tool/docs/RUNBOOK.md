@@ -189,8 +189,8 @@ the evaluation dataset.
 
 ### Prepare a golden dataset
 
-Copy `data/evaluation/golden_queries.example.json` to a private, non-example
-file. The example questions match the sample documents and use reviewed
+Use `data/evaluation/golden_queries.json`. The reviewed questions match the
+versioned sanitized company fixtures and use reviewed
 `expected_chunks` references. Each reference pairs a source filename with the
 SHA-256 hash of the reviewed chunk text. The evaluator resolves those durable
 references to the current PostgreSQL IDs when it runs, so a truncate and
@@ -253,10 +253,11 @@ default. The rows share a `run_id` and record:
 - per-query Recall@5 and `quality_recall_at_5`, plus run-level Recall@5/MRR and
   `quality_mrr`.
 
-`generation_time_ms` is blank by design: this is a retrieval-only system and
-does not generate answers. Existing compatible evaluation logs are migrated to
-the expanded schema before new rows are appended. To write the log somewhere
-else:
+`generation_time_ms` remains blank in the retrieval-only CSV. Answer-agent
+latency, citation/abstention quality, and routed-versus-flagship cost totals
+are written by `--answers` to its JSON report. Existing compatible evaluation
+logs are migrated to the expanded schema before new rows are appended. To
+write the retrieval log somewhere else:
 
 ```bash
 .venv/bin/benchmark-evaluate \
@@ -264,9 +265,8 @@ else:
   --metrics-csv /path/to/retrieval_evaluation.csv
 ```
 
-This repository has no routed answer-generation mode or runtime cost-accounting
-implementation. Do not treat ignored historical routing artifacts as evidence
-for the current retrieval pipeline.
+Run `benchmark-evaluate --answers --calibrate-abstention` after ingestion to
+measure routed answer generation and current model-cost accounting.
 
 ## 9. Run normal checks
 

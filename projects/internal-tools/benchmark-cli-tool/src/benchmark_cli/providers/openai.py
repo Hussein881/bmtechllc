@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+from time import perf_counter
 
 from openai import OpenAI
 
 from ..config import EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, OPENAI_API_KEY
+from ..logging import log_usage
 
 _client: OpenAI | None = None
 
@@ -27,6 +29,7 @@ def embed_texts(texts: Sequence[str]) -> list[list[float]]:
         return []
     if any(not text.strip() for text in texts):
         raise ValueError("texts must not contain empty values.")
+    started_at = perf_counter()
     response = _get_client().embeddings.create(model=EMBEDDING_MODEL, input=list(texts))
     vectors = [item.embedding for item in response.data]
     if len(vectors) != len(texts):
@@ -35,4 +38,12 @@ def embed_texts(texts: Sequence[str]) -> list[list[float]]:
         raise RuntimeError(
             f"Embedding dimension mismatch: expected {EMBEDDING_DIMENSIONS}, got {len(vectors[0])}."
         )
+    usage = getattr(response, "usage", None)
+    log_usage(
+        tier="embedding",
+        component="embedding",
+        prompt_tokens=usage.prompt_tokens if usage else 0,
+        completion_tokens=0,
+        latency_ms=(perf_counter() - started_at) * 1_000,
+    )
     return vectors

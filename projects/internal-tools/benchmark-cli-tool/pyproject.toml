@@ -23,6 +23,7 @@ dev = ["pytest>=8.0", "ruff>=0.6"]
 benchmark-ingest = "benchmark_cli.ingestion.pipeline:main"
 benchmark-evaluate = "benchmark_cli.evaluation.cli:main"
 benchmark-search = "benchmark_cli.search_cli:main"
+benchmark-answer = "benchmark_cli.agent:main"
 
 [tool.pytest.ini_options]
 addopts = "-m 'not integration_live'"

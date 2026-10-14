@@ -11,6 +11,7 @@ import pytest
 
 from benchmark_cli.ingestion.chunk import chunk_units, token_count
 from benchmark_cli.ingestion.clean import RawUnit, normalize_text, parse_discord, parse_transcript
+from benchmark_cli.ingestion.pipeline import metadata_for, source_type_for
 
 
 def unit(text: str, ordinal: int, **extra: object) -> RawUnit:
@@ -87,6 +88,45 @@ class ChunkingTests(unittest.TestCase):
         self.assertEqual(units[0].speaker, "Alice")
         self.assertIn("First point Second point", units[0].text)
         self.assertEqual(units[0].extra["section"], "Agenda")
+
+    def test_plain_text_conversation_dates_are_preserved(self) -> None:
+        with TemporaryDirectory() as directory:
+            discord = Path(directory) / "discord_export.txt"
+            discord.write_text("[2026-08-14 09:15:22 UTC] Alice: Update", encoding="utf-8")
+            transcript = Path(directory) / "meeting_transcript.txt"
+            transcript.write_text(
+                "Date: August 14, 2026\n[00:00:05] Alice: Update", encoding="utf-8"
+            )
+            discord_units = list(parse_discord(discord))
+            transcript_units = list(parse_transcript(transcript))
+        self.assertEqual(discord_units[0].timestamp.date().isoformat(), "2026-08-14")
+        alice_turn = next(unit for unit in transcript_units if unit.speaker == "Alice")
+        self.assertEqual(alice_turn.timestamp.date().isoformat(), "2026-08-14")
+
+    def test_markdown_discord_channel_headings_become_boundaries_and_metadata(self) -> None:
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "bmtech-discord-transcripts.md"
+            path.write_text(
+                "Times are US Eastern (UTC-4).\n\n"
+                "# #general-collab\n\n"
+                "[2026-08-14 09:15] Alice: General update\n\n"
+                "# #planning\n\n"
+                "[2026-08-14 09:16] Bob: Planning update\n",
+                encoding="utf-8",
+            )
+            units = list(parse_discord(path))
+            chunks = chunk_units(units, target_tokens=100, max_tokens=150, min_tokens=1)
+
+        self.assertEqual([unit.extra["channel"] for unit in units], ["general-collab", "planning"])
+        self.assertTrue(units[0].extra["boundary"])
+        self.assertTrue(units[1].extra["boundary"])
+        self.assertEqual(units[0].timestamp.utcoffset(), timedelta(hours=-4))
+        self.assertEqual(len(chunks), 2)
+        self.assertTrue(all(len({unit.extra["channel"] for unit in chunk.units}) == 1 for chunk in chunks))
+        metadata = metadata_for(chunks[1], path, source_type_for(path))
+        self.assertEqual(metadata.channel, "planning")
+        self.assertEqual(metadata.section, "planning")
+        self.assertEqual(metadata.timezone, "UTC-04:00")
 
 
 if __name__ == "__main__":

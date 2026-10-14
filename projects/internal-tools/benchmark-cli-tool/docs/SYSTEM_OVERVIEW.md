@@ -2,10 +2,11 @@
 
 ## What this system does
 
-This project is a retrieval-only RAG foundation. It prepares local documents
-for search, stores text and embeddings in PostgreSQL with pgvector, retrieves
-ranked evidence through hybrid search, and measures retrieval quality. It does
-not generate answers, call a chat-completion model, or orchestrate agents.
+This project prepares local documents for search, stores text and embeddings in
+PostgreSQL with pgvector, retrieves ranked evidence through hybrid search, and
+answers only when calibrated semantic and keyword checks accept the evidence.
+The bounded answer agent uses chat completions, exact verified citations, and
+explicit `no_relevant_information` abstention.
 
 ## Ingestion
 
@@ -47,8 +48,9 @@ JSON metadata, SHA-256 content hash, embedding, and generated full-text
   parent-context reads.
 
 Full-text search runs in PostgreSQL against stored chunk text using the English
-`websearch_to_tsquery` configuration. Vector search runs against the pgvector
-embedding column.
+`websearch_to_tsquery` configuration, converting ordinary term conjunctions to
+OR alternatives so full-sentence requests can return partial lexical matches.
+Vector search runs against the pgvector embedding column.
 
 ## Retrieval
 
@@ -65,10 +67,10 @@ untrusted and framed separately from trusted tool metadata. The hash lets
 reviewers create stable evaluation labels without querying the database.
 
 RRF uses candidate positions rather than raw score values, so an RRF score is
-not a probability or confidence value. The system has no relevance threshold or
-abstention behavior: if full-text search finds no matching terms, vector search
-can still return its nearest chunks, even when they are not useful. An explicit
-`no_relevant_information` decision policy is not implemented.
+not a probability or confidence value. The answer path accepts evidence only
+when its top cosine score and meaningful FTS-keyword overlap meet configured,
+golden-set-calibrated cutoffs; otherwise it returns
+`no_relevant_information`.
 
 Queries are sent unchanged to OpenAI for embedding and PostgreSQL for full-text
 search. There is no query rewriting, decomposition, keyword extraction, or
@@ -103,6 +105,11 @@ Each evaluation appends one row per query to
 `artifacts/retrieval_evaluation.csv` by default. It records retrieval mode,
 latency, returned chunk IDs, RRF scores, vector-similarity scores, per-query
 quality (Recall@5), and run-level quality (Recall@5/MRR).
+
+`benchmark-evaluate --answers --calibrate-abstention` additionally compares
+routed and flagship-only answers for abstention, required-fact coverage, exact
+citation validity, latency, and model-cost breakdowns. See
+[Performance Measurement](PERFORMANCE.md) for the reproducible procedure.
 `generation_time_ms` is intentionally blank because the system does not
 generate answers.
 

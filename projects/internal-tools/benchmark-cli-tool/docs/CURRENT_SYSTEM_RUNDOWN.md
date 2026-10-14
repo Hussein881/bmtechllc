@@ -2,12 +2,12 @@
 
 ## What it is
 
-This is a retrieval-only RAG foundation. It ingests documents, creates OpenAI
+This is a grounded RAG benchmark. It ingests documents, creates OpenAI
 embeddings, stores chunks in PostgreSQL with pgvector, retrieves evidence with
-keyword and vector search, and measures retrieval quality.
+keyword and vector search, and measures search and answer quality.
 
-It does not generate answers, run agents, route requests between models, or
-provide routed-versus-flagship cost accounting.
+It provides a bounded answer agent, model-tier routing, strict verified
+citations, calibrated abstention, and routed-versus-flagship cost accounting.
 
 ## How it works
 
@@ -34,6 +34,9 @@ provide routed-versus-flagship cost accounting.
    instructions.
 8. `read_doc()` expands a selected chunk into adjacent chunks from the same
    source and section, within a default 1,200-token context budget.
+9. `benchmark-answer` uses only accepted evidence, wraps it in request-unique
+   untrusted-data delimiters, and verifies every returned quote against its
+   source chunk before returning an answer.
 
 ## Commands
 
@@ -86,6 +89,13 @@ benchmark-search --read-doc 42 --max-context-tokens 2000
 benchmark-evaluate --dataset data/evaluation/golden_queries.json
 ```
 
+Evaluate calibrated answers and compare routing against forced flagship:
+
+```bash
+benchmark-evaluate --dataset data/evaluation/golden_queries.json \
+  --calibrate-abstention --answers --answer-report artifacts/answer-evaluation.json
+```
+
 Compare vector-only to hybrid RRF and write a Markdown report:
 
 ```bash
@@ -113,9 +123,10 @@ python -m pytest -o addopts='' -m integration_live tests/integration/test_hybrid
 
 The golden dataset has 30 reviewed questions:
 
-- 10 lookup questions
-- 10 multi-chunk questions
-- 10 unanswerable questions
+- 8 lookup questions
+- 8 multi-chunk questions
+- 7 filtered questions
+- 7 near-miss unanswerable questions
 
 Expected chunks use source filename plus chunk SHA-256 rather than database IDs,
 so labels survive re-ingestion when the reviewed source content is unchanged.

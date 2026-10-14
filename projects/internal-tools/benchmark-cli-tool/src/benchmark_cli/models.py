@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ChunkMetadata(BaseModel):
@@ -16,6 +16,7 @@ class ChunkMetadata(BaseModel):
     section: str | None = None
     speakers: list[str] = Field(default_factory=list)
     channel: str | None = None
+    timezone: str | None = None
     date_start: str | None = None
     date_end: str | None = None
     meeting: str | None = None
@@ -34,7 +35,7 @@ class ChunkMetadata(BaseModel):
         return self
 
 
-QueryCategory = Literal["lookup", "multi_chunk", "unanswerable"]
+QueryCategory = Literal["lookup", "multi_chunk", "filter", "unanswerable"]
 
 
 class GoldenChunkReference(BaseModel):
@@ -51,17 +52,55 @@ class GoldenQuery(BaseModel):
     question: str = Field(min_length=1)
     expected_chunks: list[GoldenChunkReference] = Field(default_factory=list)
     query_category: QueryCategory
+    required_answer_facts: list[str] = Field(default_factory=list)
+    speaker: str | None = None
+    source: str | None = None
+    date: str | None = None
     expected_chunk_ids: list[int] = Field(default_factory=list, exclude=True)
 
     @model_validator(mode="after")
     def validate_expected_chunks(self) -> GoldenQuery:
         if self.query_category == "unanswerable" and self.expected_chunks:
             raise ValueError("unanswerable queries must not specify expected_chunks.")
-        if self.query_category == "lookup" and len(self.expected_chunks) != 1:
+        if self.query_category in {"lookup", "filter"} and len(self.expected_chunks) != 1:
             raise ValueError("lookup queries require exactly one expected chunk reference.")
         if self.query_category == "multi_chunk" and len(self.expected_chunks) < 2:
             raise ValueError("multi_chunk queries require at least two expected chunk references.")
         references = {(chunk.source_file, chunk.content_sha256) for chunk in self.expected_chunks}
         if len(references) != len(self.expected_chunks):
             raise ValueError("expected_chunks must not repeat a source-content reference.")
+        return self
+
+
+class Citation(BaseModel):
+    """Verbatim evidence that can be validated against one persisted chunk."""
+
+    source_file: str = Field(min_length=1)
+    chunk_id: int = Field(gt=0)
+    content_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    quote: str = Field(min_length=1)
+
+    @field_validator("quote")
+    @classmethod
+    def quote_must_contain_visible_text(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("citation quote must contain non-whitespace text.")
+        return value
+
+
+class AnswerResponse(BaseModel):
+    """A grounded answer or an explicit insufficient-evidence outcome."""
+
+    status: Literal["answered", "no_relevant_information"]
+    answer: str
+    confidence: float = Field(ge=0.0, le=1.0)
+    citations: list[Citation] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_abstention(self) -> AnswerResponse:
+        if self.status == "no_relevant_information":
+            if self.confidence != 0.0 or self.citations:
+                raise ValueError("Abstentions must have zero confidence and no citations.")
+        elif not self.citations:
+            raise ValueError("Answered responses require at least one citation.")
         return self

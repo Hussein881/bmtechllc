@@ -1,9 +1,8 @@
 # Benchmark Retrieval Pipeline
 
-A retrieval-only RAG foundation: document ingestion, OpenAI embeddings,
-PostgreSQL full-text search, vector search, Reciprocal Rank Fusion, and
-retrieval-level evaluation. It intentionally does not generate answers or run
-agent workflows.
+A grounded RAG benchmark: document ingestion, OpenAI embeddings, PostgreSQL
+full-text/vector search, RRF, calibrated abstention, and a citation-verified
+answer agent.
 
 ## Setup
 
@@ -43,8 +42,9 @@ benchmark-search --query "architecture decision" --speaker Ada --date 2026-08-14
 
 ## Retrieval evaluation
 
-The 30-item template at `data/evaluation/golden_queries.example.json` has 10
-lookup, 10 multi-chunk, and 10 unanswerable queries. Its expected chunks are
+The reviewed 30-item dataset at `data/evaluation/golden_queries.json` has 8
+lookups, 8 multi-chunk questions, 7 filtered questions, and 7 near-miss
+unanswerables. Its expected chunks are
 anchored by source filename and content hash, then resolved to the current
 database IDs when evaluation runs. Copy it to a private dataset path and review
 any reference that becomes unavailable after source-content changes, then run:
@@ -52,15 +52,16 @@ any reference that becomes unavailable after source-content changes, then run:
 ```bash
 benchmark-evaluate --dataset /path/to/golden_queries.json
 benchmark-evaluate --dataset /path/to/golden_queries.json --compare-vector \
-  --comparison-report /tmp/retrieval-comparison.md
+  --calibrate-abstention --answers --answer-report artifacts/answer-evaluation.json
 pytest
 ```
 
 The comparison report is a before/after table for vector-only and hybrid RRF
 Recall@5/MRR. It records the deltas and whether both measures improved. The
 evaluation log includes retrieval mode, latency, and quality columns.
-Unanswerable queries remain in the per-query output but are excluded from the
-metrics because they have no relevant chunk IDs.
+`benchmark-answer --question "What was the HNSW p99 latency?"` returns a
+structured grounded answer or `no_relevant_information`. Every returned quote
+is verified against the cited stored chunk.
 
 ## Real integration check
 

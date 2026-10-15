@@ -1,0 +1,16 @@
+{
+  "meeting": "sample retrieval review",
+  "date": "2026-08-15",
+  "segments": [
+    {
+      "speaker": "Sam",
+      "timestamp": "2026-08-15T10:00:00Z",
+      "text": "The retrieval test suite passed."
+    },
+    {
+      "speaker": "Priya",
+      "timestamp": "2026-08-15T10:01:00Z",
+      "text": "We will document the fallback path."
+    }
+  ]
+}

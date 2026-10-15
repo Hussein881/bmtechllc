@@ -24,9 +24,11 @@ from benchmark_cli.ingestion.chunk import chunk_units
 from benchmark_cli.ingestion.clean import parse_by_type
 from benchmark_cli.ingestion.pipeline import content_hash
 from benchmark_cli.models import GoldenChunkReference, GoldenQuery
-from benchmark_cli.paths import DOCUMENTS_DIR
 from benchmark_cli.retrieval import HybridSearchResult
 from benchmark_cli.storage.postgres import SearchChunk
+
+EVALUATION_FIXTURES_DIR = Path(__file__).parents[1] / "fixtures" / "evaluation"
+FIXTURE_GOLDEN_DATASET_PATH = EVALUATION_FIXTURES_DIR / "golden_queries.json"
 
 
 def result(chunk_id: int, vector_score: float | None = 0.9) -> HybridSearchResult:
@@ -168,8 +170,8 @@ def test_seed_dataset_contains_thirty_queries_across_all_required_categories() -
     assert all(case.required_answer_facts for case in cases if case.expected_chunks)
 
 
-def test_company_fixture_hashes_match_every_golden_reference() -> None:
-    cases = load_golden_dataset(GOLDEN_DATASET_PATH)
+def test_sanitized_fixture_hashes_match_every_golden_reference() -> None:
+    cases = load_golden_dataset(FIXTURE_GOLDEN_DATASET_PATH)
     expected = {
         (reference.source_file, reference.content_sha256)
         for case in cases
@@ -177,7 +179,7 @@ def test_company_fixture_hashes_match_every_golden_reference() -> None:
     }
     actual = {
         (path.name, content_hash(chunk.text))
-        for path in DOCUMENTS_DIR.glob("company_*.txt")
+        for path in EVALUATION_FIXTURES_DIR.glob("sample_*")
         for chunk in chunk_units(parse_by_type(path))
     }
     assert expected <= actual

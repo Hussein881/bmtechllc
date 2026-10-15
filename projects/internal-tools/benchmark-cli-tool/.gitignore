@@ -12,6 +12,4 @@ usage_log.csv
 
 # Local company exports and retired source material. Sanitized test fixtures live in tests/fixtures/.
 data/documents/*
-!data/documents/company_discord_chat_transcript.txt
-!data/documents/company_meeting_transcript.txt
 data/archive/

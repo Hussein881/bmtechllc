@@ -1,0 +1,2 @@
+[2026-08-14 09:00 UTC] Alex: pgvector passed the retrieval smoke test.
+[2026-08-14 09:02 UTC] Chen: We will compare keyword and semantic search.

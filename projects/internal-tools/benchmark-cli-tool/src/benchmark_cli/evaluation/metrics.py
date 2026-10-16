@@ -95,7 +95,16 @@ class RetrievalComparison:
         }
 
 
-SearchFunction = Callable[[str, int], Sequence[HybridSearchResult]]
+SearchFunction = Callable[..., Sequence[HybridSearchResult]]
+
+
+def _search_case(case: GoldenQuery, search: SearchFunction) -> Sequence[HybridSearchResult]:
+    """Apply golden metadata filters while retaining compatibility with simple test doubles."""
+    filters = {name: value for name, value in (("speaker", case.speaker), ("source", case.source), ("date", case.date)) if value is not None}
+    try:
+        return search(case.question, 5, **filters)
+    except TypeError:
+        return search(case.question, 5)
 
 
 def evaluate_retrieval(cases: Sequence[GoldenQuery], search: SearchFunction) -> EvaluationSummary:
@@ -110,7 +119,7 @@ def evaluate_retrieval(cases: Sequence[GoldenQuery], search: SearchFunction) -> 
     reciprocal_ranks: list[float] = []
     for case in cases:
         started_at = perf_counter()
-        results = search(case.question, 5)
+        results = _search_case(case, search)
         retrieval_time_ms = (perf_counter() - started_at) * 1_000
         result_ids = tuple(result.chunk.id for result in results)
         if case.expected_chunk_ids:
@@ -174,4 +183,98 @@ def comparison_markdown(comparison: RetrievalComparison) -> str:
                 f"{comparison.recall_at_5_delta:+.3f} | {comparison.mrr_delta:+.3f} |"
             ),
         )
+    )
+
+
+@dataclass(frozen=True, slots=True)
+class AnswerQueryMetrics:
+    question_id: str
+    query_category: str
+    expected_abstention: bool
+    abstained: bool
+    answer_fact_coverage: float | None
+    citation_valid: bool
+    latency_ms: float
+
+
+@dataclass(frozen=True, slots=True)
+class AnswerEvaluationSummary:
+    total_queries: int
+    answerable_queries: int
+    abstention_precision: float
+    abstention_recall: float
+    abstention_f1: float
+    mean_answer_fact_coverage: float
+    citation_validity_rate: float
+    p50_latency_ms: float
+    p95_latency_ms: float
+    per_query: tuple[AnswerQueryMetrics, ...]
+
+    def as_dict(self) -> dict[str, Any]:
+        payload = asdict(self)
+        payload["per_query"] = list(payload["per_query"])
+        return payload
+
+
+AnswerFunction = Callable[..., Any]
+
+
+def _normalized(value: str) -> str:
+    return "".join(character.casefold() for character in value if character.isalnum())
+
+
+def evaluate_answers(cases: Sequence[GoldenQuery], answer: AnswerFunction) -> AnswerEvaluationSummary:
+    """Score abstention, required-answer-fact coverage, citations, and latency."""
+    records: list[AnswerQueryMetrics] = []
+    true_positive = false_positive = false_negative = 0
+    coverages: list[float] = []
+    citation_checks: list[bool] = []
+    latencies: list[float] = []
+    for case in cases:
+        filters = {name: value for name, value in (("speaker", case.speaker), ("source", case.source), ("date", case.date)) if value is not None}
+        started_at = perf_counter()
+        response = answer(case.question, **filters)
+        latency = (perf_counter() - started_at) * 1_000
+        latencies.append(latency)
+        expected_abstention = not case.expected_chunks
+        abstained = response.status == "no_relevant_information"
+        if expected_abstention and abstained:
+            true_positive += 1
+        elif not expected_abstention and abstained:
+            false_negative += 1
+        elif expected_abstention:
+            false_positive += 1
+        if expected_abstention:
+            coverage = None
+            citation_valid = not response.citations
+        else:
+            facts = [_normalized(fact) for fact in case.required_answer_facts]
+            answer_text = _normalized(response.answer)
+            coverage = sum(fact in answer_text for fact in facts) / len(facts) if facts else 1.0
+            citation_valid = response.status == "answered" and bool(response.citations)
+            coverages.append(coverage)
+        citation_checks.append(citation_valid)
+        records.append(AnswerQueryMetrics(case.question_id, case.query_category, expected_abstention, abstained, coverage, citation_valid, latency))
+    precision = true_positive / (true_positive + false_positive) if true_positive + false_positive else 0.0
+    recall = true_positive / (true_positive + false_negative) if true_positive + false_negative else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall else 0.0
+    ordered_latencies = sorted(latencies)
+
+    def percentile(quantile: float) -> float:
+        if not ordered_latencies:
+            return 0.0
+        index = min(len(ordered_latencies) - 1, int((len(ordered_latencies) - 1) * quantile))
+        return ordered_latencies[index]
+
+    return AnswerEvaluationSummary(
+        total_queries=len(cases),
+        answerable_queries=len(cases) - sum(record.expected_abstention for record in records),
+        abstention_precision=precision,
+        abstention_recall=recall,
+        abstention_f1=f1,
+        mean_answer_fact_coverage=sum(coverages) / len(coverages) if coverages else 0.0,
+        citation_validity_rate=sum(citation_checks) / len(citation_checks) if citation_checks else 0.0,
+        p50_latency_ms=percentile(0.50),
+        p95_latency_ms=percentile(0.95),
+        per_query=tuple(records),
     )

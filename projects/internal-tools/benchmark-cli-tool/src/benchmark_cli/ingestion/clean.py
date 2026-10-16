@@ -7,7 +7,8 @@ import re
 import unicodedata
 from collections.abc import Iterator
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date as Date
+from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -31,6 +32,8 @@ _SECRET_PATTERNS = (
 )
 _SECTION_PATTERN = re.compile(r"^\s*(?:\d+[.)]\s*)?([^:]{2,100}):(?:\s|$)")
 _NUMBERED_HEADING_PATTERN = re.compile(r"^\s*\d+(?:\.\d+)*\.?\s+(.{2,100})\s*$")
+_DISCORD_CHANNEL_HEADING = re.compile(r"^\s{0,3}#{1,6}\s+#(?P<channel>[\w-]+)\s*$")
+_UTC_OFFSET = re.compile(r"\bUTC\s*(?P<sign>[+-])\s*(?P<hours>\d{1,2})(?::?(?P<minutes>\d{2}))?\b", re.IGNORECASE)
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,8 +75,48 @@ def _parse_datetime(value: Any) -> datetime | None:
         return None
     if isinstance(value, datetime):
         return value
+    normalized = str(value).strip()
+    normalized = re.sub(r"\s+UTC$", "+00:00", normalized, flags=re.IGNORECASE)
     try:
-        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+        return datetime.fromisoformat(normalized.replace("Z", "+00:00"))
+    except ValueError:
+        for pattern in ("%B %d, %Y", "%b %d, %Y", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(normalized, pattern)
+            except ValueError:
+                continue
+        return None
+
+
+def _discord_export_timezone(text: str) -> timezone | None:
+    """Read a UTC offset declared in a text Discord export's preamble."""
+    match = _UTC_OFFSET.search(text)
+    if match is None:
+        return None
+    minutes = int(match.group("hours")) * 60 + int(match.group("minutes") or 0)
+    if match.group("sign") == "-":
+        minutes = -minutes
+    return timezone(timedelta(minutes=minutes))
+
+
+def _meeting_date(text: str) -> Date | None:
+    """Extract a dated meeting header for text transcripts with clock-only turns."""
+    for line in text.splitlines():
+        match = re.match(r"\s*date\s*:\s*(?P<value>.+)", line, re.IGNORECASE)
+        if match and (parsed := _parse_datetime(match.group("value"))) is not None:
+            return parsed.date()
+    return None
+
+
+def _timestamp_for_turn(value: Any, meeting_date: Date | None) -> datetime | None:
+    """Parse an absolute timestamp or attach a meeting date to a clock-only turn."""
+    parsed = _parse_datetime(value)
+    if parsed is not None:
+        return parsed
+    if meeting_date is None or not value:
+        return None
+    try:
+        return datetime.combine(meeting_date, time.fromisoformat(str(value).strip()))
     except ValueError:
         return None
 
@@ -149,15 +192,40 @@ def parse_discord(path: Path) -> Iterator[RawUnit]:
             yield RawUnit(content, author_name, timestamp, ordinal, {"channel": channel, "reply_to": reply})
         return
 
-    for ordinal, line in enumerate(path.read_text(encoding="utf-8").splitlines()):
-        match = re.match(r"(?:\[(?P<time>[^]]+)\]\s*)?(?P<speaker>[^:]{1,80}):\s*(?P<text>.*)", line)
+    source_text = path.read_text(encoding="utf-8")
+    export_timezone = _discord_export_timezone(source_text)
+    channel = path.stem
+    channel_boundary = False
+    for ordinal, line in enumerate(source_text.splitlines()):
+        if heading := _DISCORD_CHANNEL_HEADING.match(line):
+            channel = heading.group("channel")
+            channel_boundary = True
+            continue
+        # Discord's text export prefixes replies with tree glyphs and commonly
+        # includes an author role/id between the timestamp and the colon.
+        normalized_line = re.sub(r"^\s*(?:[└├│─]+\s*)+", "", line)
+        match = re.match(
+            r"(?:\[(?P<time>[^]]+)\]\s*)?"
+            r"(?P<speaker>[^:\[][^:]{0,120}?)(?:\s*\[[^]]+\])?:\s*(?P<text>.*)",
+            normalized_line,
+        )
         if not match:
             continue
         speaker = match.group("speaker").strip()
         content = normalize_text(match.group("text"))
         if _BOT_NAME.search(speaker) or len(content) < 3 or _URL_ONLY.fullmatch(content):
             continue
-        yield RawUnit(content, speaker, _parse_datetime(match.group("time")), ordinal, {"channel": path.stem})
+        timestamp = _parse_datetime(match.group("time"))
+        if timestamp is not None and timestamp.tzinfo is None and export_timezone is not None:
+            timestamp = timestamp.replace(tzinfo=export_timezone)
+        yield RawUnit(
+            content,
+            speaker,
+            timestamp,
+            ordinal,
+            {"channel": channel, "section": channel, "boundary": channel_boundary},
+        )
+        channel_boundary = False
 
 
 def parse_transcript(path: Path) -> Iterator[RawUnit]:
@@ -166,22 +234,41 @@ def parse_transcript(path: Path) -> Iterator[RawUnit]:
         payload = json.loads(path.read_text(encoding="utf-8"))
         segments = payload.get("segments", payload) if isinstance(payload, dict) else payload
         meeting = str(payload.get("meeting", path.stem)) if isinstance(payload, dict) else path.stem
+        meeting_date = _parse_datetime(payload.get("date")).date() if isinstance(payload, dict) and _parse_datetime(payload.get("date")) else None
     else:
+        source_text = path.read_text(encoding="utf-8")
+        meeting_date = _meeting_date(source_text)
         segments = []
-        for line in path.read_text(encoding="utf-8").splitlines():
+        pending_turn: dict[str, Any] | None = None
+        for line in source_text.splitlines():
             match = re.match(
-                r"(?:\[(?P<time>[^]]+)\]\s*)?(?P<speaker>[^:]{1,80}):\s*(?P<text>.*)", line
+                r"(?:\[(?P<time>[^]]+)\]\s*)?"
+                r"(?P<speaker>[^:\[]{1,80}):\s*(?P<text>.*)",
+                line,
             )
             if match:
-                segments.append(
-                    {
-                        "speaker": match.group("speaker").strip(),
-                        "timestamp": match.group("time"),
-                        "text": match.group("text"),
-                    }
-                )
+                if pending_turn is not None:
+                    segments.append(pending_turn)
+                    pending_turn = None
+                turn = {
+                    "speaker": match.group("speaker").strip(),
+                    "timestamp": match.group("time"),
+                    "text": match.group("text"),
+                }
+                if str(turn["text"]).strip():
+                    segments.append(turn)
+                elif turn["timestamp"] is not None:
+                    # Some transcript exports put a diarized speaker heading on
+                    # one line and the corresponding speech on the next.
+                    pending_turn = turn
+            elif pending_turn is not None and line.strip():
+                pending_turn["text"] = line
+                segments.append(pending_turn)
+                pending_turn = None
             else:
                 segments.append({"text": line})
+        if pending_turn is not None:
+            segments.append(pending_turn)
         meeting = path.stem
     if not isinstance(segments, list):
         return
@@ -216,7 +303,9 @@ def parse_transcript(path: Path) -> Iterator[RawUnit]:
         if not text or _FILLER.fullmatch(text):
             continue
         speaker = str(segment.get("speaker", segment.get("name", "Unknown"))).strip()
-        timestamp = _parse_datetime(segment.get("timestamp", segment.get("start")))
+        timestamp = _timestamp_for_turn(
+            segment.get("timestamp", segment.get("start")), meeting_date
+        )
         if pending_speaker and speaker != pending_speaker:
             flushed = flush()
             if flushed:

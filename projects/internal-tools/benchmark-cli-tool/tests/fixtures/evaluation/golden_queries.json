@@ -1,0 +1,42 @@
+[
+  {
+    "question_id": "fixture-lookup-discord",
+    "question": "What retrieval approach was compared?",
+    "expected_chunks": [
+      {
+        "source_file": "sample_discord_chat.txt",
+        "content_sha256": "b966ef18eb7cead35f5ebe9f616c00bb400a71757052096153147787d2dade15"
+      }
+    ],
+    "query_category": "lookup",
+    "required_answer_facts": ["pgvector", "keyword", "semantic search"]
+  },
+  {
+    "question_id": "fixture-lookup-transcript",
+    "question": "What follow-up work was planned after the retrieval review?",
+    "expected_chunks": [
+      {
+        "source_file": "sample_meeting_transcript.json",
+        "content_sha256": "3686b0486a4987b11ae55a34af18a6912b89579e371f4c5930314812cd2b0dd0"
+      }
+    ],
+    "query_category": "lookup",
+    "required_answer_facts": ["fallback path"]
+  },
+  {
+    "question_id": "fixture-multi-source",
+    "question": "What did the sample discussion say about retrieval validation and documentation?",
+    "expected_chunks": [
+      {
+        "source_file": "sample_discord_chat.txt",
+        "content_sha256": "b966ef18eb7cead35f5ebe9f616c00bb400a71757052096153147787d2dade15"
+      },
+      {
+        "source_file": "sample_meeting_transcript.json",
+        "content_sha256": "3686b0486a4987b11ae55a34af18a6912b89579e371f4c5930314812cd2b0dd0"
+      }
+    ],
+    "query_category": "multi_chunk",
+    "required_answer_facts": ["retrieval smoke test", "fallback path"]
+  }
+]

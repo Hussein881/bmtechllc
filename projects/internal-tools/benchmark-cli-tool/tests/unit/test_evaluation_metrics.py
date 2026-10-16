@@ -9,19 +9,25 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from benchmark_cli.config import GOLDEN_DATASET_PATH
 from benchmark_cli.evaluation.dataset import load_golden_dataset, resolve_golden_dataset
 from benchmark_cli.evaluation.metrics import (
     compare_retrieval_modes,
     comparison_markdown,
+    evaluate_answers,
     evaluate_retrieval,
     recall_at_k,
     reciprocal_rank,
 )
 from benchmark_cli.evaluation.telemetry import CSV_COLUMNS, append_evaluation_log
+from benchmark_cli.ingestion.chunk import chunk_units
+from benchmark_cli.ingestion.clean import parse_by_type
+from benchmark_cli.ingestion.pipeline import content_hash
 from benchmark_cli.models import GoldenChunkReference, GoldenQuery
 from benchmark_cli.retrieval import HybridSearchResult
 from benchmark_cli.storage.postgres import SearchChunk
+
+EVALUATION_FIXTURES_DIR = Path(__file__).parents[1] / "fixtures" / "evaluation"
+FIXTURE_GOLDEN_DATASET_PATH = EVALUATION_FIXTURES_DIR / "golden_queries.json"
 
 
 def result(chunk_id: int, vector_score: float | None = 0.9) -> HybridSearchResult:
@@ -152,13 +158,28 @@ def test_comparison_reports_hybrid_improvements_in_before_after_table() -> None:
 
 
 @pytest.mark.unit
-def test_seed_dataset_contains_thirty_queries_across_all_required_categories() -> None:
-    cases = load_golden_dataset(GOLDEN_DATASET_PATH)
+def test_sanitized_fixture_dataset_has_reviewed_categories_and_facts() -> None:
+    cases = load_golden_dataset(FIXTURE_GOLDEN_DATASET_PATH)
 
-    assert len(cases) == 30
-    assert [case.query_category for case in cases].count("lookup") == 10
-    assert [case.query_category for case in cases].count("multi_chunk") == 10
-    assert [case.query_category for case in cases].count("unanswerable") == 10
+    assert len(cases) == 3
+    assert [case.query_category for case in cases].count("lookup") == 2
+    assert [case.query_category for case in cases].count("multi_chunk") == 1
+    assert all(case.required_answer_facts for case in cases if case.expected_chunks)
+
+
+def test_sanitized_fixture_hashes_match_every_golden_reference() -> None:
+    cases = load_golden_dataset(FIXTURE_GOLDEN_DATASET_PATH)
+    expected = {
+        (reference.source_file, reference.content_sha256)
+        for case in cases
+        for reference in case.expected_chunks
+    }
+    actual = {
+        (path.name, content_hash(chunk.text))
+        for path in EVALUATION_FIXTURES_DIR.glob("sample_*")
+        for chunk in chunk_units(parse_by_type(path))
+    }
+    assert expected <= actual
 
 
 @pytest.mark.unit
@@ -177,3 +198,35 @@ def test_dataset_resolves_durable_references_to_current_database_ids() -> None:
 
     assert resolved[0].expected_chunk_ids == [42]
     assert case.expected_chunk_ids == []
+
+
+def test_answer_evaluation_scores_facts_and_abstention() -> None:
+    from benchmark_cli.models import AnswerResponse, Citation
+
+    cases = [
+        GoldenQuery(
+            question_id="answerable",
+            question="one",
+            expected_chunks=[GoldenChunkReference(source_file="source.txt", content_sha256="a" * 64)],
+            query_category="lookup",
+            required_answer_facts=["eleven milliseconds"],
+        ),
+        GoldenQuery(question_id="none", question="two", query_category="unanswerable"),
+    ]
+
+    def answer(question: str, **_: str) -> AnswerResponse:
+        if question == "two":
+            return AnswerResponse(
+                status="no_relevant_information", answer="No relevant information.", confidence=0.0
+            )
+        return AnswerResponse(
+            status="answered",
+            answer="The result was eleven milliseconds.",
+            confidence=0.9,
+            citations=[Citation(source_file="source.txt", chunk_id=1, content_sha256="a" * 64, quote="eleven")],
+        )
+
+    summary = evaluate_answers(cases, answer)
+    assert summary.abstention_f1 == 1.0
+    assert summary.mean_answer_fact_coverage == 1.0
+    assert summary.citation_validity_rate == 1.0

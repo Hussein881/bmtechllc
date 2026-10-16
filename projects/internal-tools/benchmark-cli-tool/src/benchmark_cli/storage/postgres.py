@@ -258,18 +258,25 @@ def fts_search(
         return []
     filter_clause, filter_parameters = _filters_where_clause(SearchFilters(speaker, source, date))
     statement = """
+        WITH query AS (
+            SELECT replace(
+                websearch_to_tsquery('english', %s)::text,
+                ' & ',
+                ' | '
+            )::tsquery AS tsq
+        )
         SELECT id, source_file, chunk_index, chunk_text, metadata,
-               ts_rank_cd(search_vector, websearch_to_tsquery('english', %s)) AS score,
+               ts_rank_cd(search_vector, query.tsq) AS score,
                NULL::integer AS token_count, content_sha256
-        FROM document_chunks
-        WHERE search_vector @@ websearch_to_tsquery('english', %s)
+        FROM document_chunks, query
+        WHERE search_vector @@ query.tsq
         """ + filter_clause + """
         ORDER BY score DESC, id ASC
         LIMIT %s
     """
 
     with connection() as conn, conn.cursor() as cursor:
-        cursor.execute(statement, (query, query, *filter_parameters, limit))
+        cursor.execute(statement, (query, *filter_parameters, limit))
         return [SearchChunk(*row) for row in cursor.fetchall()]
 
 

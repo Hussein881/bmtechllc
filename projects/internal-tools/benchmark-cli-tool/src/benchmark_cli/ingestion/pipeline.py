@@ -51,9 +51,20 @@ def _date_range(units: Iterable[RawUnit]) -> tuple[str | None, str | None]:
 def _source_date(path: Path) -> str:
     """Choose a stable source date for policy documents without timestamps."""
     try:
-        year = re.search(r"\b20\d{2}\b", path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
     except OSError:
-        year = None
+        text = ""
+    iso_date = re.search(r"\b20\d{2}-\d{2}-\d{2}\b", text)
+    if iso_date:
+        return iso_date.group(0)
+    for pattern in ("%B %d, %Y", "%b %d, %Y"):
+        match = re.search(r"\b[A-Z][a-z]+\s+\d{1,2},\s+20\d{2}\b", text)
+        if match:
+            try:
+                return datetime.strptime(match.group(0), pattern).date().isoformat()
+            except ValueError:
+                pass
+    year = re.search(r"\b20\d{2}\b", text)
     return year.group(0) if year else datetime.fromtimestamp(path.stat().st_mtime, UTC).date().isoformat()
 
 
@@ -65,6 +76,16 @@ def _speakers_in_order(units: Iterable[RawUnit]) -> list[str]:
             speakers.append(unit.speaker)
             seen.add(unit.speaker)
     return speakers
+
+
+def _timezone_name(units: Iterable[RawUnit]) -> str | None:
+    """Return the first explicit UTC offset preserved by a source parser."""
+    for unit in units:
+        if unit.timestamp and unit.timestamp.tzinfo:
+            name = unit.timestamp.tzname()
+            if name:
+                return name
+    return None
 
 
 def metadata_for(chunk: Chunk, path: Path, source_type: str) -> ChunkMetadata:
@@ -79,10 +100,13 @@ def metadata_for(chunk: Chunk, path: Path, source_type: str) -> ChunkMetadata:
         "embed_prefix": "",
     }
     if source_type == "discord":
+        fallback_date = start or _source_date(path)
         common.update(
             channel=str(first.extra.get("channel", path.stem)),
-            date_start=start or datetime.now(UTC).date().isoformat(),
-            date_end=end or start or datetime.now(UTC).date().isoformat(),
+            section=str(first.extra.get("section", first.extra.get("channel", path.stem))),
+            timezone=_timezone_name(chunk.units),
+            date_start=fallback_date,
+            date_end=end or fallback_date,
             speakers=_speakers_in_order(chunk.units),
         )
     elif source_type == "transcript":
@@ -107,7 +131,8 @@ def embedding_prefix(metadata: ChunkMetadata, source_filename: str) -> str:
     if metadata.source_type == "policy_doc":
         header = f"Policy document: {source_filename}; section: {metadata.section}."
     elif metadata.source_type == "discord":
-        header = f"Discord channel: {metadata.channel}; dates: {metadata.date_start} to {metadata.date_end}."
+        timezone = f"; timezone: {metadata.timezone}" if metadata.timezone else ""
+        header = f"Discord channel: {metadata.channel}; dates: {metadata.date_start} to {metadata.date_end}{timezone}."
     else:
         header = f"Meeting transcript: {metadata.meeting}; date: {metadata.date or 'unknown'}; section: {metadata.section or 'general'}."
     return header

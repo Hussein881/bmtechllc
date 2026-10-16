@@ -1,13 +1,22 @@
-name: CI
+name: Benchmark CLI CI
 
 on:
   pull_request:
+    paths:
+      - "projects/internal-tools/benchmark-cli-tool/**"
+      - ".github/workflows/benchmark-cli.yml"
   push:
     branches: [main]
+    paths:
+      - "projects/internal-tools/benchmark-cli-tool/**"
+      - ".github/workflows/benchmark-cli.yml"
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: projects/internal-tools/benchmark-cli-tool
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

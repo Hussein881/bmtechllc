@@ -9,7 +9,6 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from benchmark_cli.config import GOLDEN_DATASET_PATH
 from benchmark_cli.evaluation.dataset import load_golden_dataset, resolve_golden_dataset
 from benchmark_cli.evaluation.metrics import (
     compare_retrieval_modes,
@@ -159,14 +158,12 @@ def test_comparison_reports_hybrid_improvements_in_before_after_table() -> None:
 
 
 @pytest.mark.unit
-def test_seed_dataset_contains_thirty_queries_across_all_required_categories() -> None:
-    cases = load_golden_dataset(GOLDEN_DATASET_PATH)
+def test_sanitized_fixture_dataset_has_reviewed_categories_and_facts() -> None:
+    cases = load_golden_dataset(FIXTURE_GOLDEN_DATASET_PATH)
 
-    assert len(cases) == 30
-    assert [case.query_category for case in cases].count("lookup") == 8
-    assert [case.query_category for case in cases].count("multi_chunk") == 8
-    assert [case.query_category for case in cases].count("filter") == 7
-    assert [case.query_category for case in cases].count("unanswerable") == 7
+    assert len(cases) == 3
+    assert [case.query_category for case in cases].count("lookup") == 2
+    assert [case.query_category for case in cases].count("multi_chunk") == 1
     assert all(case.required_answer_facts for case in cases if case.expected_chunks)
 
 

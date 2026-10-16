@@ -189,9 +189,10 @@ the evaluation dataset.
 
 ### Prepare a golden dataset
 
-Use `data/evaluation/golden_queries.json`. The reviewed questions match the
-versioned sanitized company fixtures and use reviewed
-`expected_chunks` references. Each reference pairs a source filename with the
+Store a reviewed production dataset securely, then pass its path with
+`--dataset` (or place it locally at the ignored default
+`data/evaluation/golden_queries.json`). The repository's unit tests use only
+sanitized fixtures. Each production reference pairs a source filename with the
 SHA-256 hash of the reviewed chunk text. The evaluator resolves those durable
 references to the current PostgreSQL IDs when it runs, so a truncate and
 re-ingestion needs no ID update when the source text is unchanged.

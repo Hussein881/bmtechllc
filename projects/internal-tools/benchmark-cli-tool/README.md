@@ -42,12 +42,13 @@ benchmark-search --query "architecture decision" --speaker Ada --date 2026-08-14
 
 ## Retrieval evaluation
 
-The reviewed 30-item dataset at `data/evaluation/golden_queries.json` has 8
-lookups, 8 multi-chunk questions, 7 filtered questions, and 7 near-miss
-unanswerables. Its expected chunks are
-anchored by source filename and content hash, then resolved to the current
-database IDs when evaluation runs. Copy it to a private dataset path and review
-any reference that becomes unavailable after source-content changes, then run:
+Production golden datasets are intentionally not versioned because their
+questions and labels can reveal company context. Store a reviewed dataset in a
+secure location (or locally at the ignored default
+`data/evaluation/golden_queries.json`). Its expected chunks should be anchored
+by source filename and content hash, then resolved to the current database IDs
+when evaluation runs. Review any reference that becomes unavailable after
+source-content changes, then run:
 
 ```bash
 benchmark-evaluate --dataset /path/to/golden_queries.json

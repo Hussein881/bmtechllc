@@ -19,7 +19,7 @@ def test_live_discord_messages_use_the_same_redaction_and_bot_filtering() -> Non
                 "id": "1",
                 "type": 0,
                 "timestamp": "2026-10-21T01:02:03Z",
-                "author": {"username": "Ada"},
+                "author": {"global_name": None, "username": "Ada"},
                 "content": "password=very-secret <@42>",
             },
             {
@@ -58,6 +58,33 @@ def test_message_fetches_until_it_includes_the_saved_cursor() -> None:
     messages = client.messages_since("channel", "900")
 
     assert [message["id"] for message in messages] == [str(message_id) for message_id in range(899, 1001)]
+    assert client.calls == [{"limit": "100"}, {"limit": "100", "before": "901"}]
+
+
+@pytest.mark.unit
+def test_message_fetch_stops_at_the_boundary_when_the_cursor_was_deleted() -> None:
+    class FakeClient(discord_sync.DiscordRestClient):
+        def __init__(self) -> None:
+            super().__init__("token")
+            self.calls: list[dict[str, str] | None] = []
+
+        def _request_json(self, path: str, params: dict[str, str] | None = None) -> object:
+            assert path == "/channels/channel/messages"
+            self.calls.append(params)
+            if params and params.get("before") == "901":
+                return [{"id": str(message_id)} for message_id in range(899, 799, -1)]
+            if params and params.get("before") == "800":
+                raise AssertionError("a deleted cursor must not trigger a full-history scan")
+            return [{"id": str(message_id)} for message_id in range(1000, 900, -1)]
+
+    client = FakeClient()
+    messages = client.messages_since("channel", "900")
+
+    identifiers = [message["id"] for message in messages]
+    assert len(identifiers) == 200
+    assert identifiers[0] == "800"
+    assert identifiers[-1] == "1000"
+    assert "900" not in identifiers
     assert client.calls == [{"limit": "100"}, {"limit": "100", "before": "901"}]
 
 

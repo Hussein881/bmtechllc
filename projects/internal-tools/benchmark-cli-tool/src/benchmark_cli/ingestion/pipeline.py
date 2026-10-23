@@ -17,6 +17,7 @@ from ..paths import DOCUMENTS_DIR
 from ..providers.openai import embed_texts
 from ..storage.postgres import (
     create_indexes,
+    existing_embeddings,
     existing_hashes,
     initialize_database,
     replace_source_chunks,
@@ -186,19 +187,25 @@ def ingest_units(
 
     initialize_database()
     if replace_existing:
-        known_hashes: set[str] = set()
+        vectors_by_hash = existing_embeddings(hashes)
+        pending_by_hash = {
+            content_hash(chunk.text): (chunk_index, chunk, metadata)
+            for chunk_index, chunk, metadata in prepared
+            if content_hash(chunk.text) not in vectors_by_hash
+        }
+        pending = list(pending_by_hash.values())
+        result["skipped"] = len(prepared) - len(pending)
     else:
         known_hashes = existing_hashes(hashes)
-    pending = [
-        (chunk_index, chunk, metadata)
-        for chunk_index, chunk, metadata in prepared
-        if replace_existing or content_hash(chunk.text) not in known_hashes
-    ]
-    result["skipped"] = len(prepared) - len(pending)
-    if not pending:
-        if replace_existing:
-            result["inserted"] = replace_source_chunks(source_filename, [])
-        return result
+        pending = [
+            (chunk_index, chunk, metadata)
+            for chunk_index, chunk, metadata in prepared
+            if content_hash(chunk.text) not in known_hashes
+        ]
+        result["skipped"] = len(prepared) - len(pending)
+        vectors_by_hash: dict[str, list[float]] = {}
+        if not pending:
+            return result
 
     inputs = [embedding_input(chunk, metadata, path.name) for _, chunk, metadata in pending]
     vectors: list[list[float]] = []
@@ -214,6 +221,10 @@ def ingest_units(
                 if attempt == 2:
                     raise
                 time.sleep(2**attempt)
+    vectors_by_hash.update(
+        {content_hash(chunk.text): vector for (_, chunk, _), vector in zip(pending, vectors, strict=True)}
+    )
+    row_entries = prepared if replace_existing else pending
     rows = [
         {
             "source_file": source_filename,
@@ -222,9 +233,9 @@ def ingest_units(
             "content_sha256": content_hash(chunk.text),
             "token_count": chunk.token_count,
             "metadata": metadata.model_dump(mode="json"),
-            "embedding": vector,
+            "embedding": vectors_by_hash[content_hash(chunk.text)],
         }
-        for (chunk_index, chunk, metadata), vector in zip(pending, vectors, strict=True)
+        for chunk_index, chunk, metadata in row_entries
     ]
     result["inserted"] = (
         replace_source_chunks(source_filename, rows) if replace_existing else upsert_chunks(rows)

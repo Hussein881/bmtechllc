@@ -189,7 +189,11 @@ def discord_units_from_messages(
         if not isinstance(author, dict):
             continue
         author_name = str(
-            author.get("global_name", author.get("name", author.get("username", author.get("Name", "unknown"))))
+            author.get("global_name")
+            or author.get("name")
+            or author.get("username")
+            or author.get("Name")
+            or "unknown"
         )
         if author.get("isBot") or author.get("bot") or _BOT_NAME.search(author_name):
             continue

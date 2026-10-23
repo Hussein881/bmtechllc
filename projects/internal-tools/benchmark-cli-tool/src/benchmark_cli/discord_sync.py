@@ -82,11 +82,11 @@ class DiscordRestClient:
         return str(payload.get("name") or channel_id)
 
     def messages_since(self, channel_id: str, cursor: str | None) -> list[dict[str, Any]]:
-        """Fetch newest-first pages until the saved cursor appears.
+        """Fetch newest-first pages until a page reaches the saved cursor.
 
-        The page containing the cursor is deliberately included. It provides a
-        small overlap that detects edits to recent messages without requiring a
-        full-channel refresh each night.
+        The boundary page is deliberately included. It provides a small overlap
+        that detects edits to recent messages. Stopping once a page passes the
+        cursor also bounds the work when the cursor message was deleted.
         """
         before: str | None = None
         messages_by_id: dict[str, dict[str, Any]] = {}
@@ -100,7 +100,7 @@ class DiscordRestClient:
             page = [message for message in payload if isinstance(message, dict) and str(message.get("id", "")).isdigit()]
             for message in page:
                 messages_by_id[str(message["id"])] = message
-            if cursor and cursor in messages_by_id:
+            if cursor and cursor.isdigit() and any(int(message["id"]) <= int(cursor) for message in page):
                 break
             if len(payload) < 100 or not page:
                 break

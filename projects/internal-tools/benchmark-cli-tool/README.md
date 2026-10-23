@@ -51,13 +51,13 @@ workflow) with:
 benchmark-sync-discord
 ```
 
-The checked-in workflow at `.github/workflows/discord-ingestion.yml` runs at
-03:17 UTC daily and can be run manually. It deliberately targets a private
-self-hosted runner labelled `discord-ingestion`, because that runner needs the
-database and Discord credentials. Configure an environment named
+The repository-level workflow at `.github/workflows/discord-ingestion.yml`
+runs at 03:17 UTC daily and can be run manually. It runs on GitHub-hosted
+Ubuntu and works inside this project directory. Configure an environment named
 `discord-ingestion` with `DATABASE_URL`, `OPENAI_API_KEY`, and
 `DISCORD_INGEST_BOT_TOKEN` secrets, plus a non-secret
-`DISCORD_INGEST_CHANNEL_IDS` variable.
+`DISCORD_INGEST_CHANNEL_IDS` variable. If Supabase network restrictions are
+enabled, GitHub-hosted runners will need an allowed network path.
 
 The scheduled sync detects additions and edits in the range since its stored
 cursor. A deleted older Discord message is not yet removed from the corpus;

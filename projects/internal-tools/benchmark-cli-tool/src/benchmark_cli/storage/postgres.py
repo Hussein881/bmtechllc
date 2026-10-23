@@ -143,6 +143,18 @@ def existing_hashes(hashes: Sequence[str]) -> set[str]:
         return {row[0].strip() for row in cursor.fetchall()}
 
 
+def existing_embeddings(hashes: Sequence[str]) -> dict[str, list[float]]:
+    """Return persisted vectors keyed by content hash for an atomic source refresh."""
+    if not hashes:
+        return {}
+    with connection() as conn, conn.cursor() as cursor:
+        cursor.execute(
+            "SELECT content_sha256, embedding FROM document_chunks WHERE content_sha256 = ANY(%s)",
+            (list(hashes),),
+        )
+        return {content_sha256.strip(): list(embedding) for content_sha256, embedding in cursor.fetchall()}
+
+
 def resolve_chunk_references(
     references: Sequence[GoldenChunkReference],
 ) -> dict[tuple[str, str], int]:

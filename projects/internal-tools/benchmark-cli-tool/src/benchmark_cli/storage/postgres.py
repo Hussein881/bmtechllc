@@ -152,7 +152,10 @@ def existing_embeddings(hashes: Sequence[str]) -> dict[str, list[float]]:
             "SELECT content_sha256, embedding FROM document_chunks WHERE content_sha256 = ANY(%s)",
             (list(hashes),),
         )
-        return {content_sha256.strip(): list(embedding) for content_sha256, embedding in cursor.fetchall()}
+        return {
+            content_sha256.strip(): embedding.to_list()
+            for content_sha256, embedding in cursor.fetchall()
+        }
 
 
 def resolve_chunk_references(

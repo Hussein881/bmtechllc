@@ -6,8 +6,17 @@
     <title>Smart Kiosk</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="root">Loading Smart Kiosk…</div>
+    <script type="module">
+      import('/src/main.tsx').catch((error) => {
+        console.error('Smart Kiosk frontend module failed to load', error);
+        const root = document.getElementById('root');
+        if (!root) return;
+        const message = document.createElement('pre');
+        message.textContent = `Smart Kiosk failed to load:\n${error?.message ?? String(error)}`;
+        message.style.cssText = 'margin: 2rem; padding: 1rem; white-space: pre-wrap; background: #111827; color: #fef3c7; font: 16px system-ui;';
+        root.replaceChildren(message);
+      });
+    </script>
   </body>
 </html>
-

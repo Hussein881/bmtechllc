@@ -24,8 +24,10 @@ Open `http://localhost:5173`. The edge service runs at
 `apps/edge-server/data/smart-kiosk.sqlite` by default.
 
 Copy `.env.example` to `.env` to override edge host, port, database path, or
-kiosk origin. Environment variables are read by the edge service; the client
-uses `VITE_EDGE_URL` when it must point at another local edge address.
+kiosk origin. During development, Vite proxies `/v1` and `/health` to the local
+edge service, so the browser uses the same origin as the kiosk UI. Set
+`VITE_EDGE_URL` only when the browser must connect directly to a separately
+hosted edge address.
 
 ## Verification
 

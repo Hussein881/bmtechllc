@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { CartLine, OrderQuote, PaymentScenario } from '@smart-kiosk/shared';
 
-const edgeUrl = import.meta.env.VITE_EDGE_URL ?? 'http://127.0.0.1:3001';
+// Use Vite's same-origin development proxy by default. Set VITE_EDGE_URL only
+// when the browser should connect directly to a separately hosted edge node.
+const edgeUrl = import.meta.env.VITE_EDGE_URL ?? '';
 
 type Menu = {
   currencyCode: string;
